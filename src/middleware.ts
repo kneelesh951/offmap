@@ -5,7 +5,7 @@
  */
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PROTECTED = ['/dashboard', '/host-dashboard', '/host-onboarding', '/conversations', '/settings']
+const PROTECTED = ['/dashboard', '/host-dashboard', '/host-onboarding', '/conversations', '/settings', '/wishlists']
 
 // Routes that legitimately receive cross-origin POST requests (Stripe, future webhooks).
 // These already verify requests via their own signature mechanisms — no CSRF check needed.

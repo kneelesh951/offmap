@@ -494,6 +494,21 @@ class MockDatabase {
     }
     this.subscriptions.set(demoSub.id, demoSub)
 
+    // ── Seed conversation + wishlists for demo traveler ─────────────────
+    const seedConv: MockConversation = {
+      id: 'conv-seed-1',
+      travelerId: 'user-traveler-demo',
+      hostId: 'user-host-demo',
+      subscriptionId: 'sub-demo',
+      unlockedAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+      lastMessageAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+    }
+    this.conversations.set(seedConv.id, seedConv)
+
+    // Seed a couple of wishlist items for demo traveler
+    this.wishlists.set('user-traveler-demo:host-3', { userId: 'user-traveler-demo', hostId: 'host-3' })
+    this.wishlists.set('user-traveler-demo:host-5', { userId: 'user-traveler-demo', hostId: 'host-5' })
+
     console.log('🌱 Mock database seeded with sample data')
     console.log('   Demo accounts:')
     console.log('   Traveler → traveler@demo.com / demo1234')

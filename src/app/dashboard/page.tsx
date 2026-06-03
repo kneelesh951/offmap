@@ -128,7 +128,7 @@ export default async function TravelerDashboard() {
   const STATS = [
     { label: 'Conversations', value: convCount, href: '/conversations', icon: '💬',
       bg: 'linear-gradient(135deg,#1E40AF,#3B82F6)' },   // cobalt blue
-    { label: 'Saved hosts', value: wishCount, href: '/search', icon: '❤️',
+    { label: 'Saved hosts', value: wishCount, href: '/wishlists', icon: '❤️',
       bg: 'linear-gradient(135deg,#5B21B6,#8B5CF6)' },   // warm plum
     { label: 'Cities live', value: cityCount, href: '/search', icon: '🌍',
       bg: 'linear-gradient(135deg,#134E4A,#0D9488)' },   // teal

@@ -769,16 +769,16 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
               })()}
 
               {/* Live Now card */}
-              <div className="fc-live" style={{ flex:1, borderRadius:'16px', padding:'12px 14px', background:'linear-gradient(135deg,#3D1F35,#5C2D4D)', boxShadow:'0 12px 36px rgba(61,31,53,0.55)' }}>
+              <div className="fc-live" style={{ flex:1, borderRadius:'16px', padding:'12px 14px', background:'linear-gradient(135deg,#C8960C,#D4A017)', boxShadow:'0 12px 36px rgba(180,130,20,0.45)' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'6px' }}>
-                  <span className="glow-dot" style={{ width:'7px', height:'7px', borderRadius:'50%', background:'#F9A8D4', display:'inline-block', flexShrink:0 }} />
-                  <span style={{ fontSize:'10px', fontWeight:700, color:'rgba(255,255,255,0.50)', textTransform:'uppercase', letterSpacing:'0.08em' }}>Live now</span>
+                  <span className="glow-dot" style={{ width:'7px', height:'7px', borderRadius:'50%', background:'#FFF3C4', display:'inline-block', flexShrink:0 }} />
+                  <span style={{ fontSize:'10px', fontWeight:700, color:'rgba(255,255,255,0.70)', textTransform:'uppercase', letterSpacing:'0.08em' }}>Live now</span>
                 </div>
                 <div style={{ fontSize:'20px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif', letterSpacing:'-0.03em', marginBottom:'2px' }}>⚡ 4 min</div>
-                <div style={{ fontSize:'10px', color:'rgba(255,255,255,0.55)', fontWeight:500, marginBottom:'8px' }}>avg. host reply time</div>
+                <div style={{ fontSize:'10px', color:'rgba(255,255,255,0.70)', fontWeight:500, marginBottom:'8px' }}>avg. host reply time</div>
                 <div style={{ display:'flex', gap:'4px', flexWrap:'wrap' }}>
                   {[['🇩🇪','Berlin'],['🇵🇹','Lisbon'],['🇳🇱','AMS']].map(([flag, city]) => (
-                    <span key={city} style={{ fontSize:'9px', fontWeight:600, padding:'2px 7px', borderRadius:'999px', background:'rgba(255,255,255,0.10)', color:'rgba(255,255,255,0.75)' }}>{flag} {city}</span>
+                    <span key={city} style={{ fontSize:'9px', fontWeight:600, padding:'2px 7px', borderRadius:'999px', background:'rgba(255,255,255,0.18)', color:'rgba(255,255,255,0.85)' }}>{flag} {city}</span>
                   ))}
                 </div>
               </div>
@@ -801,12 +801,12 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
               </div>
 
               {/* Pricing */}
-              <div style={{ flex:1, borderRadius:'14px', padding:'12px 14px', background:'linear-gradient(135deg,rgba(232,98,26,0.22),rgba(232,98,26,0.10))', border:'1px solid rgba(232,98,26,0.25)', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
-                <div style={{ fontSize:'9px', fontWeight:700, color:TERRA, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'4px' }}>Unlock hosts from</div>
-                <div style={{ fontSize:'20px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif', letterSpacing:'-0.03em', lineHeight:1 }}>€6 <span style={{ fontSize:'11px', fontWeight:500, color:'rgba(255,255,255,0.55)' }}>/day</span></div>
+              <div style={{ flex:1, borderRadius:'14px', padding:'12px 14px', background:'linear-gradient(135deg,#E8621A,#F07830)', boxShadow:'0 8px 28px rgba(232,98,26,0.40)', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
+                <div style={{ fontSize:'9px', fontWeight:700, color:'rgba(255,255,255,0.75)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'4px' }}>Unlock hosts from</div>
+                <div style={{ fontSize:'20px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif', letterSpacing:'-0.03em', lineHeight:1 }}>€6 <span style={{ fontSize:'11px', fontWeight:500, color:'rgba(255,255,255,0.65)' }}>/day</span></div>
                 <div style={{ display:'flex', gap:'4px', marginTop:'6px', flexWrap:'wrap' }}>
                   {['€6 day','€12 week','€18 mo'].map(t => (
-                    <span key={t} style={{ fontSize:'9px', fontWeight:600, padding:'2px 6px', borderRadius:'999px', background:'rgba(232,98,26,0.20)', color:TERRA }}>{t}</span>
+                    <span key={t} style={{ fontSize:'9px', fontWeight:600, padding:'2px 6px', borderRadius:'999px', background:'rgba(255,255,255,0.18)', color:'rgba(255,255,255,0.90)' }}>{t}</span>
                   ))}
                 </div>
               </div>

@@ -53,7 +53,9 @@ export function Navbar({ user }: NavbarProps) {
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
-    await supabase.auth.signOut()
+    if (process.env.NEXT_PUBLIC_MOCK_MODE !== 'true') {
+      await supabase.auth.signOut()
+    }
     router.push('/')
     router.refresh()
   }
