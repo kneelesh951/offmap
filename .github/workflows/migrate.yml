@@ -1,0 +1,48 @@
+name: Database Migration
+
+# Runs DB migrations automatically after code deploys to staging or production.
+# Staging migrations run when staging branch is updated.
+# Production migrations run when main branch is updated.
+#
+# IMPORTANT: Migrations run AFTER Vercel deploys the code.
+# Vercel deployment is triggered by GitHub push automatically via the Vercel integration.
+# This workflow only handles the DB migration step.
+
+on:
+  push:
+    branches: [main, staging]
+    paths:
+      # Only run when migration files actually change
+      - 'drizzle/migrations/**'
+      - 'src/lib/db/schema.ts'
+
+jobs:
+  migrate:
+    name: Run DB migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations (staging)
+        if: github.ref == 'refs/heads/staging'
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+        run: npm run db:migrate
+
+      - name: Run migrations (production)
+        if: github.ref == 'refs/heads/main'
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: npm run db:migrate

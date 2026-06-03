@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(grep -r \"createConversationSchema\\\\|sendMessageSchema\" '/Users/Neel/Downloads/lokalink 2/src' --include=*.ts --include=*.tsx)",
+      "Bash(grep -r @/lib/validators '/Users/Neel/Downloads/lokalink 2/src' --include=*.ts --include=*.tsx)",
+      "Bash(grep -n \"useRealtimeMessages\" \"/Users/Neel/Downloads/lokalink 2/src/app/conversations/\"*\"/ChatWindow.tsx\")",
+      "Bash(curl -s -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"\"\"\"email\"\"\"\":\"\"\"\"traveler@demo.com\"\"\"\",\"\"\"\"password\"\"\"\":\"\"\"\"demo1234\"\"\"\"}')",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"console.log\\(require\\(''./package.json''\\).dependencies.next\\)\")",
+      "Bash(curl -s http://localhost:3000/api/auth/login -X POST -H 'Content-Type: application/json' -d '{\"\"\"\"email\"\"\"\":\"\"\"\"traveler@demo.com\"\"\"\",\"\"\"\"password\"\"\"\":\"\"\"\"demo1234\"\"\"\"}' -c /tmp/traveler_cookies.txt)",
+      "WebFetch(domain:)",
+      "Bash(curl -s http://localhost:3000/api/auth/login -X POST -H 'Content-Type: application/json' -d '{\"\"email\"\":\"\"traveler@demo.com\"\",\"\"password\"\":\"\"demo1234\"\"}' -w \"\\\\nHTTP %{http_code}\")",
+      "Bash(curl -s http://localhost:3000/auth/login -w \"\\\\nHTTP %{http_code}\" -o /dev/null)",
+      "Bash(node -e \"try { require.resolve\\(''lucide-react''\\); console.log\\(''installed''\\) } catch { console.log\\(''MISSING''\\) }\")",
+      "Bash(curl -s http://localhost:3001/api/auth/login -X POST -H 'Content-Type: application/json' -d '{\"\"email\"\":\"\"traveler@demo.com\"\",\"\"password\"\":\"\"demo1234\"\"}' -w \"\\\\nHTTP %{http_code}\")",
+      "Bash(ls .env*)",
+      "Bash(supabase start:*)",
+      "Bash(echo \"=== 1. HOST SEARCH — by city ===\" BERLIN_ID=\"f9439aa5-4bfe-4cd0-92a7-0692b1152f86\" curl -s \"http://localhost:3001/api/hosts/search?cityId=$BERLIN_ID&page=1&limit=10\")",
+      "Bash(curl -v \"http://localhost:3001/api/hosts/search?cityId=f9439aa5-4bfe-4cd0-92a7-0692b1152f86&page=1&limit=10\")",
+      "Bash(find \"/Users/Neel/Downloads/lokalink 2/src/app/\\(dashboard\\)\" -name \"page.tsx\")",
+      "Bash(grep -E \"\\\\.ts$\")"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
+}

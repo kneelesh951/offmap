@@ -1,0 +1,48 @@
+name: Preview Deploy Comment
+
+# Posts the Vercel preview URL as a comment on every PR.
+# Makes it easy for reviewers to click through and test visually.
+# Vercel does the actual deployment — this just surfaces the URL.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  comment:
+    name: Post preview URL
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Find existing comment
+        uses: peter-evans/find-comment@v3
+        id: find
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: github-actions[bot]
+          body-includes: '🚀 Preview Deploy'
+
+      - name: Post or update comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            ## 🚀 Preview Deploy
+
+            | | |
+            |---|---|
+            | **Mode** | `MOCK_MODE=true` — no real services |
+            | **Preview URL** | Vercel will post the URL below automatically |
+            | **Demo traveler** | `traveler@demo.com` / `demo1234` |
+            | **Demo host** | `host@demo.com` / `demo1234` |
+
+            ### Pre-merge checklist
+            - [ ] TypeScript check passes ✅
+            - [ ] Lint passes ✅
+            - [ ] Build passes ✅
+            - [ ] Visually tested on preview URL
+            - [ ] Mobile layout checked

@@ -1,0 +1,39 @@
+# Dependencies — reinstalled inside the container
+node_modules
+npm-debug.log*
+
+# Next.js build output — rebuilt inside the container
+.next
+out
+
+# Environment files — NEVER copy into image, inject at runtime
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# Dev tools
+.eslintcache
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker files themselves
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Docs
+README.md
+CLAUDE.md
+QUICKSTART.md
+RUNNING_LOCALLY.md
+
+# Drizzle local DB (mock mode only)
+*.db
+*.db-journal

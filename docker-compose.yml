@@ -1,0 +1,91 @@
+version: '3.9'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# LokaLink — Docker Compose
+#
+# Two modes:
+#   docker-compose up                → production build (needs real env vars)
+#   docker-compose --profile mock up → mock mode (no external services needed)
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── Next.js app ─────────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Public env vars are baked into the build
+        NEXT_PUBLIC_MOCK_MODE: ${NEXT_PUBLIC_MOCK_MODE:-false}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+    ports:
+      - "3000:3000"
+    environment:
+      # Runtime secrets — injected at container start, never baked into image
+      NODE_ENV: production
+      MOCK_MODE: ${MOCK_MODE:-false}
+      DATABASE_URL: ${DATABASE_URL}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      STRIPE_PRICE_DAY: ${STRIPE_PRICE_DAY}
+      STRIPE_PRICE_WEEK: ${STRIPE_PRICE_WEEK}
+      STRIPE_PRICE_MONTH: ${STRIPE_PRICE_MONTH}
+      STRIPE_PRICE_ANNUAL: ${STRIPE_PRICE_ANNUAL}
+      UPSTASH_REDIS_REST_URL: ${UPSTASH_REDIS_REST_URL}
+      UPSTASH_REDIS_REST_TOKEN: ${UPSTASH_REDIS_REST_TOKEN}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-noreply@lokalink.com}
+      RESEND_FROM_NAME: ${RESEND_FROM_NAME:-LokaLink}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/cities"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ── Mock mode (no Supabase/Stripe needed) ───────────────────────────────────
+  app-mock:
+    profiles: ["mock"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_MOCK_MODE: "true"
+        NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+        NEXT_PUBLIC_SUPABASE_URL: "https://mock.supabase.co"
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: "mock-anon-key"
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_mock"
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      MOCK_MODE: "true"
+      NEXT_PUBLIC_MOCK_MODE: "true"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+      NEXT_PUBLIC_SUPABASE_URL: "https://mock.supabase.co"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "mock-anon-key"
+      SUPABASE_SERVICE_ROLE_KEY: "mock-service-role"
+      DATABASE_URL: "file:./mock.db"
+      STRIPE_SECRET_KEY: "sk_test_mock"
+      STRIPE_WEBHOOK_SECRET: "whsec_mock"
+      STRIPE_PRICE_DAY: "price_mock_day"
+      STRIPE_PRICE_WEEK: "price_mock_week"
+      STRIPE_PRICE_MONTH: "price_mock_month"
+      STRIPE_PRICE_ANNUAL: "price_mock_annual"
+      UPSTASH_REDIS_REST_URL: "https://mock.upstash.io"
+      UPSTASH_REDIS_REST_TOKEN: "mock-token"
+      RESEND_API_KEY: "re_mock"
+      RESEND_FROM_EMAIL: "dev@localhost"
+      RESEND_FROM_NAME: "LokaLink Dev"
+    restart: unless-stopped

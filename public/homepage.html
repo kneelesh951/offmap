@@ -1,0 +1,2677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Offmap — Meet a Local. Live the City.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,400;1,9..144,600;1,9..144,700&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ─── TOKENS ─────────────────────────── */
+:root {
+  --cream:      #FAF7F2;
+  --sand:       #F2EDE4;
+  --sand-deep:  #E8E0D4;
+  --parchment:  #EDE6D9;
+  --ink:        #0F3D22;
+  --ink-mid:    #1E6038;
+  --ink-soft:   #2D6B3F;
+  --ink-muted:  #4A7A5C;
+  --green-gloss: linear-gradient(175deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 35%, rgba(255,255,255,0) 65%);
+  --terra:      #E8621A;
+  --terra-dark: #C4511A;
+  --terra-pale: #FEF0E8;
+  --terra-tint: rgba(232,98,26,0.09);
+  --gold:       #F5A623;
+  --sage:       #5A7350;
+  --sage-pale:  #EAF0E6;
+  --border:     rgba(27,58,42,0.09);
+  --border-med: rgba(27,58,42,0.14);
+  --shadow-xs:  0 1px 4px rgba(27,58,42,0.06);
+  --shadow-sm:  0 4px 16px rgba(27,58,42,0.08);
+  --shadow-md:  0 8px 32px rgba(27,58,42,0.10);
+  --shadow-lg:  0 16px 56px rgba(27,58,42,0.13);
+  --shadow-terra: 0 8px 32px rgba(232,98,26,0.35);
+  --r-sm:       8px;
+  --r:          14px;
+  --r-lg:       22px;
+  --r-xl:       32px;
+  --r-pill:     100px;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; font-size:16px; }
+body {
+  font-family:'Geist',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+  font-feature-settings:'kern' 1,'liga' 1;
+  font-weight:450;
+  letter-spacing:-0.01em;
+}
+::selection { background:var(--terra); color:#fff; }
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:var(--cream); }
+::-webkit-scrollbar-thumb { background:rgba(197,90,40,0.25); border-radius:3px; }
+
+/* ─── NAV ─────────────────────────────── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  height:68px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 44px;
+  background: #0F3D22;
+  backdrop-filter:blur(28px) saturate(1.6);
+  -webkit-backdrop-filter:blur(28px) saturate(1.6);
+  border-bottom:1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.07) inset,
+    0 4px 24px rgba(15,61,34,0.20);
+  transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+nav.scrolled {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%),
+    rgba(15,61,34,0.96);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.08) inset,
+    0 8px 32px rgba(15,61,34,0.30);
+  border-bottom:1px solid rgba(255,255,255,0.12);
+}
+
+.nav-logo {
+  font-family:'Fraunces',serif;
+  font-size:26px; font-weight:800; letter-spacing:-0.8px;
+  color:#fff; cursor:pointer; user-select:none;
+}
+.nav-logo span {
+  color:var(--terra);
+  background: linear-gradient(135deg, var(--terra) 0%, var(--gold) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* Nav links pill — glass capsule */
+.nav-links {
+  display:flex; align-items:center;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:var(--r-pill); padding:5px;
+  gap:2px;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset;
+  backdrop-filter:blur(8px);
+}
+.nav-link {
+  padding:7px 18px; border-radius:var(--r-pill);
+  border:none; background:transparent;
+  font-family:'Geist',sans-serif; font-size:13px; font-weight:600;
+  color:#fff; cursor:pointer;
+  transition:all 0.2s; letter-spacing:0.01em;
+}
+.nav-link:hover {
+  color:#fff;
+  background:rgba(255,255,255,0.12);
+}
+.nav-link.active {
+  background:rgba(255,255,255,0.15);
+  color:#fff;
+  font-weight:600;
+}
+
+.nav-actions { display:flex; align-items:center; gap:10px; }
+
+.nav-btn-ghost {
+  padding:8px 20px; border-radius:var(--r-pill);
+  border:1px solid rgba(255,255,255,0.40);
+  background:transparent;
+  font-family:'Geist',sans-serif; font-size:13px; font-weight:600;
+  color:#fff; cursor:pointer;
+  transition:all 0.22s; letter-spacing:0.01em;
+}
+.nav-btn-ghost:hover {
+  border-color:rgba(255,255,255,0.70);
+  background:rgba(255,255,255,0.10);
+  color:#fff;
+}
+
+/* Get started — vivid terra gradient */
+.nav-btn-cta {
+  padding:9px 22px; border-radius:var(--r-pill);
+  border:1px solid rgba(255,255,255,0.15);
+  background: linear-gradient(135deg, var(--terra) 0%, #F07830 100%);
+  font-family:'Fraunces',serif; font-size:13px; font-weight:700;
+  color:#fff; cursor:pointer;
+  transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:0 3px 14px rgba(232,98,26,0.40), 0 1px 0 rgba(255,255,255,0.15) inset;
+  letter-spacing:0.01em;
+}
+.nav-btn-cta:hover {
+  transform:translateY(-2px) scale(1.03);
+  box-shadow:0 6px 22px rgba(232,98,26,0.55), 0 1px 0 rgba(255,255,255,0.15) inset;
+}
+
+/* ─── HERO ─────────────────────────────── */
+.hero {
+  min-height:100vh;
+  display:grid; grid-template-columns:1fr 1fr;
+  align-items:center; gap:64px;
+  padding:112px 44px 80px;
+  max-width:1320px; margin:0 auto;
+  position:relative;
+}
+
+/* subtle dot pattern */
+.hero::before {
+  content:'';
+  position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background-image:radial-gradient(circle, rgba(27,58,42,0.06) 1px, transparent 1px);
+  background-size:32px 32px;
+  mask-image:radial-gradient(ellipse 100% 100% at 50% 0%, black 40%, transparent 100%);
+}
+
+.hero-left {}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:#fff; border:1px solid var(--border);
+  padding:6px 14px; border-radius:var(--r-pill);
+  font-size:12px; font-weight:500; color:var(--terra);
+  margin-bottom:28px; box-shadow:var(--shadow-xs);
+}
+.hero-badge-dot {
+  width:6px; height:6px; border-radius:50%; background:var(--terra);
+  animation:breathe 2.2s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.4; transform:scale(1.4); }
+}
+
+.hero-h1 {
+  font-family:'Fraunces',serif;
+  font-size:clamp(48px,5.5vw,80px);
+  font-weight:700; line-height:1.02; letter-spacing:-2px;
+  color:var(--ink); margin-bottom:24px;
+}
+.hero-h1 em { font-style:italic; color:var(--terra); }
+.hero-h1 .light { font-weight:400; color:var(--ink-soft); }
+
+.hero-sub {
+  font-size:17px; line-height:1.78; color:var(--ink-soft);
+  max-width:480px; margin-bottom:40px; font-weight:500;
+}
+
+.hero-actions { display:flex; align-items:center; gap:12px; margin-bottom:52px; flex-wrap:wrap; }
+.btn-primary {
+  padding:14px 30px; border-radius:var(--r-pill);
+  border:none; background:var(--terra);
+  font-family:'Geist',sans-serif; font-size:15px; font-weight:600;
+  color:#fff; cursor:pointer; transition:all 0.25s;
+  box-shadow:0 4px 20px rgba(197,90,40,0.30);
+  display:flex; align-items:center; gap:8px;
+}
+.btn-primary:hover { background:var(--terra-dark); transform:translateY(-2px); box-shadow:0 8px 28px rgba(197,90,40,0.40); }
+.btn-primary:active { transform:translateY(0); }
+.btn-secondary {
+  padding:14px 30px; border-radius:var(--r-pill);
+  border:1.5px solid var(--border-med); background:transparent;
+  font-family:'Geist',sans-serif; font-size:15px; font-weight:600;
+  color:var(--ink); cursor:pointer; transition:all 0.25s;
+  display:flex; align-items:center; gap:8px;
+}
+.btn-secondary:hover { border-color:var(--ink); color:var(--ink); background:rgba(27,58,42,0.03); }
+
+/* Hero stats */
+.hero-stats {
+  display:flex; gap:0;
+  border:1px solid var(--border); border-radius:var(--r-lg);
+  overflow:hidden; background:#fff; box-shadow:var(--shadow-sm);
+  width:fit-content;
+}
+.h-stat {
+  padding:16px 24px; border-right:1px solid var(--border);
+  display:flex; flex-direction:column; gap:3px;
+}
+.h-stat:last-child { border-right:none; }
+.h-stat-n {
+  font-family:'Fraunces',serif; font-size:26px; font-weight:700;
+  color:var(--terra); line-height:1;
+}
+.h-stat-l { font-size:11px; font-weight:600; color:var(--ink-muted); letter-spacing:0.03em; }
+
+/* ─── HERO RIGHT — host stack ─────────── */
+.hero-right { position:relative; height:580px; }
+
+.hero-card-main {
+  position:absolute; top:0; right:0; width:300px;
+  background:#fff; border-radius:var(--r-xl);
+  border:1px solid var(--border); box-shadow:var(--shadow-lg);
+  overflow:hidden;
+  animation:floatA 7s ease-in-out infinite;
+}
+@keyframes floatA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+
+.hc-cover {
+  height:180px; position:relative;
+  background:linear-gradient(135deg, #C55A28 0%, #E8895A 55%, #D4A84A 100%);
+}
+.hc-cover-pattern {
+  position:absolute; inset:0; opacity:0.12;
+  background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);
+  background-size:12px 12px;
+}
+.hc-avatar {
+  position:absolute; bottom:-26px; left:20px;
+  width:56px; height:56px; border-radius:14px;
+  border:3px solid #fff; box-shadow:var(--shadow-sm);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-size:22px; font-weight:700; color:#fff;
+}
+.hc-body { padding:36px 20px 20px; }
+.hc-name { font-family:'Fraunces',serif; font-size:17px; font-weight:600; color:var(--ink); }
+.hc-city { font-size:12px; font-weight:500; color:var(--ink-soft); margin-top:3px; }
+.hc-tags { display:flex; flex-wrap:wrap; gap:5px; margin:12px 0; }
+.hc-tag {
+  font-size:11px; font-weight:500; padding:3px 10px;
+  border-radius:var(--r-pill); background:var(--terra-pale);
+  color:var(--terra); border:1px solid rgba(197,90,40,0.15);
+}
+.hc-footer {
+  display:flex; justify-content:space-between; align-items:center;
+  padding-top:12px; border-top:1px solid var(--border);
+}
+.hc-rate { font-size:13px; font-weight:600; color:var(--terra); }
+.hc-stars { font-size:12px; font-weight:500; color:var(--ink-soft); display:flex; align-items:center; gap:3px; }
+.hc-star { color:#E8A830; font-size:11px; }
+
+/* floating mini cards */
+.float-card {
+  position:absolute; background:#fff;
+  border:1px solid var(--border); border-radius:var(--r-lg);
+  padding:16px 18px; box-shadow:var(--shadow-md);
+}
+.fc-1 {
+  top:190px; left:0; width:195px;
+  animation:floatB 8s ease-in-out infinite 1.2s;
+}
+@keyframes floatB { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.fc-2 {
+  bottom:30px; right:10px; width:220px;
+  background:var(--ink); border-color:transparent;
+  animation:floatC 9s ease-in-out infinite 2.4s;
+}
+@keyframes floatC { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.fc-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-muted); margin-bottom:6px; }
+.fc-label-light { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:rgba(250,247,242,0.60); margin-bottom:6px; }
+.fc-value { font-family:'Fraunces',serif; font-size:20px; font-weight:600; color:var(--ink); }
+.fc-value-light { font-family:'Fraunces',serif; font-size:20px; font-weight:600; color:var(--cream); }
+.fc-sub { font-size:11px; font-weight:500; color:var(--ink-soft); margin-top:3px; }
+.fc-sub-light { font-size:11px; font-weight:500; color:rgba(250,247,242,0.65); margin-top:3px; }
+.fc-avatars { display:flex; margin-top:8px; }
+.fc-av {
+  width:26px; height:26px; border-radius:50%;
+  border:2px solid #fff; margin-left:-7px;
+  font-size:9px; font-weight:700; color:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.fc-av:first-child { margin-left:0; }
+
+/* ─── SEARCH ─────────────────────────── */
+.search-wrap {
+  background:var(--sand);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:52px 44px;
+}
+.search-inner { max-width:960px; margin:0 auto; }
+.search-title {
+  font-family:'Fraunces',serif; font-size:24px; font-weight:600;
+  color:var(--ink); text-align:center; margin-bottom:24px;
+  letter-spacing:-0.4px;
+}
+.search-bar {
+  display:flex; align-items:stretch;
+  background:#fff; border-radius:var(--r-pill);
+  border:1.5px solid var(--border);
+  box-shadow:var(--shadow-md);
+  overflow:hidden;
+}
+.s-field {
+  flex:1; padding:16px 22px; border-right:1px solid var(--border);
+  cursor:pointer; transition:background 0.2s;
+  display:flex; flex-direction:column; gap:3px; min-width:130px;
+}
+.s-field:hover { background:var(--cream); }
+.s-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--terra); }
+.s-val { font-size:13px; font-weight:600; color:var(--ink-soft); }
+.s-btn {
+  padding:16px 30px; border:none; background:var(--terra);
+  font-family:'Geist',sans-serif; font-size:14px; font-weight:600;
+  color:#fff; cursor:pointer; transition:background 0.2s; white-space:nowrap;
+  display:flex; align-items:center; gap:8px;
+}
+.s-btn:hover { background:var(--terra-dark); }
+
+/* ─── SECTION SHARED ─────────────────── */
+.section { padding:80px 44px; max-width:1320px; margin:0 auto; }
+.section-bordered { border-top:1px solid var(--border); }
+.eyebrow {
+  font-size:11px; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.1em; color:var(--terra);
+  display:flex; align-items:center; gap:8px; margin-bottom:10px;
+}
+.eyebrow::before { content:''; width:20px; height:1.5px; background:var(--terra); border-radius:1px; }
+.section-title {
+  font-family:'Fraunces',serif;
+  font-size:clamp(28px,3.5vw,46px);
+  font-weight:700; line-height:1.1; letter-spacing:-1px;
+  color:var(--ink); margin-bottom:0;
+}
+.section-title em { font-style:italic; color:var(--terra); }
+.section-title .light { font-weight:400; color:var(--ink-soft); }
+.section-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:36px; }
+.see-all {
+  font-size:13px; font-weight:600; color:var(--terra);
+  cursor:pointer; display:flex; align-items:center; gap:5px;
+  border-bottom:1px solid rgba(197,90,40,0.3); padding-bottom:1px;
+  transition:gap 0.2s;
+}
+.see-all:hover { gap:9px; }
+
+/* ─── CATEGORIES ─────────────────────── */
+.cats-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }
+.cat {
+  padding:22px 14px 18px; border-radius:var(--r-lg);
+  border:1.5px solid var(--border); background:#fff;
+  text-align:center; cursor:pointer; transition:all 0.25s;
+  position:relative; overflow:hidden;
+}
+.cat::after {
+  content:''; position:absolute; inset:0; border-radius:var(--r-lg);
+  background:var(--terra); opacity:0; transition:opacity 0.25s;
+}
+.cat:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:rgba(197,90,40,0.25); }
+.cat.active { border-color:var(--terra); background:var(--terra-pale); }
+.cat.active .cat-n { color:var(--terra); }
+.cat-icon { font-size:26px; display:block; margin-bottom:10px; position:relative; z-index:1; }
+.cat-n { font-size:12px; font-weight:600; color:var(--ink-mid); position:relative; z-index:1; transition:color 0.2s; }
+.cat-c { font-size:11px; color:var(--ink-muted); margin-top:4px; position:relative; z-index:1; }
+
+/* ─── HOST CARDS ─────────────────────── */
+.hosts-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+.hcard {
+  background:#fff; border-radius:var(--r-xl);
+  border:1px solid var(--border); box-shadow:var(--shadow-xs);
+  overflow:hidden; cursor:pointer; transition:all 0.3s;
+}
+.hcard:hover { transform:translateY(-7px); box-shadow:var(--shadow-lg); border-color:rgba(197,90,40,0.2); }
+.hcard-img { height:170px; position:relative; overflow:hidden; }
+.hcard-img-bg { width:100%; height:100%; transition:transform 0.5s ease; }
+.hcard:hover .hcard-img-bg { transform:scale(1.05); }
+.hcard-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom, transparent 45%, rgba(27,58,42,0.55) 100%);
+}
+.hcard-badge {
+  position:absolute; top:12px; left:12px; z-index:1;
+  background:rgba(27,58,42,0.6); backdrop-filter:blur(8px);
+  color:#fff; font-size:11px; font-weight:500;
+  padding:4px 10px; border-radius:var(--r-pill);
+}
+.hcard-fav {
+  position:absolute; top:12px; right:12px; z-index:1;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.9); border:none;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; cursor:pointer; transition:all 0.2s;
+}
+.hcard-fav:hover { background:#fff; transform:scale(1.1); }
+.hcard-av {
+  position:absolute; bottom:-22px; left:16px; z-index:1;
+  width:46px; height:46px; border-radius:12px;
+  border:3px solid #fff; box-shadow:var(--shadow-sm);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-size:18px; font-weight:700; color:#fff;
+}
+.hcard-body { padding:30px 16px 16px; }
+.hcard-name { font-family:'Fraunces',serif; font-size:17px; font-weight:600; color:var(--ink); }
+.hcard-langs { font-size:11px; color:var(--ink-muted); margin-top:3px; }
+.hcard-tags { display:flex; flex-wrap:wrap; gap:5px; margin:10px 0; }
+.hcard-tag {
+  font-size:11px; font-weight:500; padding:3px 9px; border-radius:var(--r-pill);
+  background:var(--sand); color:var(--ink-mid);
+}
+.hcard-footer {
+  display:flex; justify-content:space-between; align-items:center;
+  padding-top:12px; border-top:1px solid var(--border);
+}
+.hcard-rate { font-size:13px; font-weight:600; color:var(--ink); }
+.hcard-rate small { color:var(--ink-muted); font-weight:400; font-size:11px; }
+.hcard-rating { font-size:12px; color:var(--ink-muted); display:flex; align-items:center; gap:3px; }
+.hcard-star { color:#E8A830; font-size:11px; }
+
+/* ─── HOW IT WORKS ───────────────────── */
+.how-wrap {
+  background:var(--ink);
+  padding:100px 44px;
+}
+.how-inner { max-width:1320px; margin:0 auto; }
+.how-eyebrow { color:rgba(250,247,242,0.6); }
+.how-title { color:var(--cream); margin-bottom:0; }
+.how-title em { color:var(--terra); }
+.how-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; margin-top:56px; align-items:start; }
+.how-steps { display:flex; flex-direction:column; }
+.how-step {
+  display:flex; gap:20px; padding:24px 0;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  cursor:pointer; transition:all 0.2s;
+}
+.how-step:first-child { border-top:1px solid rgba(255,255,255,0.07); }
+.how-step-n {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  border:1px solid rgba(255,255,255,0.12);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-size:16px; font-weight:600;
+  color:rgba(255,255,255,0.3); transition:all 0.3s;
+}
+.how-step.active .how-step-n { background:var(--terra); border-color:var(--terra); color:#fff; }
+.how-step-title {
+  font-family:'Fraunces',serif; font-size:18px; font-weight:600;
+  color:rgba(250,247,242,0.5); margin-bottom:6px; transition:color 0.3s;
+}
+.how-step.active .how-step-title { color:var(--cream); }
+.how-step-desc { font-size:14px; font-weight:500; line-height:1.75; color:rgba(250,247,242,0.50); }
+.how-step.active .how-step-desc { color:rgba(250,247,242,0.70); }
+
+.how-visual {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:var(--r-xl);
+  padding:44px 36px; text-align:center;
+  min-height:340px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  transition:all 0.4s ease;
+}
+.how-visual::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(197,90,40,0.06), transparent 60%);
+}
+.how-v-icon { font-size:64px; margin-bottom:22px; position:relative; z-index:1; }
+.how-v-title {
+  font-family:'Fraunces',serif; font-size:22px; font-weight:600;
+  color:var(--cream); margin-bottom:12px; position:relative; z-index:1;
+}
+.how-v-desc {
+  font-size:14px; font-weight:500; line-height:1.75; color:rgba(250,247,242,0.65);
+  max-width:280px; position:relative; z-index:1;
+}
+.how-v-chip {
+  margin-top:22px; padding:8px 18px; border-radius:var(--r-pill);
+  background:var(--terra-tint); border:1px solid rgba(197,90,40,0.3);
+  font-size:12px; font-weight:500; color:rgba(197,90,40,0.8);
+  position:relative; z-index:1;
+}
+
+/* ─── CITIES ─────────────────────────── */
+.cities-scroll {
+  display:flex; gap:10px; overflow-x:auto;
+  padding-bottom:4px; scrollbar-width:none; margin-top:32px;
+}
+.cities-scroll::-webkit-scrollbar { display:none; }
+.city-chip {
+  display:flex; align-items:center; gap:11px;
+  padding:12px 18px; border-radius:var(--r-lg);
+  background:#fff; border:1.5px solid var(--border);
+  cursor:pointer; white-space:nowrap; flex-shrink:0;
+  transition:all 0.2s; box-shadow:var(--shadow-xs);
+}
+.city-chip:hover,.city-chip.active {
+  border-color:rgba(197,90,40,0.35); background:var(--terra-pale);
+}
+.city-chip:hover .city-n,.city-chip.active .city-n { color:var(--terra); }
+.city-flag { font-size:20px; }
+.city-n { font-size:14px; font-weight:600; color:var(--ink-mid); transition:color 0.2s; }
+.city-h { font-size:11px; color:var(--ink-muted); margin-top:2px; }
+
+/* ─── PRICING CTA ─────────────────────── */
+.cta-wrap {
+  margin:0 44px 80px;
+  border-radius:var(--r-xl);
+  background:linear-gradient(140deg, #C55A28 0%, #A64820 45%, #7A320E 100%);
+  padding:72px;
+  display:grid; grid-template-columns:1fr 1fr; gap:72px;
+  align-items:center; position:relative; overflow:hidden;
+}
+.cta-wrap::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size:28px 28px;
+}
+.cta-wrap::after {
+  content:''; position:absolute;
+  width:480px; height:480px; border-radius:50%;
+  top:-160px; right:-120px; pointer-events:none;
+  background:radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+}
+.cta-left { position:relative; z-index:1; }
+.cta-eyebrow { color:rgba(255,255,255,0.55); letter-spacing:0.12em; }
+.cta-eyebrow::before { background:rgba(255,255,255,0.4); }
+.cta-title {
+  font-family:'Fraunces',serif;
+  font-size:clamp(34px,4vw,54px);
+  font-weight:700; line-height:1.05; letter-spacing:-1px;
+  color:#fff; margin:14px 0 20px;
+}
+.cta-sub { font-size:16px; line-height:1.78; color:rgba(255,255,255,0.72); }
+.cta-feats { display:flex; flex-direction:column; gap:10px; margin-top:28px; }
+.cta-feat {
+  display:flex; align-items:center; gap:10px;
+  font-size:14px; color:rgba(255,255,255,0.75);
+}
+.cta-check {
+  width:18px; height:18px; border-radius:5px; flex-shrink:0;
+  background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; color:#fff;
+}
+
+.cta-right { position:relative; z-index:1; }
+.plans-title {
+  font-size:11px; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.12em; color:rgba(255,255,255,0.4); margin-bottom:14px;
+}
+.plans { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+.plan {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:17px 20px; border-radius:var(--r-lg);
+  border:1px solid rgba(255,255,255,0.14);
+  background:rgba(255,255,255,0.08);
+  cursor:pointer; transition:all 0.2s;
+}
+.plan:hover,.plan.sel {
+  background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.35);
+}
+.plan-name { font-family:'Geist',sans-serif; font-size:14px; font-weight:600; color:#fff; }
+.plan-desc { font-size:11px; font-weight:500; color:rgba(255,255,255,0.65); margin-top:2px; }
+.plan-badge {
+  font-size:9px; font-weight:700; padding:2px 7px; border-radius:4px;
+  background:rgba(255,255,255,0.2); color:#fff; margin-left:8px;
+  text-transform:uppercase; letter-spacing:0.06em;
+}
+.plan-price {
+  font-family:'Fraunces',serif; font-size:22px; font-weight:600;
+  color:#fff; white-space:nowrap;
+}
+.plan-price sub { font-size:11px; font-weight:500; opacity:0.75; }
+.cta-btn {
+  width:100%; padding:17px; border-radius:var(--r-pill);
+  border:none; background:#fff;
+  font-family:'Geist',sans-serif; font-size:15px; font-weight:700;
+  color:var(--terra); cursor:pointer; transition:all 0.25s;
+}
+.cta-btn:hover { background:var(--cream); transform:translateY(-1px); }
+.cta-trust {
+  display:flex; gap:20px; justify-content:center; margin-top:14px;
+  flex-wrap:wrap;
+}
+.trust-item {
+  font-size:11px; font-weight:500; color:rgba(255,255,255,0.60);
+  display:flex; align-items:center; gap:5px;
+}
+.trust-item::before { content:'✓'; color:rgba(255,255,255,0.75); }
+
+/* ─── REVIEWS ─────────────────────────── */
+.reviews-wrap { background:var(--sand); padding:80px 44px; border-top:1px solid var(--border); }
+.reviews-inner { max-width:1320px; margin:0 auto; }
+.reviews-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:40px; }
+.review {
+  background:#fff; border-radius:var(--r-xl);
+  border:1px solid var(--border); padding:28px;
+  box-shadow:var(--shadow-xs); transition:all 0.3s;
+}
+.review:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+.review-stars { display:flex; gap:3px; margin-bottom:16px; }
+.rv-star { color:#E8A830; font-size:13px; }
+.review-text {
+  font-family:'Fraunces',serif; font-size:16px; font-style:italic;
+  font-weight:500; line-height:1.7; color:var(--ink); margin-bottom:20px;
+}
+.review-author { display:flex; align-items:center; gap:12px; }
+.rv-av {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-size:16px; font-weight:700; color:#fff;
+}
+.rv-name { font-size:14px; font-weight:600; color:var(--ink); }
+.rv-meta { font-size:11px; color:var(--ink-muted); margin-top:2px; }
+
+/* ─── HOST CTA ────────────────────────── */
+.host-cta-wrap { padding:80px 44px; border-top:1px solid var(--border); }
+.host-cta-inner { max-width:1320px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+.host-cta-title {
+  font-family:'Fraunces',serif;
+  font-size:clamp(34px,4vw,56px); font-weight:700; line-height:1.05;
+  letter-spacing:-1px; color:var(--ink); margin:14px 0 20px;
+}
+.host-cta-title em { font-style:italic; color:var(--terra); }
+.host-cta-sub { font-size:16px; line-height:1.78; color:var(--ink-soft); margin-bottom:32px; }
+.host-cta-btn {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:14px 28px; border-radius:var(--r-pill);
+  border:1.5px solid var(--border-med); background:transparent;
+  font-family:'Geist',sans-serif; font-size:14px; font-weight:600;
+  color:var(--ink); cursor:pointer; transition:all 0.25s;
+}
+.host-cta-btn:hover { background:var(--ink); color:var(--cream); border-color:var(--ink); }
+.perks { display:flex; flex-direction:column; gap:12px; }
+.perk {
+  display:flex; gap:16px; align-items:flex-start;
+  padding:20px 22px; border-radius:var(--r-lg);
+  background:#fff; border:1px solid var(--border);
+  box-shadow:var(--shadow-xs); transition:all 0.2s;
+}
+.perk:hover { border-color:rgba(197,90,40,0.2); box-shadow:var(--shadow-sm); }
+.perk-icon {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  background:var(--terra-pale); border:1px solid rgba(197,90,40,0.15);
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+}
+.perk-title { font-size:14px; font-weight:600; color:var(--ink); margin-bottom:4px; }
+.perk-desc { font-size:13px; font-weight:500; line-height:1.65; color:var(--ink-soft); }
+
+/* ─── FOOTER ─────────────────────────── */
+footer {
+  background:var(--ink); color:var(--cream);
+  padding:64px 44px 40px;
+}
+.footer-inner { max-width:1320px; margin:0 auto; }
+.footer-grid {
+  display:grid; grid-template-columns:2.2fr 1fr 1fr 1fr;
+  gap:56px; margin-bottom:48px;
+}
+.footer-logo {
+  font-family:'Fraunces',serif; font-size:26px; font-weight:700;
+  color:var(--cream); margin-bottom:14px;
+}
+.footer-logo span { color:var(--terra); }
+.footer-tagline {
+  font-size:14px; font-weight:500; line-height:1.75; color:rgba(250,247,242,0.60);
+  max-width:260px; margin-bottom:24px;
+}
+.footer-socials { display:flex; gap:8px; }
+.social {
+  width:36px; height:36px; border-radius:9px;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; cursor:pointer; color:rgba(250,247,242,0.6);
+  transition:all 0.2s;
+}
+.social:hover { background:var(--terra); border-color:var(--terra); color:#fff; }
+.footer-col h4 {
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.12em; color:rgba(250,247,242,0.50);
+  margin-bottom:18px;
+}
+.footer-col a {
+  display:block; font-size:14px; font-weight:500; color:rgba(250,247,242,0.65);
+  margin-bottom:11px; cursor:pointer; transition:color 0.2s; text-decoration:none;
+}
+.footer-col a:hover { color:var(--terra); }
+.footer-bottom {
+  display:flex; align-items:center; justify-content:space-between;
+  padding-top:28px; border-top:1px solid rgba(255,255,255,0.07);
+}
+.footer-copy { font-size:12px; font-weight:500; color:rgba(250,247,242,0.50); }
+.footer-flags { display:flex; gap:6px; flex-wrap:wrap; }
+.f-flag {
+  font-size:11px; font-weight:500; padding:3px 10px; border-radius:5px;
+  background:rgba(255,255,255,0.06); color:rgba(250,247,242,0.50);
+  border:1px solid rgba(255,255,255,0.10);
+}
+
+/* ─── MODAL ──────────────────────────── */
+.modal-overlay {
+  position:fixed; inset:0; z-index:800;
+  background:rgba(27,58,42,0.65); backdrop-filter:blur(10px);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:#fff; border-radius:var(--r-xl);
+  width:100%; max-width:480px; overflow:hidden;
+  box-shadow:var(--shadow-lg);
+  animation:popIn 0.32s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn {
+  from { opacity:0; transform:scale(0.91) translateY(20px); }
+  to { opacity:1; transform:scale(1) translateY(0); }
+}
+.modal-top {
+  position:relative; height:120px;
+  display:flex; align-items:flex-end; padding:0 24px 0;
+}
+.modal-av {
+  width:68px; height:68px; border-radius:16px;
+  border:4px solid #fff; box-shadow:var(--shadow-md);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-size:26px; font-weight:700; color:#fff;
+  position:relative; top:34px; z-index:1;
+}
+.modal-close-btn {
+  position:absolute; top:14px; right:14px;
+  width:32px; height:32px; border-radius:50%;
+  background:rgba(255,255,255,0.85); border:none;
+  font-size:16px; cursor:pointer; color:var(--ink-mid);
+  display:flex; align-items:center; justify-content:center;
+  transition:background 0.2s;
+}
+.modal-close-btn:hover { background:#fff; }
+.modal-body { padding:42px 24px 24px; }
+.modal-name { font-family:'Fraunces',serif; font-size:22px; font-weight:700; color:var(--ink); }
+.modal-city { font-size:13px; color:var(--ink-muted); margin-top:4px; }
+.modal-tags { display:flex; flex-wrap:wrap; gap:6px; margin:14px 0; }
+.modal-tag {
+  font-size:12px; font-weight:500; padding:4px 12px; border-radius:var(--r-pill);
+  background:var(--terra-pale); color:var(--terra);
+  border:1px solid rgba(197,90,40,0.15);
+}
+.modal-bio {
+  font-size:14px; line-height:1.78; color:var(--ink-soft);
+  background:var(--sand); border-radius:var(--r); padding:16px;
+  margin-bottom:20px; border:1px solid var(--border);
+}
+.modal-cta {
+  width:100%; padding:15px; border-radius:var(--r-pill); border:none;
+  background:var(--terra); font-family:'Geist',sans-serif;
+  font-size:15px; font-weight:600; color:#fff;
+  cursor:pointer; transition:all 0.2s; margin-bottom:12px;
+}
+.modal-cta:hover { background:var(--terra-dark); }
+.modal-paywall {
+  padding:13px 16px; border-radius:var(--r); text-align:center;
+  background:var(--terra-pale); border:1px solid rgba(197,90,40,0.15);
+}
+.modal-paywall p { font-size:12px; color:var(--ink-soft); line-height:1.6; }
+.modal-paywall strong { color:var(--terra); }
+
+/* ─── TOAST ──────────────────────────── */
+.toast {
+  position:fixed; bottom:28px; left:50%; z-index:9999;
+  transform:translateX(-50%) translateY(16px); opacity:0;
+  background:var(--ink); color:var(--cream);
+  padding:11px 22px; border-radius:var(--r-pill);
+  font-size:13px; font-weight:500;
+  pointer-events:none; white-space:nowrap;
+  box-shadow:var(--shadow-lg);
+  transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  display:flex; align-items:center; gap:8px;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ─── HERO INLINE SEARCH ─────────────── */
+.hero-search {
+  margin-bottom:40px;
+  background:#fff;
+  border-radius:var(--r-xl);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow-md);
+  overflow:hidden;
+}
+.hsearch-tabs {
+  display:flex; border-bottom:1px solid var(--border);
+}
+.hsearch-tab {
+  flex:1; padding:14px 18px;
+  border:none; background:transparent;
+  font-family:'Geist',sans-serif; font-size:13px; font-weight:600;
+  color:var(--ink-muted); cursor:pointer; transition:all 0.2s;
+  border-bottom:2px solid transparent; margin-bottom:-1px;
+}
+.hsearch-tab:hover { color:var(--ink); background:var(--cream); }
+.hsearch-tab.active { color:var(--terra); border-bottom-color:var(--terra); background:#fff; }
+.hsearch-panel { display:none; padding:20px; }
+.hsearch-panel.active { display:block; }
+.hsearch-fields {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:1px; background:var(--border);
+  border:1px solid var(--border); border-radius:var(--r);
+  overflow:hidden; margin-bottom:14px;
+}
+#tab-trip .hsearch-fields { grid-template-columns:repeat(3,1fr); }
+.hsearch-field {
+  padding:12px 16px; background:#fff;
+  cursor:pointer; transition:background 0.2s;
+}
+.hsearch-field:hover { background:var(--cream); }
+.hsf-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--terra); margin-bottom:3px; }
+.hsf-val { font-size:13px; font-weight:600; color:var(--ink-soft); }
+.hsearch-btn {
+  width:100%; padding:13px; border-radius:var(--r-pill); border:none;
+  background:var(--terra); font-family:'Geist',sans-serif;
+  font-size:14px; font-weight:600; color:#fff;
+  cursor:pointer; transition:all 0.2s;
+  box-shadow:0 3px 14px rgba(197,90,40,0.28);
+}
+.hsearch-btn:hover { background:var(--terra-dark); }
+
+/* Host type selector */
+.htype-label {
+  font-size:12px; font-weight:600; color:var(--ink-mid);
+  margin-bottom:10px;
+}
+.htype-opt { font-weight:500; color:var(--ink-soft); }
+.htype-grid {
+  display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;
+}
+.htype-btn {
+  display:flex; align-items:center; gap:6px;
+  padding:8px 14px; border-radius:var(--r-pill);
+  border:1.5px solid var(--border); background:#fff;
+  cursor:pointer; transition:all 0.2s;
+  font-size:13px; font-weight:500; color:var(--ink-mid);
+}
+.htype-btn:hover { border-color:rgba(90,115,80,0.4); background:var(--sage-pale); }
+.htype-btn.active { border-color:var(--sage); background:var(--sage-pale); color:var(--sage); }
+.htype-icon { font-size:16px; }
+.htype-name { font-size:12px; font-weight:600; }
+
+/* ─── PLAN MY TRIP SECTION ───────────── */
+.trip-how-wrap {
+  padding:80px 44px;
+  background:var(--sand);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.trip-how-inner { max-width:1320px; margin:0 auto; }
+.trip-how-top {
+  display:flex; align-items:flex-end; justify-content:space-between;
+  margin-bottom:48px; gap:24px; flex-wrap:wrap;
+}
+.trip-cta-btn {
+  padding:14px 28px; border-radius:var(--r-pill);
+  border:none; background:var(--sage);
+  font-family:'Geist',sans-serif; font-size:14px; font-weight:600;
+  color:#fff; cursor:pointer; transition:all 0.25s;
+  box-shadow:0 3px 14px rgba(90,115,80,0.28); white-space:nowrap;
+  flex-shrink:0;
+}
+.trip-cta-btn:hover { background:#486040; transform:translateY(-2px); }
+
+/* 4 step cards */
+.trip-steps {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:16px; margin-bottom:48px;
+}
+.trip-step {
+  background:#fff; border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:24px 20px;
+  position:relative; box-shadow:var(--shadow-xs);
+  transition:all 0.25s;
+}
+.trip-step:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:rgba(90,115,80,0.25); }
+.trip-step-num {
+  position:absolute; top:20px; right:20px;
+  font-family:'Fraunces',serif; font-size:36px; font-weight:700;
+  color:rgba(27,58,42,0.06); line-height:1;
+}
+.trip-step-icon { font-size:28px; margin-bottom:14px; display:block; }
+.trip-step-title {
+  font-family:'Fraunces',serif; font-size:17px; font-weight:600;
+  color:var(--ink); margin-bottom:8px;
+}
+.trip-step-desc { font-size:13px; line-height:1.7; color:var(--ink-soft); }
+
+/* Live trip request ticker */
+.trip-ticker { }
+.trip-ticker-label {
+  font-size:11px; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.1em; color:var(--ink-muted); margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.trip-ticker-label::before {
+  content:''; display:inline-block; width:6px; height:6px;
+  border-radius:50%; background:var(--sage); animation:pulse 2s infinite;
+}
+.trip-requests { display:flex; flex-direction:column; gap:10px; }
+.trip-req {
+  background:#fff; border:1px solid var(--border); border-radius:var(--r-lg);
+  padding:16px 20px; display:flex; align-items:center; gap:16px;
+  cursor:pointer; transition:all 0.2s; box-shadow:var(--shadow-xs);
+}
+.trip-req:hover { border-color:rgba(90,115,80,0.3); box-shadow:var(--shadow-sm); }
+.trip-req-av {
+  width:44px; height:44px; border-radius:11px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-size:18px; font-weight:700; color:#fff;
+}
+.trip-req-body { flex:1; min-width:0; }
+.trip-req-name { font-size:14px; font-weight:600; color:var(--ink); }
+.trip-req-city { font-weight:500; color:var(--ink-soft); }
+.trip-req-tags {
+  display:flex; flex-wrap:wrap; gap:5px; margin-top:6px;
+}
+.trip-req-tags span {
+  font-size:11px; padding:2px 9px; border-radius:var(--r-pill);
+  background:var(--sand); color:var(--ink-mid); border:1px solid var(--border);
+}
+.trip-req-date { font-size:11px; font-weight:500; color:var(--ink-soft); margin-top:5px; }
+.trip-req-badge {
+  flex-shrink:0; font-size:11px; font-weight:700;
+  padding:5px 12px; border-radius:var(--r-pill);
+  background:var(--sage-pale); color:var(--sage);
+  border:1px solid rgba(90,115,80,0.2);
+  white-space:nowrap;
+}
+
+/* Trip modal inputs */
+.trip-input-wrap {
+  background:var(--sand); border:1px solid var(--border);
+  border-radius:var(--r); padding:12px 14px; cursor:pointer;
+  transition:border-color 0.2s;
+}
+.trip-input-wrap:hover { border-color:var(--border-med); }
+.trip-input-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--terra); margin-bottom:4px; }
+.trip-input-val { font-size:13px; color:var(--ink-muted); }
+
+/* ─── RESPONSIVE — TRIP SECTION ──────── */
+@media(max-width:1100px){
+  .trip-steps { grid-template-columns:repeat(2,1fr); }
+  .trip-how-wrap { padding:60px 44px; }
+}
+
+/* ─── FADE-IN ─────────────────────────── */
+.fade { opacity:0; transform:translateY(22px); transition:opacity 0.6s ease, transform 0.6s ease; }
+.fade.in { opacity:1; transform:translateY(0); }
+.fade-d1 { transition-delay:0.1s; }
+.fade-d2 { transition-delay:0.2s; }
+.fade-d3 { transition-delay:0.3s; }
+
+/* ─── RESPONSIVE — TABLET ─────────────── */
+@media(max-width:1100px){
+  .hero { grid-template-columns:1fr; padding-top:100px; gap:40px; }
+  .hero-right { display:none; }
+  .hero-sub { max-width:100%; }
+  .how-grid { grid-template-columns:1fr; gap:40px; }
+  .cta-wrap { grid-template-columns:1fr; padding:48px; gap:40px; }
+  .cta-left { border-right:none; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:40px; }
+  .host-cta-inner { grid-template-columns:1fr; gap:40px; }
+  .hosts-grid { grid-template-columns:repeat(2,1fr); }
+  .reviews-grid { grid-template-columns:1fr 1fr; }
+  .cats-grid { grid-template-columns:repeat(3,1fr); }
+  .footer-grid { grid-template-columns:1fr 1fr; gap:40px; }
+}
+
+/* ─── RESPONSIVE — MOBILE ─────────────── */
+@media(max-width:720px){
+
+  /* NAV — hamburger menu */
+  nav { padding:0 16px; height:60px; }
+  .nav-links { display:none; }
+  .nav-actions .nav-btn-ghost { display:none; }
+  .nav-btn-cta { padding:8px 16px; font-size:12px; }
+
+  /* Hamburger button — injected by JS */
+  .nav-hamburger {
+    display:flex; flex-direction:column; gap:5px;
+    background:transparent; border:none; cursor:pointer;
+    padding:8px; margin-left:8px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .nav-hamburger span {
+    display:block; width:22px; height:2px;
+    background:var(--ink); border-radius:2px;
+    transition:all 0.3s ease;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(5px,5px); }
+  .nav-hamburger.open span:nth-child(2) { opacity:0; transform:translateX(-8px); }
+  .nav-hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(5px,-5px); }
+
+  /* Mobile drawer menu */
+  .mobile-menu {
+    position:fixed; top:60px; left:0; right:0; z-index:190;
+    background:#0F3D22;
+    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border-bottom:1px solid rgba(255,255,255,0.12);
+    box-shadow:0 8px 32px rgba(15,61,34,0.40);
+    padding:8px 16px 20px;
+    transform:translateY(-110%);
+    transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);
+    will-change:transform;
+  }
+  .mobile-menu.open { transform:translateY(0); }
+  .mobile-menu-link {
+    display:block; width:100%; text-align:left;
+    padding:14px 4px; font-size:16px; font-weight:500;
+    color:var(--ink-mid); background:transparent; border:none;
+    border-bottom:1px solid var(--border); cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .mobile-menu-link:last-child { border-bottom:none; }
+  .mobile-menu-cta {
+    display:block; width:100%; margin-top:14px; padding:15px;
+    background:var(--terra); border:none; border-radius:var(--r-pill);
+    font-size:15px; font-weight:600; color:#fff;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+    font-family:'Geist',sans-serif;
+  }
+
+  /* HERO */
+  .hero {
+    padding:88px 16px 56px;
+    min-height:auto;
+  }
+  .hero-h1 {
+    font-size:clamp(38px,11vw,56px);
+    letter-spacing:-1.5px;
+    margin-bottom:18px;
+  }
+  .hero-sub {
+    font-size:15px; margin-bottom:28px;
+  }
+  .hero-actions {
+    flex-direction:column; gap:10px; margin-bottom:36px;
+  }
+  .btn-primary, .btn-secondary {
+    width:100%; justify-content:center;
+    padding:15px 20px; font-size:15px;
+  }
+  .hero-stats {
+    width:100%; flex-wrap:wrap;
+    border-radius:var(--r-lg);
+  }
+  .h-stat {
+    flex:1; min-width:calc(50% - 1px);
+    padding:14px 16px;
+  }
+  .h-stat:nth-child(2) { border-right:none; }
+  .h-stat:nth-child(3) { border-top:1px solid var(--border); }
+  .h-stat:nth-child(4) { border-top:1px solid var(--border); border-right:none; }
+  .h-stat-n { font-size:22px; }
+
+  /* SEARCH */
+  .search-wrap { padding:32px 16px; }
+  .search-title { font-size:20px; margin-bottom:18px; }
+  .search-bar {
+    flex-direction:column; border-radius:var(--r-lg);
+    gap:0;
+  }
+  .s-field {
+    border-right:none;
+    border-bottom:1px solid var(--border);
+    padding:14px 18px;
+    min-width:auto;
+  }
+  .s-field:last-of-type { border-bottom:none; }
+  .s-btn {
+    border-radius:0 0 var(--r-lg) var(--r-lg);
+    justify-content:center; padding:16px;
+    font-size:15px;
+  }
+
+  /* CATEGORIES */
+  .section { padding:48px 16px; }
+  .section-header { flex-direction:column; align-items:flex-start; gap:12px; margin-bottom:24px; }
+  .section-title { font-size:28px; }
+  .cats-grid { grid-template-columns:repeat(3,1fr); gap:8px; }
+  .cat { padding:16px 8px 14px; }
+  .cat-icon { font-size:22px; margin-bottom:8px; }
+  .cat-n { font-size:11px; }
+  .cat-c { font-size:10px; }
+
+  /* HOST CARDS */
+  .hosts-grid { grid-template-columns:1fr; gap:14px; }
+  .hcard { border-radius:var(--r-lg); }
+  .hcard-img { height:200px; }
+
+  /* HOW IT WORKS */
+  .how-wrap { padding:56px 16px; }
+  .how-title { font-size:28px; }
+  .how-grid { grid-template-columns:1fr; gap:32px; margin-top:32px; }
+  .how-step { padding:20px 0; gap:16px; }
+  .how-step-n { width:36px; height:36px; font-size:15px; flex-shrink:0; }
+  .how-step-title { font-size:16px; }
+  .how-visual { padding:32px 24px; min-height:240px; }
+  .how-v-icon { font-size:48px; margin-bottom:16px; }
+  .how-v-title { font-size:18px; }
+  .how-v-desc { font-size:13px; }
+
+  /* CITIES */
+  .cities-section { padding:48px 16px; }
+  .city-chip { padding:10px 14px; }
+  .city-flag { font-size:18px; }
+  .city-n { font-size:13px; }
+
+  /* PRICING CTA */
+  .cta-wrap {
+    margin:0 16px 56px;
+    border-radius:var(--r-xl);
+    padding:32px 20px;
+    grid-template-columns:1fr;
+    gap:32px;
+  }
+  .cta-title { font-size:clamp(28px,8vw,40px); margin-bottom:14px; }
+  .cta-sub { font-size:14px; }
+  .cta-feats { gap:8px; }
+  .cta-feat { font-size:13px; }
+  .plan { padding:14px 16px; }
+  .plan-name { font-size:13px; }
+  .plan-desc { font-size:11px; }
+  .plan-price { font-size:20px; }
+  .cta-btn { padding:16px; font-size:14px; }
+  .cta-trust { gap:14px; }
+
+  /* REVIEWS */
+  .reviews-wrap { padding:48px 16px; }
+  .reviews-grid { grid-template-columns:1fr; gap:12px; }
+  .review { padding:20px; }
+  .review-text { font-size:14px; }
+
+  /* HOST CTA */
+  .host-cta-wrap { padding:48px 16px; }
+  .host-cta-title { font-size:28px; margin-bottom:14px; }
+  .host-cta-sub { font-size:14px; margin-bottom:24px; }
+  .host-cta-btn { width:100%; justify-content:center; padding:15px 24px; }
+  .perks { gap:10px; }
+  .perk { padding:16px; gap:12px; }
+  .perk-icon { width:36px; height:36px; font-size:16px; }
+  .perk-title { font-size:13px; }
+  .perk-desc { font-size:12px; }
+
+  /* FOOTER */
+  footer { padding:48px 16px 36px; }
+  .footer-grid { grid-template-columns:1fr; gap:32px; }
+  .footer-logo { font-size:22px; }
+  .footer-tagline { max-width:100%; }
+  .footer-bottom {
+    flex-direction:column; gap:16px; text-align:center;
+  }
+  .footer-flags { flex-wrap:wrap; justify-content:center; gap:6px; }
+
+  /* MODAL — full bottom sheet on mobile */
+  .modal-overlay { align-items:flex-end; padding:0; }
+  .modal {
+    max-width:100%; border-radius:var(--r-xl) var(--r-xl) 0 0;
+    animation:slideUp 0.32s cubic-bezier(0.32,0.72,0,1);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @keyframes slideUp {
+    from { transform:translateY(100%); }
+    to   { transform:translateY(0); }
+  }
+  .modal-body { padding:40px 20px 20px; }
+  .modal-name { font-size:20px; }
+
+  /* HERO SEARCH — mobile */
+  .hero-search { border-radius:var(--r-lg); margin-bottom:28px; }
+  .hsearch-tab { font-size:12px; padding:12px 10px; }
+  .hsearch-panel { padding:14px; }
+  .hsearch-fields { grid-template-columns:1fr 1fr !important; }
+  .hsearch-field { padding:10px 12px; }
+  .hsf-label { font-size:9px; }
+  .hsf-val { font-size:12px; }
+  .htype-grid { gap:6px; }
+  .htype-btn { padding:7px 11px; font-size:12px; }
+  .htype-icon { font-size:14px; }
+
+  /* PLAN MY TRIP — mobile */
+  .trip-how-wrap { padding:48px 16px; }
+  .trip-how-top { flex-direction:column; align-items:flex-start; gap:16px; margin-bottom:28px; }
+  .trip-cta-btn { width:100%; text-align:center; justify-content:center; }
+  .trip-steps { grid-template-columns:1fr; gap:10px; margin-bottom:28px; }
+  .trip-step { padding:18px 16px; }
+  .trip-step-num { font-size:28px; }
+  .trip-step-icon { font-size:24px; margin-bottom:10px; }
+  .trip-step-title { font-size:16px; }
+  .trip-req { padding:14px 16px; gap:12px; flex-wrap:wrap; }
+  .trip-req-badge { margin-left:auto; }
+  .trip-ticker-label { font-size:10px; }
+
+  /* TOAST */
+  .toast {
+    bottom:24px; white-space:normal;
+    max-width:calc(100% - 32px);
+    text-align:center; padding:10px 20px;
+    font-size:12px;
+  }
+
+  /* Touch tap targets — minimum 44px */
+  .cat, .city-chip, .hcard-fav,
+  .how-step, .plan, .perk { min-height:44px; }
+
+  /* Disable hover effects on touch */
+  @media(hover:none){
+    .hcard:hover { transform:none; box-shadow:var(--shadow-xs); }
+    .btn-primary:hover { transform:none; }
+    .btn-secondary:hover { background:transparent; }
+    .nav-btn-cta:hover { transform:none; }
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   VIBRANT OVERRIDES — rich travel feel
+   ═══════════════════════════════════════════════ */
+
+/* ── Hero: city photo background — glossy green overlay ── */
+body {
+  background-color: var(--cream);
+  background-image:
+    linear-gradient(175deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 20%),
+    linear-gradient(to bottom,
+      rgba(15,61,34,0.93) 0%,
+      rgba(15,61,34,0.86) 20%,
+      rgba(15,61,34,0.62) 45%,
+      rgba(250,247,242,1) 72%),
+    url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1600&q=80');
+  background-size: auto, auto, cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll;
+}
+
+/* Hero text becomes white on the photo */
+.hero-h1 { color: #fff; }
+.hero-h1 em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--terra) 0%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-h1 .light { color: rgba(255,255,255,0.45); -webkit-text-fill-color: rgba(255,255,255,0.45); }
+.hero-sub { color: rgba(255,255,255,0.72); }
+
+/* Hero badge — frosted glass */
+.hero-badge {
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.22);
+  color: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
+}
+.hero-badge-dot { background: var(--terra); }
+
+/* Stat block stays white-boxed — looks great on dark hero */
+.h-stat-wrap { box-shadow: 0 8px 40px rgba(0,0,0,0.25); }
+.h-stat-v { color: var(--terra); }
+
+/* Secondary hero button */
+.btn-secondary {
+  border-color: rgba(255,255,255,0.35);
+  color: #fff;
+}
+.btn-secondary:hover {
+  border-color: #fff;
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+}
+
+/* Primary button — vivid orange with gold glow */
+.btn-primary {
+  background: linear-gradient(135deg, var(--terra) 0%, #F07830 100%);
+  box-shadow: 0 4px 24px rgba(232,98,26,0.40);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--terra-dark) 0%, var(--terra) 100%);
+  box-shadow: var(--shadow-terra);
+  transform: translateY(-2px);
+}
+.nav-btn-cta {
+  background: linear-gradient(135deg, var(--terra) 0%, #F07830 100%);
+  box-shadow: 0 2px 12px rgba(232,98,26,0.30);
+}
+.nav-btn-cta:hover {
+  background: linear-gradient(135deg, var(--terra-dark) 0%, var(--terra) 100%);
+  box-shadow: var(--shadow-terra);
+}
+
+/* ── Hero dots override — terra tinted ── */
+.hero::before {
+  background-image: radial-gradient(circle, rgba(232,98,26,0.15) 1px, transparent 1px);
+  mask-image: none;
+  opacity: 0.6;
+}
+
+/* ── Host card in hero — lift the shadow ── */
+.hcard { box-shadow: 0 24px 80px rgba(0,0,0,0.30); }
+
+/* ── Hero heading avatar gradient ── */
+.hc-av-placeholder {
+  background: linear-gradient(135deg, var(--terra) 0%, var(--gold) 100%);
+}
+
+/* ── How It Works section ── */
+.how-v-chip {
+  background: rgba(232,98,26,0.15);
+  border-color: rgba(232,98,26,0.4);
+  color: #F07830;
+}
+
+/* ── CTA section — vivid gradient ── */
+.cta-wrap {
+  background: linear-gradient(140deg, #1C1612 0%, #3D1A08 30%, #B84010 65%, #E8621A 100%);
+}
+.cta-wrap::after {
+  background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 70%);
+}
+
+/* ── Reviews section — dark for contrast ── */
+.reviews-wrap {
+  background: var(--ink);
+  border-top: none;
+}
+.section-eyebrow.reviews-ey::before { background: rgba(255,255,255,0.35); }
+.reviews-wrap .section-eyebrow { color: rgba(255,255,255,0.45); }
+.reviews-wrap .section-title { color: #fff; }
+.reviews-wrap .section-sub { color: rgba(255,255,255,0.55); }
+.review {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.10);
+  box-shadow: none;
+}
+.review:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(232,98,26,0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.30);
+}
+.review-text { color: rgba(250,247,242,0.80); }
+.rv-name { color: #fff; }
+.rv-meta { color: rgba(255,255,255,0.35); }
+.rv-star { color: var(--gold); }
+
+/* ── City chips — more vibrant active state ── */
+.city-chip:hover, .city-chip.active {
+  background: var(--terra-pale);
+  border-color: var(--terra);
+  box-shadow: 0 4px 16px rgba(232,98,26,0.18);
+}
+
+/* ── Host CTA section — warm bg ── */
+.host-cta-wrap { background: linear-gradient(160deg, #FFF8F4 0%, var(--cream) 60%); }
+.perk:hover { border-color: rgba(232,98,26,0.25); box-shadow: 0 4px 20px rgba(232,98,26,0.10); }
+.perk-icon { background: var(--terra-pale); border-color: rgba(232,98,26,0.20); }
+
+/* ── Scrollbar terra tint ── */
+::-webkit-scrollbar-thumb { background: rgba(232,98,26,0.30); }
+
+/* ── Nav CTA hover glow ── */
+.social:hover { background: var(--terra); border-color: var(--terra); }
+
+/* ── Glossy green surfaces ── */
+/* Hero overlay — deep glossy green */
+body {
+  background-image:
+    linear-gradient(175deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0) 25%),
+    linear-gradient(to bottom,
+      rgba(15,61,34,0.93) 0%,
+      rgba(15,61,34,0.85) 20%,
+      rgba(15,61,34,0.62) 45%,
+      rgba(250,247,242,1) 72%),
+    url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1600&q=80');
+  background-size: auto, auto, cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll;
+}
+
+/* Glossy reviews section */
+.reviews-wrap {
+  background:
+    linear-gradient(175deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.03) 30%, rgba(255,255,255,0) 60%),
+    #0F3D22;
+}
+
+/* Glossy footer */
+footer {
+  background:
+    linear-gradient(175deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 70%),
+    #0A2E18;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Glossy CTA block */
+.cta-wrap {
+  background:
+    linear-gradient(175deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 35%),
+    linear-gradient(140deg, #081F11 0%, #0F3D22 28%, #B84010 68%, #E8621A 100%);
+  box-shadow: 0 24px 80px rgba(15,61,34,0.30), 0 4px 0 rgba(255,255,255,0.05) inset;
+}
+
+/* Glossy nav — always dark green */
+#nav.scrolled, #nav {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 100%),
+    rgba(15,61,34,0.97);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 4px 24px rgba(15,61,34,0.30);
+}
+
+/* ══════════════════════════════════════════════
+   CLASSY BUTTONS & TYPOGRAPHY
+   ══════════════════════════════════════════════ */
+
+/* Rich serif hero headline */
+.hero-h1 {
+  font-size: clamp(52px, 6vw, 88px);
+  letter-spacing: -2.5px;
+  font-weight: 800;
+  line-height: 1.0;
+}
+
+/* Gradient italic word */
+.hero-h1 em {
+  background: linear-gradient(120deg, #E8621A 0%, #F5A623 60%, #E8621A 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Refined primary button */
+.btn-primary {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  padding: 15px 34px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, #E8621A 0%, #F07830 100%);
+  box-shadow: 0 4px 20px rgba(232,98,26,0.40), 0 1px 0 rgba(255,255,255,0.15) inset;
+  border: 1px solid rgba(255,255,255,0.15);
+  transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1);
+}
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 36px rgba(232,98,26,0.50), 0 1px 0 rgba(255,255,255,0.15) inset;
+}
+
+/* Refined secondary button */
+.btn-secondary {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 15px 34px;
+  border-radius: 100px;
+  border: 1.5px solid rgba(255,255,255,0.40);
+  backdrop-filter: blur(8px);
+  transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1);
+}
+.btn-secondary:hover {
+  border-color: rgba(255,255,255,0.80);
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-2px);
+}
+
+/* Nav CTA button */
+.nav-btn-cta {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg, #E8621A 0%, #F07830 100%);
+  box-shadow: 0 2px 12px rgba(232,98,26,0.35);
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.nav-btn-cta:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 20px rgba(232,98,26,0.45);
+}
+
+/* CTA subscribe button */
+.cta-btn {
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  padding: 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.20);
+  transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1);
+}
+.cta-btn:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+}
+
+/* Hero search button */
+.hsearch-btn {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg, #E8621A 0%, #F07830 100%);
+  box-shadow: 0 4px 16px rgba(232,98,26,0.35);
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.hsearch-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,98,26,0.45); }
+
+/* Section titles — richer serif */
+.section-title {
+  font-size: clamp(30px, 3.5vw, 48px);
+  letter-spacing: -1px;
+  font-weight: 800;
+}
+
+/* Host CTA title */
+.host-cta-title {
+  font-size: clamp(32px, 4vw, 56px);
+  letter-spacing: -1.5px;
+  font-weight: 800;
+}
+
+/* CTA title */
+.cta-title {
+  font-size: clamp(32px, 3.8vw, 56px);
+  letter-spacing: -1.5px;
+  font-weight: 800;
+}
+
+/* Section eyebrow — small label above titles */
+.section-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+}
+
+/* Nav logo — bolder */
+.nav-logo {
+  font-size: 24px;
+  letter-spacing: -0.5px;
+  font-weight: 800;
+}
+
+/* Review text — richer italic */
+.review-text {
+  font-size: 17px;
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+/* CTA gradient update — bottle green to terra */
+.cta-wrap {
+  background: linear-gradient(140deg, #0D2A1E 0%, #1B3A2A 30%, #B84010 68%, #E8621A 100%);
+}
+
+/* Footer — bottle green */
+/* Host card in hero — refined */
+.hcard {
+  box-shadow: 0 32px 100px rgba(15,61,34,0.35), 0 8px 30px rgba(0,0,0,0.20);
+}
+
+/* ══ CRISP TEXT ══════════════════════════════ */
+h1,h2,h3,h4,h5,h6,
+.hero-h1,.section-title,.cta-title,.host-cta-title,
+.how-v-title,.plan-name,.rv-name,.hc-name,
+.nav-logo,.footer-logo {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern' 1;
+}
+.hero-sub    { color: rgba(255,255,255,0.82); font-weight: 400; letter-spacing: 0.01em; }
+.section-sub { color: var(--ink-soft); font-weight: 400; letter-spacing: 0.01em; }
+.review-text { color: rgba(255,255,255,0.88); }
+.rv-name     { font-weight: 700; letter-spacing: -0.01em; }
+.hc-name     { letter-spacing: -0.02em; }
+.nav-link    { letter-spacing: 0.005em; }
+
+.hero-h1 {
+  font-size: clamp(54px, 6.2vw, 92px);
+  letter-spacing: -3px;
+  font-weight: 800;
+  line-height: 0.97;
+}
+.section-title {
+  font-size: clamp(32px, 3.8vw, 52px);
+  letter-spacing: -1.5px;
+  font-weight: 800;
+  line-height: 1.05;
+}
+.how-v-title  { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+.hc-rate      { font-size: 14px; font-weight: 700; color: var(--terra); letter-spacing: -0.02em; }
+.footer-logo  { font-size: 28px; letter-spacing: -1px; font-weight: 800; }
+.nav-logo     { font-size: 25px; letter-spacing: -0.8px; font-weight: 800; }
+
+/* ══ GLOSSY GREEN SURFACES ══════════════════ */
+.reviews-wrap {
+  background:
+    linear-gradient(175deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.03) 30%, rgba(255,255,255,0) 60%),
+    #0F3D22;
+}
+footer {
+  background:
+    linear-gradient(175deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 70%),
+    #0A2E18;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.cta-wrap {
+  background:
+    linear-gradient(175deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 35%),
+    linear-gradient(140deg, #081F11 0%, #0F3D22 28%, #B84010 68%, #E8621A 100%);
+  box-shadow: 0 24px 80px rgba(15,61,34,0.30), 0 1px 0 rgba(255,255,255,0.05) inset;
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ─── MOBILE DRAWER ─── -->
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-menu-link" onclick="mClose();window.location.href='/search'">Explore</button>
+  <button class="mobile-menu-link" onclick="mClose();window.location.href='/become-a-host'">Become a Host</button>
+  <button class="mobile-menu-link" onclick="mClose();openTripModal()">✈️ Post a Trip</button>
+  <button class="mobile-menu-link" onclick="mClose();window.location.href='/#how'">How It Works</button>
+  <button class="mobile-menu-link" onclick="mClose();window.location.href='/#cities'">Cities</button>
+  <button class="mobile-menu-link" onclick="mClose();window.location.href='/pricing'">Pricing</button>
+  <button class="mobile-menu-link" onclick="mClose();window.location.href='/auth/login'">Log in</button>
+  <button class="mobile-menu-cta" onclick="mClose();window.location.href='/auth/register'">Get started →</button>
+</div>
+
+<!-- ─── NAV ─── -->
+<nav id="nav">
+  <div class="nav-logo" onclick="t('🏠 Home')">Loka<span>Link</span></div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="window.location.href='/search'">Explore</button>
+    <button class="nav-link" onclick="window.location.href='/become-a-host'">Become a Host</button>
+    <button class="nav-link" onclick="openTripModal()">✈️ Post a Trip</button>
+    <button class="nav-link" onclick="document.getElementById('how') && document.getElementById('how').scrollIntoView({behavior:'smooth'})">How It Works</button>
+    <button class="nav-link" onclick="document.getElementById('cities') && document.getElementById('cities').scrollIntoView({behavior:'smooth'})">Cities</button>
+    <button class="nav-link" onclick="window.location.href='/pricing'">Pricing</button>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-btn-ghost" onclick="window.location.href='/auth/login'">Log in</button>
+    <button class="nav-btn-cta" onclick="window.location.href='/auth/register'">Get started</button>
+    <button class="nav-hamburger" id="hamburger" onclick="mToggle()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero" id="search">
+  <div class="hero-left">
+    <div class="hero-badge fade fade-d1">
+      <span class="hero-badge-dot"></span>
+      Now live across Europe &nbsp;·&nbsp; 18 cities
+    </div>
+
+    <h1 class="hero-h1 fade fade-d1">
+      Travel like<br/>
+      a <em>local,</em><br/>
+      <span class="light">not a tourist.</span>
+    </h1>
+
+    <p class="hero-sub fade fade-d2">
+      Connect with verified locals who show you the real city — hidden cafés, neighbourhood stories, and experiences no guidebook covers. Subscribe once, connect everywhere.
+    </p>
+
+    <!-- ─── INLINE SEARCH — moved up into hero ─── -->
+    <div class="hero-search fade fade-d2" id="hero-search-bar">
+      <!-- Mode tabs -->
+      <div class="hsearch-tabs">
+        <button class="hsearch-tab active" onclick="switchTab(this,'find')" data-tab="find">🔍 Find a host</button>
+        <button class="hsearch-tab" onclick="switchTab(this,'trip')" data-tab="trip">✈️ Post my trip</button>
+      </div>
+
+      <!-- Tab: Find a host -->
+      <div class="hsearch-panel active" id="tab-find">
+        <div class="hsearch-fields">
+          <div class="hsearch-field" onclick="t('📍 Select destination city')">
+            <div class="hsf-label">City</div>
+            <div class="hsf-val">Berlin, Lisbon, Amsterdam…</div>
+          </div>
+          <div class="hsearch-field" onclick="t('📅 Pick travel dates')">
+            <div class="hsf-label">When</div>
+            <div class="hsf-val">Select dates</div>
+          </div>
+          <div class="hsearch-field" onclick="t('✨ Choose your interest')">
+            <div class="hsf-label">Interest</div>
+            <div class="hsf-val">Food, Art, Nightlife…</div>
+          </div>
+          <div class="hsearch-field" onclick="t('🗣️ Filter by language')">
+            <div class="hsf-label">Language</div>
+            <div class="hsf-val">English, German…</div>
+          </div>
+        </div>
+        <button class="hsearch-btn" onclick="t('🔍 Searching hosts…')">Search hosts →</button>
+      </div>
+
+      <!-- Tab: Post my trip -->
+      <div class="hsearch-panel" id="tab-trip">
+        <div class="hsearch-fields">
+          <div class="hsearch-field" onclick="openTripModal()">
+            <div class="hsf-label">Destination</div>
+            <div class="hsf-val">City or country</div>
+          </div>
+          <div class="hsearch-field" onclick="openTripModal()">
+            <div class="hsf-label">Dates</div>
+            <div class="hsf-val">Arrival — Departure</div>
+          </div>
+          <div class="hsearch-field" onclick="openTripModal()">
+            <div class="hsf-label">Interests</div>
+            <div class="hsf-val">Food, History, Art…</div>
+          </div>
+        </div>
+        <!-- Host type selector -->
+        <div class="htype-label">Preferred host type <span class="htype-opt">(optional)</span></div>
+        <div class="htype-grid">
+          <div class="htype-btn active" onclick="toggleType(this,'Any')">
+            <span class="htype-icon">🌍</span>
+            <span class="htype-name">Any</span>
+          </div>
+          <div class="htype-btn" onclick="toggleType(this,'Male host')">
+            <span class="htype-icon">👨</span>
+            <span class="htype-name">Male</span>
+          </div>
+          <div class="htype-btn" onclick="toggleType(this,'Female host')">
+            <span class="htype-icon">👩</span>
+            <span class="htype-name">Female</span>
+          </div>
+          <div class="htype-btn" onclick="toggleType(this,'Couple host')">
+            <span class="htype-icon">👫</span>
+            <span class="htype-name">Couple</span>
+          </div>
+          <div class="htype-btn" onclick="toggleType(this,'Family host')">
+            <span class="htype-icon">👨‍👩‍👧</span>
+            <span class="htype-name">Family</span>
+          </div>
+          <div class="htype-btn" onclick="toggleType(this,'Group host')">
+            <span class="htype-icon">👥</span>
+            <span class="htype-name">Group</span>
+          </div>
+        </div>
+        <button class="hsearch-btn" style="background:var(--sage);" onclick="openTripModal()">Post my trip — hosts will reach out →</button>
+      </div>
+    </div>
+
+    <div class="hero-stats fade fade-d3">
+      <div class="h-stat">
+        <div class="h-stat-n">2,400+</div>
+        <div class="h-stat-l">Verified hosts</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-n">18</div>
+        <div class="h-stat-l">Cities live</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-n">4.9★</div>
+        <div class="h-stat-l">Avg rating</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-n">€6</div>
+        <div class="h-stat-l">From / day</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-card-main">
+      <div class="hc-cover">
+        <div class="hc-cover-pattern"></div>
+        <div class="hc-avatar" style="background:linear-gradient(135deg,#C55A28,#A64820)">A</div>
+      </div>
+      <div class="hc-body">
+        <div class="hc-name">Amira Khalil</div>
+        <div class="hc-city">📍 Berlin · EN · DE · AR · FR · TR</div>
+        <div class="hc-tags">
+          <span class="hc-tag">Street Food</span>
+          <span class="hc-tag">Art Scene</span>
+          <span class="hc-tag">Nightlife</span>
+          <span class="hc-tag">History</span>
+        </div>
+        <div class="hc-footer">
+          <div class="hc-rate">From €25/hr</div>
+          <div class="hc-stars"><span class="hc-star">★</span> 4.98 · 143 reviews</div>
+        </div>
+      </div>
+    </div>
+    <div class="float-card fc-1">
+      <div class="fc-label">New connections</div>
+      <div class="fc-value">+24 today</div>
+      <div class="fc-avatars">
+        <div class="fc-av" style="background:#C55A28">M</div>
+        <div class="fc-av" style="background:#5A7350">J</div>
+        <div class="fc-av" style="background:#4A7A9E">R</div>
+        <div class="fc-av" style="background:#D4A84A">S</div>
+        <div class="fc-av" style="background:var(--ink-soft)">+</div>
+      </div>
+      <div class="fc-sub">Travelers matched today</div>
+    </div>
+    <div class="float-card fc-2">
+      <div class="fc-label-light">🔥 Trending right now</div>
+      <div class="fc-value-light">Lisbon 🇵🇹</div>
+      <div class="fc-sub-light">38 hosts available this weekend</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW POST MY TRIP WORKS ─── -->
+<div class="trip-how-wrap">
+  <div class="trip-how-inner">
+    <div class="trip-how-top">
+      <div>
+        <div class="eyebrow">New feature</div>
+        <h2 class="section-title">Post your trip.<br/>Let hosts <em>find you.</em></h2>
+        <p style="font-size:15px;color:var(--ink-soft);line-height:1.75;margin-top:12px;max-width:460px;">Don't want to search? Tell us where you're going, your interests, and the type of host you prefer — verified locals in that city will reach out to you directly.</p>
+      </div>
+      <button class="trip-cta-btn" onclick="openTripModal()">Post a trip request →</button>
+    </div>
+    <div class="trip-steps">
+      <div class="trip-step">
+        <div class="trip-step-num">1</div>
+        <div class="trip-step-icon">✈️</div>
+        <div class="trip-step-title">Post your trip</div>
+        <div class="trip-step-desc">Enter your destination, dates, interests, and preferred host type. Visible to verified hosts in that city only.</div>
+      </div>
+      <div class="trip-step">
+        <div class="trip-step-num">2</div>
+        <div class="trip-step-icon">🔔</div>
+        <div class="trip-step-title">Hosts get notified</div>
+        <div class="trip-step-desc">Matching local hosts receive a notification about your trip. They review your profile and decide if they'd like to connect.</div>
+      </div>
+      <div class="trip-step">
+        <div class="trip-step-num">3</div>
+        <div class="trip-step-icon">💬</div>
+        <div class="trip-step-title">Hosts reach out to you</div>
+        <div class="trip-step-desc">Interested hosts send you a message. You choose who to connect with — no pressure, multiple options, total control.</div>
+      </div>
+      <div class="trip-step">
+        <div class="trip-step-num">4</div>
+        <div class="trip-step-icon">🌍</div>
+        <div class="trip-step-title">Plan your experience</div>
+        <div class="trip-step-desc">Agree on a plan, meet up, and explore the real city together. Leave a review for both sides afterward.</div>
+      </div>
+    </div>
+    <!-- Live trip requests ticker -->
+    <div class="trip-ticker">
+      <div class="trip-ticker-label">Recent trip requests</div>
+      <div class="trip-requests">
+        <div class="trip-req" onclick="t('👀 View Sarah\'s trip to Berlin')">
+          <div class="trip-req-av" style="background:linear-gradient(135deg,#C55A28,#A64820)">S</div>
+          <div class="trip-req-body">
+            <div class="trip-req-name">Sarah K. <span class="trip-req-city">→ Berlin 🇩🇪</span></div>
+            <div class="trip-req-tags"><span>Food & Drink</span><span>Art</span><span>Prefers: Female host</span></div>
+            <div class="trip-req-date">Jun 12–16 · 3 hosts responded</div>
+          </div>
+          <div class="trip-req-badge">3 offers</div>
+        </div>
+        <div class="trip-req" onclick="t('👀 View James\'s trip to Lisbon')">
+          <div class="trip-req-av" style="background:linear-gradient(135deg,#4A7A9E,#2A5A7E)">J</div>
+          <div class="trip-req-body">
+            <div class="trip-req-name">James T. <span class="trip-req-city">→ Lisbon 🇵🇹</span></div>
+            <div class="trip-req-tags"><span>History</span><span>Fado</span><span>Any host type</span></div>
+            <div class="trip-req-date">Jun 20–25 · 5 hosts responded</div>
+          </div>
+          <div class="trip-req-badge">5 offers</div>
+        </div>
+        <div class="trip-req" onclick="t('👀 View Priya\'s trip to Amsterdam')">
+          <div class="trip-req-av" style="background:linear-gradient(135deg,#5A7350,#3A5230)">P</div>
+          <div class="trip-req-body">
+            <div class="trip-req-name">Priya M. <span class="trip-req-city">→ Amsterdam 🇳🇱</span></div>
+            <div class="trip-req-tags"><span>Cycling</span><span>Markets</span><span>Prefers: Couple host</span></div>
+            <div class="trip-req-date">Jul 3–7 · 2 hosts responded</div>
+          </div>
+          <div class="trip-req-badge">2 offers</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── POST TRIP MODAL ─── -->
+<div class="modal-overlay" id="trip-modal" onclick="closeTripModal(event)">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-top" style="background:linear-gradient(135deg,#5A7350,#3A5230);height:80px;">
+      <button class="modal-close-btn" onclick="document.getElementById('trip-modal').classList.remove('open')">✕</button>
+    </div>
+
+    <!-- Form state -->
+    <div class="modal-body" style="padding-top:24px" id="trip-form-body">
+      <div class="modal-name">Post a trip request</div>
+      <div class="modal-city" style="margin-bottom:20px">Verified hosts in your destination will reach out to you</div>
+
+      <!-- City dropdown -->
+      <div style="margin-bottom:16px">
+        <div class="trip-input-label">Destination city</div>
+        <select id="trip-city" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r);background:var(--sand);font-size:14px;color:var(--ink);font-family:inherit;cursor:pointer;appearance:auto;">
+          <option value="">Where are you going?</option>
+          <option value="city-berlin">Berlin</option>
+          <option value="city-lisbon">Lisbon</option>
+          <option value="city-amsterdam">Amsterdam</option>
+          <option value="city-barcelona">Barcelona</option>
+          <option value="city-munich">Munich</option>
+          <option value="city-vienna">Vienna</option>
+          <option value="city-prague">Prague</option>
+          <option value="city-warsaw">Warsaw</option>
+          <option value="city-budapest">Budapest</option>
+          <option value="city-rome">Rome</option>
+        </select>
+      </div>
+
+      <!-- Date inputs -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div>
+          <div class="trip-input-label">Arrival date</div>
+          <input type="date" id="trip-arrival" style="width:100%;padding:12px 14px;border:2px solid var(--border-med);border-radius:12px;background:#fff;font-size:14px;font-weight:600;color:var(--ink);font-family:inherit;min-height:46px;cursor:pointer;" />
+        </div>
+        <div>
+          <div class="trip-input-label">Departure date</div>
+          <input type="date" id="trip-departure" style="width:100%;padding:12px 14px;border:2px solid var(--border-med);border-radius:12px;background:#fff;font-size:14px;font-weight:600;color:var(--ink);font-family:inherit;min-height:46px;cursor:pointer;" />
+        </div>
+      </div>
+
+      <!-- Number of travelers -->
+      <div style="margin-bottom:16px">
+        <div class="trip-input-label">Number of travelers</div>
+        <div style="display:flex;gap:8px;margin-top:6px" id="trip-travelers-grid">
+          <button class="htype-btn active" onclick="selectTravelerCount(this,1)" data-count="1" type="button"><span class="htype-name">1</span></button>
+          <button class="htype-btn" onclick="selectTravelerCount(this,2)" data-count="2" type="button"><span class="htype-name">2</span></button>
+          <button class="htype-btn" onclick="selectTravelerCount(this,3)" data-count="3" type="button"><span class="htype-name">3</span></button>
+          <button class="htype-btn" onclick="selectTravelerCount(this,4)" data-count="4" type="button"><span class="htype-name">4</span></button>
+          <button class="htype-btn" onclick="selectTravelerCount(this,5)" data-count="5" type="button"><span class="htype-name">5+</span></button>
+        </div>
+      </div>
+
+      <!-- Category multi-select -->
+      <div style="margin-bottom:16px">
+        <div class="trip-input-label">What are you interested in? <span style="font-weight:400;color:var(--ink-muted)">(select all that apply)</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px" id="trip-categories-grid">
+          <button class="htype-btn" onclick="toggleTripCat(this)" data-cat="food-drink" type="button"><span class="htype-icon">🍜</span><span class="htype-name">Food & Drink</span></button>
+          <button class="htype-btn" onclick="toggleTripCat(this)" data-cat="nature" type="button"><span class="htype-icon">🌿</span><span class="htype-name">Nature</span></button>
+          <button class="htype-btn" onclick="toggleTripCat(this)" data-cat="art-culture" type="button"><span class="htype-icon">🎨</span><span class="htype-name">Art & Culture</span></button>
+          <button class="htype-btn" onclick="toggleTripCat(this)" data-cat="nightlife" type="button"><span class="htype-icon">🎵</span><span class="htype-name">Nightlife</span></button>
+          <button class="htype-btn" onclick="toggleTripCat(this)" data-cat="history" type="button"><span class="htype-icon">🏛️</span><span class="htype-name">History</span></button>
+          <button class="htype-btn" onclick="toggleTripCat(this)" data-cat="family" type="button"><span class="htype-icon">👨‍👩‍👧</span><span class="htype-name">Family & Kids</span></button>
+        </div>
+      </div>
+
+      <!-- Host type preference -->
+      <div style="margin-bottom:16px">
+        <div class="htype-label" style="margin-bottom:10px">Preferred host type <span class="htype-opt">(optional)</span></div>
+        <div class="htype-grid" id="trip-hosttype-grid">
+          <div class="htype-btn active" onclick="selectTripHostType(this,'any')"><span class="htype-icon">🌍</span><span class="htype-name">Any</span></div>
+          <div class="htype-btn" onclick="selectTripHostType(this,'male')"><span class="htype-icon">👨</span><span class="htype-name">Male</span></div>
+          <div class="htype-btn" onclick="selectTripHostType(this,'female')"><span class="htype-icon">👩</span><span class="htype-name">Female</span></div>
+          <div class="htype-btn" onclick="selectTripHostType(this,'couple')"><span class="htype-icon">👫</span><span class="htype-name">Couple</span></div>
+          <div class="htype-btn" onclick="selectTripHostType(this,'family')"><span class="htype-icon">👨‍👩‍👧</span><span class="htype-name">Family</span></div>
+          <div class="htype-btn" onclick="selectTripHostType(this,'group')"><span class="htype-icon">👥</span><span class="htype-name">Group</span></div>
+        </div>
+      </div>
+
+      <!-- Note to hosts -->
+      <div style="margin-bottom:16px">
+        <div class="trip-input-label">Note to hosts <span style="font-weight:400;color:var(--ink-muted)">(optional)</span></div>
+        <textarea id="trip-note" maxlength="200" rows="3" placeholder="e.g. We love street food and live music — looking for someone who knows the local scene!" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r);background:var(--sand);font-size:14px;color:var(--ink);font-family:inherit;resize:vertical;" oninput="document.getElementById('trip-note-count').textContent=this.value.length+'/200'"></textarea>
+        <div id="trip-note-count" style="font-size:11px;color:var(--ink-muted);text-align:right;margin-top:4px">0/200</div>
+      </div>
+
+      <div style="background:var(--sand);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;font-size:13px;color:var(--ink-soft);line-height:1.65">
+        🔒 Your trip is visible only to verified hosts in your chosen city. Your personal contact details are never shared until you choose to connect.
+      </div>
+
+      <!-- Error message -->
+      <div id="trip-error" style="display:none;background:#fef2f2;border:1px solid #fca5a5;border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;color:#b91c1c;"></div>
+
+      <button class="modal-cta" style="background:var(--sage)" id="trip-submit-btn" onclick="submitTrip()">Post my trip — it's free →</button>
+      <div class="modal-paywall"><p>Posting a trip request is always free. Subscribe from <strong>€6/day</strong> to reply to hosts who reach out to you.</p></div>
+    </div>
+
+    <!-- Success state -->
+    <div class="modal-body" style="padding-top:40px;display:none;text-align:center" id="trip-success-body">
+      <div style="font-size:48px;margin-bottom:16px">🎉</div>
+      <div class="modal-name" style="margin-bottom:8px">Your trip is posted!</div>
+      <div style="font-size:14px;color:var(--ink-soft);line-height:1.6;margin-bottom:24px">
+        Verified hosts in your destination will see your request and reach out. You'll be notified when they respond.
+      </div>
+      <div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1px solid #F59E0B;border-radius:var(--r);padding:18px 20px;margin-bottom:24px;text-align:left">
+        <div style="font-weight:700;font-size:15px;color:#92400E;margin-bottom:6px">Subscribe to read host responses</div>
+        <div style="font-size:13px;color:#78350F;line-height:1.6;margin-bottom:14px">When hosts respond to your trip, you'll need an active subscription to read their messages and connect.</div>
+        <button class="modal-cta" style="background:linear-gradient(135deg,#E8621A,#F07830);font-size:15px;padding:14px" onclick="window.location.href='/pricing'">Subscribe from €6 →</button>
+      </div>
+      <button style="background:none;border:none;color:var(--ink-muted);font-size:13px;cursor:pointer;text-decoration:underline" onclick="document.getElementById('trip-modal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CATEGORIES ─── -->
+<div class="section section-bordered fade">
+  <div class="section-header">
+    <div>
+      <div class="eyebrow">Explore by interest</div>
+      <h2 class="section-title">What's your <em>vibe?</em></h2>
+    </div>
+    <div class="see-all" onclick="window.location.href='/search'">See all →</div>
+  </div>
+  <div class="cats-grid">
+    <div class="cat active" onclick="fc(this,'Food & Drink')">
+      <span class="cat-icon">🍜</span>
+      <div class="cat-n">Food & Drink</div>
+      <div class="cat-c">438 hosts</div>
+    </div>
+    <div class="cat" onclick="fc(this,'Nature & Outdoors')">
+      <span class="cat-icon">🌿</span>
+      <div class="cat-n">Nature</div>
+      <div class="cat-c">312 hosts</div>
+    </div>
+    <div class="cat" onclick="fc(this,'Art & Culture')">
+      <span class="cat-icon">🎨</span>
+      <div class="cat-n">Art & Culture</div>
+      <div class="cat-c">527 hosts</div>
+    </div>
+    <div class="cat" onclick="fc(this,'Nightlife')">
+      <span class="cat-icon">🎵</span>
+      <div class="cat-n">Nightlife</div>
+      <div class="cat-c">209 hosts</div>
+    </div>
+    <div class="cat" onclick="fc(this,'History')">
+      <span class="cat-icon">🏛️</span>
+      <div class="cat-n">History</div>
+      <div class="cat-c">384 hosts</div>
+    </div>
+    <div class="cat" onclick="fc(this,'Family & Kids')">
+      <span class="cat-icon">👨‍👩‍👧</span>
+      <div class="cat-n">Family & Kids</div>
+      <div class="cat-c">176 hosts</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── HOST CARDS ─── -->
+<div class="section fade">
+  <div class="section-header">
+    <div>
+      <div class="eyebrow">Top rated</div>
+      <h2 class="section-title">Featured <em>hosts</em></h2>
+    </div>
+    <div class="see-all" onclick="window.location.href='/search'">Browse all →</div>
+  </div>
+  <div class="hosts-grid">
+
+    <div class="hcard" onclick="om('Amira Khalil','Berlin, Germany','Street Food · Art Scene · Nightlife · History','A','linear-gradient(135deg,#C55A28,#A64820)','Born in Lebanon, living in Berlin for 12 years. I know every hidden bar in Neukölln, the best döner no tourist has found, and the street art that changes every week.')">
+      <div class="hcard-img">
+        <div class="hcard-img-bg" style="background:linear-gradient(135deg,#2A0E05 0%,#7A3018 50%,#C55A28 100%)"></div>
+        <div class="hcard-overlay"></div>
+        <div class="hcard-badge">🇩🇪 Berlin</div>
+        <button class="hcard-fav" onclick="event.stopPropagation();fav(this)">🤍</button>
+        <div class="hcard-av" style="background:linear-gradient(135deg,#C55A28,#A64820)">A</div>
+      </div>
+      <div class="hcard-body">
+        <div class="hcard-name">Amira Khalil</div>
+        <div class="hcard-langs">EN · DE · AR · FR · TR</div>
+        <div class="hcard-tags">
+          <span class="hcard-tag">Street Food</span>
+          <span class="hcard-tag">Art Scene</span>
+          <span class="hcard-tag">Nightlife</span>
+        </div>
+        <div class="hcard-footer">
+          <div class="hcard-rate">€25/hr <small>· free to browse</small></div>
+          <div class="hcard-rating"><span class="hcard-star">★</span> 4.98 · 143</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hcard" onclick="om('Marco Vasquez','Lisbon, Portugal','History · Architecture · Food · Fado','M','linear-gradient(135deg,#1A5A30,#2E8A50)','Born and raised in Alfama. My grandfather was a Fado singer. I\'ll show you the Lisbon that exists beneath the tourist surface — the real tascas, old neighbourhood stories, hidden viewpoints.')">
+      <div class="hcard-img">
+        <div class="hcard-img-bg" style="background:linear-gradient(135deg,#051A0E 0%,#1A5A30 50%,#4A9A5A 100%)"></div>
+        <div class="hcard-overlay"></div>
+        <div class="hcard-badge">🇵🇹 Lisbon</div>
+        <button class="hcard-fav" onclick="event.stopPropagation();fav(this)">🤍</button>
+        <div class="hcard-av" style="background:linear-gradient(135deg,#2E8A50,#1A5A30)">M</div>
+      </div>
+      <div class="hcard-body">
+        <div class="hcard-name">Marco Vasquez</div>
+        <div class="hcard-langs">EN · PT · ES</div>
+        <div class="hcard-tags">
+          <span class="hcard-tag">History</span>
+          <span class="hcard-tag">Food</span>
+          <span class="hcard-tag">Architecture</span>
+        </div>
+        <div class="hcard-footer">
+          <div class="hcard-rate">€30/hr <small>· free to browse</small></div>
+          <div class="hcard-rating"><span class="hcard-star">★</span> 4.96 · 98</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hcard" onclick="om('Yuki Tanaka','Amsterdam, Netherlands','Cycling · Markets · Contemporary Art','Y','linear-gradient(135deg,#1A4A6A,#2A7AAA)','I cycle 40km every day and know Amsterdam by wheel. Canal houses not in any guide, markets locals actually shop at, galleries showing the next generation of artists.')">
+      <div class="hcard-img">
+        <div class="hcard-img-bg" style="background:linear-gradient(135deg,#051018 0%,#1A4A6A 50%,#4A8AAA 100%)"></div>
+        <div class="hcard-overlay"></div>
+        <div class="hcard-badge">🇳🇱 Amsterdam</div>
+        <button class="hcard-fav" onclick="event.stopPropagation();fav(this)">🤍</button>
+        <div class="hcard-av" style="background:linear-gradient(135deg,#2A7AAA,#1A4A6A)">Y</div>
+      </div>
+      <div class="hcard-body">
+        <div class="hcard-name">Yuki Tanaka</div>
+        <div class="hcard-langs">EN · NL · JP</div>
+        <div class="hcard-tags">
+          <span class="hcard-tag">Cycling</span>
+          <span class="hcard-tag">Markets</span>
+          <span class="hcard-tag">Art</span>
+        </div>
+        <div class="hcard-footer">
+          <div class="hcard-rate">€22/hr <small>· free to browse</small></div>
+          <div class="hcard-rating"><span class="hcard-star">★</span> 5.0 · 211</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hcard" onclick="om('Sofia Reyes','Barcelona, Spain','Tapas · Flamenco · Architecture · Beaches','S','linear-gradient(135deg,#8A5A0A,#C4901A)','Barcelona local for 28 years. The tapas bar my family has eaten at for 3 generations, the Gaudí building nobody visits, and where locals actually swim in summer.')">
+      <div class="hcard-img">
+        <div class="hcard-img-bg" style="background:linear-gradient(135deg,#1E1200 0%,#6A3A08 50%,#C4901A 100%)"></div>
+        <div class="hcard-overlay"></div>
+        <div class="hcard-badge">🇪🇸 Barcelona</div>
+        <button class="hcard-fav" onclick="event.stopPropagation();fav(this)">🤍</button>
+        <div class="hcard-av" style="background:linear-gradient(135deg,#C4901A,#8A5A0A)">S</div>
+      </div>
+      <div class="hcard-body">
+        <div class="hcard-name">Sofia Reyes</div>
+        <div class="hcard-langs">EN · ES · CA · IT</div>
+        <div class="hcard-tags">
+          <span class="hcard-tag">Tapas</span>
+          <span class="hcard-tag">Flamenco</span>
+          <span class="hcard-tag">Architecture</span>
+        </div>
+        <div class="hcard-footer">
+          <div class="hcard-rate">€28/hr <small>· free to browse</small></div>
+          <div class="hcard-rating"><span class="hcard-star">★</span> 4.97 · 76</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── HOW IT WORKS ─── -->
+<div class="how-wrap" id="how">
+  <div class="how-inner fade">
+    <div class="eyebrow how-eyebrow">Simple process</div>
+    <h2 class="section-title how-title">How Offmap <em>works</em></h2>
+    <div class="how-grid">
+      <div class="how-steps">
+        <div class="how-step active" onclick="hs(this,0)">
+          <div class="how-step-n">1</div>
+          <div>
+            <div class="how-step-title">Browse host profiles</div>
+            <div class="how-step-desc">Explore verified locals by city, interest, and language. Every profile shows their story, availability, and real reviews from past travelers.</div>
+          </div>
+        </div>
+        <div class="how-step" onclick="hs(this,1)">
+          <div class="how-step-n">2</div>
+          <div>
+            <div class="how-step-title">Subscribe to connect</div>
+            <div class="how-step-desc">Get a day pass from €6. Unlock messaging with any host in any city — unlimited connections, no per-message fees.</div>
+          </div>
+        </div>
+        <div class="how-step" onclick="hs(this,2)">
+          <div class="how-step-n">3</div>
+          <div>
+            <div class="how-step-title">Chat & plan directly</div>
+            <div class="how-step-desc">Message your host, agree on timing, price, and itinerary. Everything negotiated directly between you — zero platform commission on your plans.</div>
+          </div>
+        </div>
+        <div class="how-step" onclick="hs(this,3)">
+          <div class="how-step-n">4</div>
+          <div>
+            <div class="how-step-title">Live like a local</div>
+            <div class="how-step-desc">Meet your host, explore the real city, leave an honest review for both sides. Build your travel passport, one city at a time.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="how-visual" id="hv">
+          <div class="how-v-icon" id="hv-icon">🔍</div>
+          <div class="how-v-title" id="hv-title">Browse verified locals</div>
+          <div class="how-v-desc" id="hv-desc">Filter by city, language, interest and availability. Every host is ID-verified. Real people, real profiles, real reviews.</div>
+          <div class="how-v-chip" id="hv-chip">2,400+ profiles available</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CITIES ─── -->
+<div class="section section-bordered" id="cities">
+  <div class="section-header">
+    <div>
+      <div class="eyebrow">Available now</div>
+      <h2 class="section-title">Live <em>cities</em></h2>
+    </div>
+  </div>
+  <div class="cities-scroll">
+    <div class="city-chip active" onclick="cc(this,'Berlin')"><span class="city-flag">🇩🇪</span><div><div class="city-n">Berlin</div><div class="city-h">214 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Lisbon')"><span class="city-flag">🇵🇹</span><div><div class="city-n">Lisbon</div><div class="city-h">187 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Amsterdam')"><span class="city-flag">🇳🇱</span><div><div class="city-n">Amsterdam</div><div class="city-h">203 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Barcelona')"><span class="city-flag">🇪🇸</span><div><div class="city-n">Barcelona</div><div class="city-h">229 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Munich')"><span class="city-flag">🇩🇪</span><div><div class="city-n">Munich</div><div class="city-h">156 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Vienna')"><span class="city-flag">🇦🇹</span><div><div class="city-n">Vienna</div><div class="city-h">142 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Prague')"><span class="city-flag">🇨🇿</span><div><div class="city-n">Prague</div><div class="city-h">119 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Warsaw')"><span class="city-flag">🇵🇱</span><div><div class="city-n">Warsaw</div><div class="city-h">98 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Budapest')"><span class="city-flag">🇭🇺</span><div><div class="city-n">Budapest</div><div class="city-h">134 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Rome')"><span class="city-flag">🇮🇹</span><div><div class="city-n">Rome</div><div class="city-h">268 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Porto')"><span class="city-flag">🇵🇹</span><div><div class="city-n">Porto</div><div class="city-h">89 hosts</div></div></div>
+    <div class="city-chip" onclick="cc(this,'Athens')"><span class="city-flag">🇬🇷</span><div><div class="city-n">Athens</div><div class="city-h">112 hosts</div></div></div>
+  </div>
+</div>
+
+<!-- ─── PRICING CTA ─── -->
+<div id="pricing">
+  <div class="cta-wrap">
+    <div class="cta-left">
+      <div class="eyebrow cta-eyebrow">Pricing</div>
+      <h2 class="cta-title">One pass.<br/>Every city.<br/>Every local.</h2>
+      <p class="cta-sub">Browse all profiles for free. Subscribe to unlock messaging. Hosts set their own rates — you deal directly, no commission taken from your experience.</p>
+      <div class="cta-feats">
+        <div class="cta-feat"><div class="cta-check">✓</div>Unlimited connections in any city</div>
+        <div class="cta-feat"><div class="cta-check">✓</div>Direct messaging — no middleman</div>
+        <div class="cta-feat"><div class="cta-check">✓</div>Hosts negotiate price directly with you</div>
+        <div class="cta-feat"><div class="cta-check">✓</div>Cancel anytime — no lock-in</div>
+        <div class="cta-feat"><div class="cta-check">✓</div>GDPR compliant — data stays in EU</div>
+      </div>
+    </div>
+    <div class="cta-right">
+      <div class="plans-title">Choose your plan</div>
+      <div class="plans">
+        <div class="plan sel" onclick="sp(this)">
+          <div><div class="plan-name">Day Pass</div><div class="plan-desc">24hr unlimited connections · perfect for a weekend trip</div></div>
+          <div class="plan-price">€6<sub>/day</sub></div>
+        </div>
+        <div class="plan" onclick="sp(this)">
+          <div><div class="plan-name">Weekly</div><div class="plan-desc">7 days unlimited · ideal for a holiday</div></div>
+          <div class="plan-price">€12<sub>/wk</sub></div>
+        </div>
+        <div class="plan" onclick="sp(this)">
+          <div><div class="plan-name">Monthly</div><div class="plan-desc">30 days unlimited · for the digital nomad</div></div>
+          <div class="plan-price">€18<sub>/mo</sub></div>
+        </div>
+        <div class="plan" onclick="sp(this)">
+          <div><div class="plan-name">Annual <span class="plan-badge">Best value</span></div><div class="plan-desc">365 days · works out to €4/month</div></div>
+          <div class="plan-price">€49<sub>/yr</sub></div>
+        </div>
+      </div>
+      <button class="cta-btn" onclick="window.location.href='/pricing'">Start connecting now →</button>
+      <div class="cta-trust">
+        <div class="trust-item">No ads ever</div>
+        <div class="trust-item">Cancel anytime</div>
+        <div class="trust-item">GDPR compliant</div>
+        <div class="trust-item">Secure payment</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── REVIEWS ─── -->
+<div class="reviews-wrap">
+  <div class="reviews-inner fade">
+    <div class="section-header">
+      <div>
+        <div class="eyebrow">Social proof</div>
+        <h2 class="section-title">What <em>travelers</em> say</h2>
+      </div>
+    </div>
+    <div class="reviews-grid">
+      <div class="review">
+        <div class="review-stars"><span class="rv-star">★</span><span class="rv-star">★</span><span class="rv-star">★</span><span class="rv-star">★</span><span class="rv-star">★</span></div>
+        <p class="review-text">"Amira showed me a Berlin I would never have found in ten trips. We ended up at a rooftop bar that doesn't exist on Google Maps and ate döner at 2am. One of my best travel memories."</p>
+        <div class="review-author">
+          <div class="rv-av" style="background:linear-gradient(135deg,#C55A28,#A64820)">J</div>
+          <div><div class="rv-name">James K.</div><div class="rv-meta">London, UK · visited Berlin</div></div>
+        </div>
+      </div>
+      <div class="review">
+        <div class="review-stars"><span class="rv-star">★</span><span class="rv-star">★</span><span class="rv-star">★</span><span class="rv-star">★</span><span class="rv-star">★</span></div>
+        <p class="review-text">"Marco took us to a Fado restaurant his family has been going to for decades. The owner sang for us personally. €6 subscription was the best money I spent on the entire trip."</p>
+        <div class="review-author">
+          <div class="rv-av" style="background:linear-gradient(135deg,#2E8A50,#1A5A30)">P</div>
+          <div><div class="rv-name">Priya M.</div><div class="rv-meta">Toronto, CA · visited Lisbon</div></div>
+        </div>
+      </div>
+      <div class="review">
+        <div class="review-stars"><span class="rv-star">★</span><span class="rv-star">★</span><span class="rv-star">★</span><span class="rv-star">★</span><span class="rv-star">★</span></div>
+        <p class="review-text">"Yuki cycled with us for 4 hours through Amsterdam neighbourhoods I didn't know existed. There's no way a tour guide does this. We saw the city through the eyes of someone who lives it."</p>
+        <div class="review-author">
+          <div class="rv-av" style="background:linear-gradient(135deg,#2A7AAA,#1A4A6A)">L</div>
+          <div><div class="rv-name">Lars H.</div><div class="rv-meta">Stockholm, SE · visited Amsterdam</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── BECOME A HOST ─── -->
+<div class="host-cta-wrap fade">
+  <div class="host-cta-inner">
+    <div>
+      <div class="eyebrow">For locals</div>
+      <h2 class="host-cta-title">Share your city.<br/>Earn on your<br/><em>own terms.</em></h2>
+      <p class="host-cta-sub">List your profile for free. Set your own rate, your own schedule, your own experience. Travelers pay you directly — we never take a commission from your earnings.</p>
+      <button class="host-cta-btn" onclick="window.location.href='/become-a-host'">+ Become a host — it's free</button>
+    </div>
+    <div class="perks">
+      <div class="perk">
+        <div class="perk-icon">💰</div>
+        <div><div class="perk-title">100% of what you earn</div><div class="perk-desc">We never take a cut from your sessions. You set the rate, you keep everything travelers pay you directly.</div></div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">🗓️</div>
+        <div><div class="perk-title">Your schedule, your rules</div><div class="perk-desc">Set your own availability. Accept only the travelers you want to meet. No obligations, no minimums.</div></div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">🛡️</div>
+        <div><div class="perk-title">Verified & protected</div><div class="perk-desc">All travelers are ID-verified before they can message you. Community guidelines protect every host.</div></div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">⭐</div>
+        <div><div class="perk-title">Build your reputation</div><div class="perk-desc">Reviews build your profile over time. Premium hosts get top search placement and a verified badge.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Loka<span>Link</span></div>
+        <div class="footer-tagline">Connecting curious travelers with the people who know their city best. Meet a local, live like one.</div>
+        <div class="footer-socials">
+          <div class="social" onclick="t('𝕏 Twitter')">𝕏</div>
+          <div class="social" onclick="t('📸 Instagram')">◎</div>
+          <div class="social" onclick="t('💼 LinkedIn')">in</div>
+          <div class="social" onclick="t('🎵 TikTok')">♪</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a onclick="window.location.href='/search'">Browse Hosts</a>
+        <a onclick="window.location.href='/experiences'">Experiences</a>
+        <a onclick="window.location.href='/gift-cards'">Gift Cards</a>
+        <a onclick="window.location.href='/pricing'">Pricing</a>
+      </div>
+      <div class="footer-col">
+        <h4>Hosts</h4>
+        <a onclick="window.location.href='/become-a-host'">Become a Host</a>
+        <a onclick="window.location.href='/host-guidelines'">Guidelines</a>
+        <a onclick="window.location.href='/host-dashboard'">Dashboard</a>
+        <a onclick="window.location.href='/faq'">FAQ</a>
+        <a onclick="window.location.href='/community'">Community</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a onclick="window.location.href='/about'">About Us</a>
+        <a onclick="window.location.href='/press'">Press</a>
+        <a onclick="window.location.href='/privacy'">Privacy Policy</a>
+        <a onclick="window.location.href='/terms'">Terms</a>
+        <a onclick="window.location.href='/impressum'">Impressum</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 Offmap GmbH · Registered in Berlin, Germany · All rights reserved</div>
+      <div class="footer-flags">
+        <span class="f-flag">🇩🇪 Berlin</span>
+        <span class="f-flag">🇵🇹 Lisbon</span>
+        <span class="f-flag">🇳🇱 Amsterdam</span>
+        <span class="f-flag">🇪🇸 Barcelona</span>
+        <span class="f-flag">+14 cities</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ─── MODAL ─── -->
+<div class="modal-overlay" id="modal" onclick="cm(event)">
+  <div class="modal">
+    <div class="modal-top" id="modal-cover">
+      <div class="modal-av" id="modal-av">A</div>
+      <button class="modal-close-btn" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-name" id="modal-name">Host</div>
+      <div class="modal-city" id="modal-city">City</div>
+      <div class="modal-tags" id="modal-tags"></div>
+      <div class="modal-bio" id="modal-bio"></div>
+      <button class="modal-cta" onclick="window.location.href='/auth/login'">Connect with this host →</button>
+      <div class="modal-paywall">
+        <p>🔒 Subscribe from <strong>€6/day</strong> to unlock messaging · Hosts negotiate price directly with you · Zero platform commission</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─ Search tabs ─ */
+function switchTab(btn, id){
+  document.querySelectorAll('.hsearch-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.hsearch-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+/* ─ Host type toggle ─ */
+function toggleType(el, name){
+  /* If "Any" is clicked, deselect all others */
+  if(name==='Any'){
+    el.closest('.htype-grid').querySelectorAll('.htype-btn').forEach(b=>b.classList.remove('active'));
+    el.classList.add('active');
+    t('🌍 Any host type selected');
+    return;
+  }
+  /* Otherwise deselect "Any" and toggle this one */
+  el.closest('.htype-grid').querySelector('.htype-btn:first-child')?.classList.remove('active');
+  el.classList.toggle('active');
+  const selected=Array.from(el.closest('.htype-grid').querySelectorAll('.htype-btn.active')).map(b=>b.querySelector('.htype-name').textContent);
+  if(selected.length===0){ el.closest('.htype-grid').querySelector('.htype-btn:first-child').classList.add('active'); }
+  else { t('✓ '+selected.join(', ')+' host'+(selected.length>1?'s':'')+' selected'); }
+}
+
+/* ─ Trip modal ─ */
+function openTripModal(){
+  // Reset to form state
+  document.getElementById('trip-form-body').style.display='';
+  document.getElementById('trip-success-body').style.display='none';
+  document.getElementById('trip-error').style.display='none';
+  document.getElementById('trip-modal').classList.add('open');
+  // Set min date to today
+  var today=new Date().toISOString().split('T')[0];
+  document.getElementById('trip-arrival').min=today;
+  document.getElementById('trip-departure').min=today;
+}
+function closeTripModal(e){
+  if(e.target===e.currentTarget) e.currentTarget.classList.remove('open');
+}
+
+/* Trip form state */
+var tripState={numTravelers:1,categories:[],hostType:'any'};
+
+function selectTravelerCount(el,n){
+  tripState.numTravelers=n;
+  el.closest('#trip-travelers-grid').querySelectorAll('.htype-btn').forEach(function(b){b.classList.remove('active')});
+  el.classList.add('active');
+}
+function toggleTripCat(el){
+  el.classList.toggle('active');
+  var cats=[];
+  document.querySelectorAll('#trip-categories-grid .htype-btn.active').forEach(function(b){cats.push(b.dataset.cat)});
+  tripState.categories=cats;
+}
+function selectTripHostType(el,type){
+  tripState.hostType=type;
+  el.closest('#trip-hosttype-grid').querySelectorAll('.htype-btn').forEach(function(b){b.classList.remove('active')});
+  el.classList.add('active');
+}
+
+function submitTrip(){
+  var errEl=document.getElementById('trip-error');
+  errEl.style.display='none';
+  var cityId=document.getElementById('trip-city').value;
+  var arrival=document.getElementById('trip-arrival').value;
+  var departure=document.getElementById('trip-departure').value;
+  var note=document.getElementById('trip-note').value.trim();
+
+  // Validate
+  var errors=[];
+  if(!cityId) errors.push('Please select a city');
+  if(!arrival) errors.push('Please select an arrival date');
+  if(!departure) errors.push('Please select a departure date');
+  if(arrival&&departure&&arrival>=departure) errors.push('Departure must be after arrival');
+  if(tripState.categories.length===0) errors.push('Select at least one interest category');
+
+  if(errors.length){
+    errEl.innerHTML=errors.join('<br>');
+    errEl.style.display='block';
+    return;
+  }
+
+  var btn=document.getElementById('trip-submit-btn');
+  btn.textContent='Posting...';
+  btn.disabled=true;
+
+  fetch('/api/trips',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      cityId:cityId,
+      arrivalDate:arrival,
+      departureDate:departure,
+      numTravelers:tripState.numTravelers,
+      categories:tripState.categories,
+      hostTypePreference:tripState.hostType,
+      noteToHosts:note||undefined,
+    })
+  })
+  .then(function(r){return r.json()})
+  .then(function(data){
+    btn.textContent='Post my trip — it\'s free →';
+    btn.disabled=false;
+    if(data.success){
+      document.getElementById('trip-form-body').style.display='none';
+      document.getElementById('trip-success-body').style.display='';
+    } else {
+      var msg=data.error?.message||'Something went wrong. Please try again.';
+      errEl.textContent=msg;
+      errEl.style.display='block';
+    }
+  })
+  .catch(function(){
+    btn.textContent='Post my trip — it\'s free →';
+    btn.disabled=false;
+    errEl.textContent='Network error. Please check your connection and try again.';
+    errEl.style.display='block';
+  });
+}
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled',scrollY>50);
+});
+
+/* ─ Mobile menu ─ */
+function mToggle(){
+  var hb=document.getElementById('hamburger');
+  var mm=document.getElementById('mobile-menu');
+  hb.classList.toggle('open');
+  mm.classList.toggle('open');
+  document.body.style.overflow=mm.classList.contains('open')?'hidden':'';
+}
+function mClose(){
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobile-menu').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+/* ─ Toast ─ */
+let _tt;
+function t(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+/* ─ Scroll to section ─ */
+function s(id){ mClose(); document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
+
+/* ─ Category filter ─ */
+function fc(el,name){
+  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); t('🎯 Showing: '+name);
+}
+
+/* ─ Plan select ─ */
+function sp(el){
+  document.querySelectorAll('.plan').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+  const n=el.querySelector('.plan-name').textContent.replace('Best value','').trim();
+  const p=el.querySelector('.plan-price').textContent;
+  t('✓ Selected: '+n+' — '+p);
+}
+
+/* ─ City chip ─ */
+function cc(el,name){
+  document.querySelectorAll('.city-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  t('📍 Showing hosts in '+name);
+}
+
+/* ─ Fav toggle ─ */
+function fav(el){
+  const s=el.textContent==='❤️';
+  el.textContent=s?'🤍':'❤️';
+  t(s?'💔 Removed from wishlist':'❤️ Saved to wishlist!');
+}
+
+/* ─ How it works ─ */
+const steps=[
+  {icon:'🔍',title:'Browse verified locals',desc:'Filter by city, language, interest and availability. Every host is ID-verified. Real people, real profiles, real reviews.',chip:'2,400+ profiles available'},
+  {icon:'⚡',title:'Subscribe to unlock',desc:'From €6 for a day pass. One subscription unlocks messaging with every host in all 18 cities instantly.',chip:'From €6 per day'},
+  {icon:'💬',title:'Chat & plan directly',desc:'Message your host, agree on timing, price, and what you want to see. No platform fee on your plans.',chip:'Direct — no commission'},
+  {icon:'🌍',title:'Live like a local',desc:'Meet your host, explore the real city. Leave an honest review for both sides and build your travel passport.',chip:'Real local experiences'},
+];
+function hs(el,i){
+  document.querySelectorAll('.how-step').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  const hv=document.getElementById('hv');
+  hv.style.opacity='0'; hv.style.transform='translateY(10px)';
+  setTimeout(()=>{
+    const d=steps[i];
+    document.getElementById('hv-icon').textContent=d.icon;
+    document.getElementById('hv-title').textContent=d.title;
+    document.getElementById('hv-desc').textContent=d.desc;
+    document.getElementById('hv-chip').textContent=d.chip;
+    hv.style.transition='all 0.35s ease';
+    hv.style.opacity='1'; hv.style.transform='translateY(0)';
+  },160);
+}
+
+/* ─ Modal ─ */
+function om(name,city,tags,init,bg,bio){
+  const av=document.getElementById('modal-av');
+  av.textContent=init; av.style.background=bg;
+  document.getElementById('modal-cover').style.background=bg;
+  document.getElementById('modal-name').textContent=name;
+  document.getElementById('modal-city').textContent='📍 '+city;
+  document.getElementById('modal-bio').textContent=bio;
+  const te=document.getElementById('modal-tags');
+  te.innerHTML=tags.split('·').map(x=>`<span class="modal-tag">${x.trim()}</span>`).join('');
+  document.getElementById('modal').classList.add('open');
+}
+function cm(e){ if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); }
+
+/* ─ Fade in on scroll ─ */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+},{threshold:0.08});
+document.querySelectorAll('.fade').forEach(el=>obs.observe(el));
+
+/* ─ Stagger hero fades on load ─ */
+window.addEventListener('load',()=>{
+  document.querySelectorAll('.hero .fade').forEach((el,i)=>{
+    setTimeout(()=>el.classList.add('in'),100+i*120);
+  });
+});
+</script>
+</body>
+</html>
