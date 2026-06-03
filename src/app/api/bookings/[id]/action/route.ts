@@ -284,10 +284,9 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     return NextResponse.json({ success: false, error: { code: 'INVALID_ACTION', message: 'Unknown action' } }, { status: 400 })
 
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err)
-    console.error('[bookings/action] error:', msg)
+    console.error('[bookings/action] error:', err instanceof Error ? err.message : String(err))
     return NextResponse.json(
-      { success: false, error: { code: 'SERVER_ERROR', message: msg || 'Something went wrong' } },
+      { success: false, error: { code: 'SERVER_ERROR', message: 'Something went wrong. Please try again.' } },
       { status: 500 }
     )
   }

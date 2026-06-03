@@ -19,11 +19,7 @@ export async function POST(request: NextRequest) {
 
   // ── Mock mode — log to console ────────────────────────────────────────────
   if (process.env.MOCK_MODE === 'true') {
-    console.log('\n📧 [Mock] Contact form submission:')
-    console.log(`  Name:    ${name}`)
-    console.log(`  Email:   ${email}`)
-    console.log(`  Topic:   ${topic}`)
-    console.log(`  Message: ${message}\n`)
+    console.log(`\n📧 [Mock] Contact form submission — topic: ${topic}\n`)
     return NextResponse.json({ success: true, data: { message: 'Message received.' } })
   }
 

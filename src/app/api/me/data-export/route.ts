@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
     trips,
     tripResps,
     notifs,
+    userAuditLogs,
   ] = await Promise.all([
     db.select().from(users).where(eq(users.id, userId)).limit(1),
     db.select().from(hostProfiles).where(eq(hostProfiles.userId, userId)),
@@ -75,6 +76,7 @@ export async function GET(request: NextRequest) {
     db.select().from(tripRequests).where(eq(tripRequests.travelerId, userId)),
     db.select().from(tripHostResponses).where(eq(tripHostResponses.hostId, userId)),
     db.select().from(notifications).where(eq(notifications.userId, userId)),
+    db.select().from(auditLogs).where(eq(auditLogs.userId, userId)),
   ])
 
   if (!user) {
@@ -105,6 +107,7 @@ export async function GET(request: NextRequest) {
     tripRequests: trips,
     tripHostResponses: tripResps,
     notifications: notifs,
+    auditLog: userAuditLogs,
   }
 
   // Log the data export for GDPR audit

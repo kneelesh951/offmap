@@ -141,10 +141,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, data: { profileId: profile.id } }, { status: 201 })
 
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err)
-    console.error('[host/onboarding] error:', msg)
+    console.error('[host/onboarding] error:', err instanceof Error ? err.message : String(err))
     return NextResponse.json(
-      { success: false, error: { code: 'SERVER_ERROR', message: msg || 'Something went wrong' } },
+      { success: false, error: { code: 'SERVER_ERROR', message: 'Something went wrong. Please try again.' } },
       { status: 500 }
     )
   }

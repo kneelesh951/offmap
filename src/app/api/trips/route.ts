@@ -77,11 +77,7 @@ export async function POST(request: NextRequest) {
     // Mock notification: log matching hosts
     const city = mockDb.cities.get(parsed.data.cityId)
     const matchingHosts = Array.from(mockDb.hostProfiles.values()).filter(h => h.cityId === parsed.data.cityId && h.isActive)
-    console.log(`📬 Trip posted to ${city?.name ?? parsed.data.cityId} — notifying ${matchingHosts.length} host(s):`)
-    matchingHosts.forEach(h => {
-      const hostUser = mockDb.getUserById(h.userId)
-      console.log(`   → ${hostUser?.fullName ?? h.userId} (${h.headline})`)
-    })
+    console.log(`📬 Trip posted to ${city?.name ?? 'unknown city'} — notifying ${matchingHosts.length} host(s)`)
 
     return NextResponse.json({ success: true, data: trip }, { status: 201 })
   }

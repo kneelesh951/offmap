@@ -164,10 +164,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, data: { booking } }, { status: 201 })
 
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err)
-    console.error('[bookings] POST error:', msg)
+    console.error('[bookings] POST error:', err instanceof Error ? err.message : String(err))
     return NextResponse.json(
-      { success: false, error: { code: 'SERVER_ERROR', message: msg || 'Something went wrong' } },
+      { success: false, error: { code: 'SERVER_ERROR', message: 'Something went wrong. Please try again.' } },
       { status: 500 }
     )
   }
@@ -228,10 +227,9 @@ export async function GET() {
     return NextResponse.json({ success: true, data: { bookings: bookings ?? [] } })
 
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err)
-    console.error('[bookings] GET error:', msg)
+    console.error('[bookings] GET error:', err instanceof Error ? err.message : String(err))
     return NextResponse.json(
-      { success: false, error: { code: 'SERVER_ERROR', message: msg || 'Something went wrong' } },
+      { success: false, error: { code: 'SERVER_ERROR', message: 'Something went wrong. Please try again.' } },
       { status: 500 }
     )
   }

@@ -20,9 +20,7 @@ export async function POST(request: NextRequest) {
     const user = mockDb.getUserByEmail(email)
     // Always return success to prevent email enumeration
     if (user) {
-      console.log(`[Mock] Password reset link for ${email}: http://localhost:3000/auth/reset-password?token=mock-reset-token-${user.id}`)
-    } else {
-      console.log(`[Mock] Password reset requested for unknown email: ${email}`)
+      console.log(`[Mock] Password reset link: http://localhost:3000/auth/reset-password?token=mock-reset-token-${user.id}`)
     }
     return NextResponse.json({ success: true, data: { message: 'If that email exists, a reset link has been sent.' } })
   }
