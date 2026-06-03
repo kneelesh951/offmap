@@ -31,20 +31,20 @@ const CAROUSEL_HOSTS = [
     rateCents: 2500,
     rating: '4.98', reviews: 143,
     browsingNow: 34,
-    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&q=80',
-    objectPosition: '50% 35%',
+    photo: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=900&h=500&fit=crop&crop=top&q=80',
+    objectPosition: '50% 30%',
   },
   {
     id: 'host-2',
     name: 'Marco V.',
     city: 'Lisbon', flag: '🇵🇹',
     languages: ['EN','PT','ES'],
-    tags: ['Fado & Culture','Food Tours','History'],
+    tags: ['Food & Drink','History','Art & Culture'],
     rateCents: 3000,
     rating: '4.96', reviews: 98,
     browsingNow: 21,
-    photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&q=80',
-    objectPosition: '50% 40%',
+    photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=900&h=500&fit=crop&crop=top&q=80',
+    objectPosition: '50% 30%',
   },
   {
     id: 'host-3',
@@ -55,7 +55,7 @@ const CAROUSEL_HOSTS = [
     rateCents: 2200,
     rating: '5.0', reviews: 211,
     browsingNow: 47,
-    photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80',
+    photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=900&h=500&fit=crop&crop=top&q=80',
     objectPosition: '50% 30%',
   },
   {
@@ -67,8 +67,8 @@ const CAROUSEL_HOSTS = [
     rateCents: 2800,
     rating: '4.97', reviews: 76,
     browsingNow: 29,
-    photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&q=80',
-    objectPosition: '50% 35%',
+    photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900&h=500&fit=crop&crop=top&q=80',
+    objectPosition: '50% 30%',
   },
   {
     id: 'host-9',
@@ -79,7 +79,7 @@ const CAROUSEL_HOSTS = [
     rateCents: 2800,
     rating: '4.93', reviews: 41,
     browsingNow: 18,
-    photo: 'https://images.unsplash.com/photo-1560250097-0dc05329d0ea?w=800&q=80',
+    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&h=500&fit=crop&crop=top&q=80',
     objectPosition: '50% 30%',
   },
   {
@@ -91,8 +91,8 @@ const CAROUSEL_HOSTS = [
     rateCents: 4500,
     rating: '5.0', reviews: 29,
     browsingNow: 56,
-    photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&q=80',
-    objectPosition: '50% 28%',
+    photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=900&h=500&fit=crop&crop=top&q=80',
+    objectPosition: '50% 30%',
   },
 ]
 
@@ -185,12 +185,12 @@ const today = new Date().toISOString().split('T')[0]
 
 // Fallback photo + objectPosition for known mock hosts (no real photos in mock mode)
 const MOCK_HOST_PHOTOS: Record<string, { url: string; pos: string }> = {
-  'host-1': { url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&q=80', pos: '50% 35%' },
-  'host-2': { url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&q=80', pos: '50% 40%' },
-  'host-3': { url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80', pos: '50% 30%' },
-  'host-4': { url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&q=80', pos: '50% 35%' },
-  'host-7': { url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&q=80', pos: '50% 28%' },
-  'host-9': { url: 'https://images.unsplash.com/photo-1560250097-0dc05329d0ea?w=800&q=80', pos: '50% 30%' },
+  'host-1': { url: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=900&h=500&fit=crop&crop=top&q=80', pos: '50% 30%' },
+  'host-2': { url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=900&h=500&fit=crop&crop=top&q=80', pos: '50% 30%' },
+  'host-3': { url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=900&h=500&fit=crop&crop=top&q=80', pos: '50% 30%' },
+  'host-4': { url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900&h=500&fit=crop&crop=top&q=80', pos: '50% 30%' },
+  'host-7': { url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=900&h=500&fit=crop&crop=top&q=80', pos: '50% 30%' },
+  'host-9': { url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&h=500&fit=crop&crop=top&q=80', pos: '50% 30%' },
 }
 const FALLBACK_PHOTO = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80'
 
@@ -305,81 +305,80 @@ function HeroCarousel({ hosts }: { hosts: ReturnType<typeof mapToCarousel>[] }) 
 
   return (
     <div className="absolute" style={{ top:0, left:0, right:0, zIndex:5 }}>
-      {/* Main card — clicking navigates to host profile */}
+      {/* Main card — horizontal layout: photo left, info right */}
       <div
         onClick={() => router.push(`/hosts/${host.id}`)}
         style={{
-          height:'260px', borderRadius:'22px', overflow:'hidden',
+          height:'200px', borderRadius:'22px', overflow:'hidden',
           boxShadow:'0 24px 70px rgba(0,0,0,0.40)',
           position:'relative', cursor:'pointer',
+          display:'flex',
+          background:'linear-gradient(135deg, #0C3547 0%, #0E4155 40%, #115068 70%, #0E4155 100%)',
         }}
       >
-        {/* Photo */}
-        <img
-          src={host.photo}
-          alt={host.name}
-          style={{
-            width:'100%', height:'100%', objectFit:'cover',
-            objectPosition: '50% 20%',
-            opacity: fading ? 0 : 1,
-            transition: 'opacity 0.30s ease',
-            transform: fading ? 'scale(1.02)' : 'scale(1)',
-          }}
-        />
+        {/* Photo — left side, contained */}
+        <div style={{ width:'42%', position:'relative', overflow:'hidden', flexShrink:0, borderRight:'2px solid rgba(255,255,255,0.12)' }}>
+          <img
+            src={host.photo}
+            alt={host.name}
+            style={{
+              width:'100%', height:'100%', objectFit:'cover',
+              objectPosition: host.objectPosition ?? '50% 30%',
+              opacity: fading ? 0 : 1,
+              transition: 'opacity 0.30s ease',
+            }}
+          />
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0" style={{ background:'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.82) 100%)' }} />
-
-        {/* Hover scrim — subtle indication it's clickable */}
-        <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity"
-          style={{ background:'rgba(15,61,34,0.15)' }} />
-
-        {/* Verified badge — top-left */}
-        <div style={{ position:'absolute', top:'12px', left:'12px', borderRadius:'99px', padding:'5px 11px', background:'rgba(15,61,34,0.82)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', gap:'5px' }}>
-          <span style={{ fontSize:'10px', color:'#4ADE80' }}>✓</span>
-          <span style={{ fontSize:'10px', fontWeight:700, color:'#fff' }}>Verified Host</span>
         </div>
 
-        {/* Browsing now — top-right */}
-        <div style={{ position:'absolute', top:'12px', right:'12px', borderRadius:'99px', padding:'5px 11px', background:'rgba(0,0,0,0.52)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', gap:'6px' }}>
-          <span className="glow-dot" style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#4ADE80', display:'inline-block', flexShrink:0 }} />
-          <span style={{ fontSize:'11px', fontWeight:700, color:'#fff', whiteSpace:'nowrap' }}>{host.browsingNow} browsing now</span>
-        </div>
-
-        {/* "View profile" hint — bottom-right corner on hover */}
-        <div className="absolute opacity-0 hover:opacity-100 transition-opacity"
-          style={{ bottom:'14px', right:'14px', borderRadius:'99px', padding:'5px 12px', background:TERRA, fontSize:'10px', fontWeight:700, color:'#fff' }}>
-          View profile →
-        </div>
-
-        {/* Bottom info */}
+        {/* Info — right side */}
         <div style={{
-          position:'absolute', bottom:0, left:0, right:0, padding:'14px 16px',
+          flex:1, display:'flex', flexDirection:'column', justifyContent:'center',
+          padding:'18px 22px 18px 10px',
           opacity: fading ? 0 : 1, transition: 'opacity 0.30s ease',
         }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
-            <div>
-              <div style={{ fontSize:'22px', fontWeight:800, color:'#fff', fontFamily:'Georgia, serif', letterSpacing:'-0.02em', textShadow:'0 2px 8px rgba(0,0,0,0.50)' }}>
-                {host.name}
-              </div>
-              <div style={{ fontSize:'11.5px', color:'rgba(255,255,255,0.82)', fontWeight:600, marginTop:'2px' }}>
-                {host.flag} {host.city} · {host.languages.join(' · ')}
-              </div>
+          {/* Top row: browsing now + verified badge */}
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'10px' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:'6px' }}>
+              <span className="glow-dot" style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#4ADE80', display:'inline-block', flexShrink:0 }} />
+              <span style={{ fontSize:'10px', fontWeight:700, color:'rgba(255,255,255,0.7)', whiteSpace:'nowrap' }}>{host.browsingNow} browsing now</span>
             </div>
-            <div style={{ textAlign:'right' }}>
-              <div style={{ fontSize:'13px', fontWeight:800, color:'#F5A623' }}>★ {host.rating}</div>
-              <div style={{ fontSize:'10px', color:'rgba(255,255,255,0.60)', fontWeight:500 }}>{host.reviews} reviews</div>
+            <div style={{ borderRadius:'99px', padding:'6px 16px', background:'rgba(255,255,255,0.95)', display:'flex', alignItems:'center', gap:'6px', boxShadow:'0 2px 10px rgba(0,0,0,0.12)' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" fill="#1D9BF0"/><path d="M9.5 13.5l2 2 4-5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <span style={{ fontSize:'11px', fontWeight:800, color:'#0F3D22', letterSpacing:'0.03em' }}>Verified Host</span>
             </div>
           </div>
-          <div style={{ display:'flex', gap:'5px', marginTop:'9px', flexWrap:'wrap' }}>
+
+          {/* Name */}
+          <div style={{ fontSize:'22px', fontWeight:800, color:'#fff', fontFamily:'Georgia, serif', letterSpacing:'-0.02em', marginBottom:'4px' }}>
+            {host.name}
+          </div>
+
+          {/* Location + languages */}
+          <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.75)', fontWeight:600, marginBottom:'12px' }}>
+            {host.flag} {host.city} · {host.languages.join(' · ')}
+          </div>
+
+          {/* Rating */}
+          <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'14px' }}>
+            <div style={{ fontSize:'14px', fontWeight:800, color:'#F5A623' }}>★ {host.rating}</div>
+            <div style={{ fontSize:'11px', color:'rgba(255,255,255,0.50)', fontWeight:500 }}>{host.reviews} reviews</div>
+          </div>
+
+          {/* Tags + price */}
+          <div style={{ display:'flex', gap:'5px', flexWrap:'wrap' }}>
             {(host.tags as string[]).map((t: string) => (
-              <span key={t} style={{ fontSize:'10px', fontWeight:600, padding:'3px 9px', borderRadius:'999px', background:'rgba(255,255,255,0.16)', backdropFilter:'blur(4px)', color:'#fff', border:'1px solid rgba(255,255,255,0.22)' }}>{t}</span>
+              <span key={t} style={{ fontSize:'10px', fontWeight:600, padding:'3px 10px', borderRadius:'999px', background:'rgba(255,255,255,0.10)', color:'rgba(255,255,255,0.85)', border:'1px solid rgba(255,255,255,0.18)' }}>{t}</span>
             ))}
-            <span style={{ fontSize:'10px', fontWeight:700, padding:'3px 9px', borderRadius:'999px', background:TERRA, color:'#fff' }}>
+            <span style={{ fontSize:'10px', fontWeight:700, padding:'3px 10px', borderRadius:'999px', background:TERRA, color:'#fff' }}>
               €{Math.round(host.rateCents / 100)}/hr
             </span>
           </div>
         </div>
+
+        {/* Hover scrim */}
+        <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity"
+          style={{ background:'rgba(15,61,34,0.10)' }} />
 
         {/* Left arrow — inside card, vertically centred */}
         <button
@@ -539,17 +538,17 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
       {/* ════════════════════════════════════════
           HERO — two-column split
       ════════════════════════════════════════ */}
-      <section style={{ background: `linear-gradient(155deg, #1C7A42 0%, #155C30 25%, #0D3820 55%, #0A2E1A 80%, #122E1C 100%)`, position:'relative', overflow:'hidden' }}>
-        {/* mesh gradient layer — deep teal-green shimmer */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background:'radial-gradient(ellipse 80% 60% at 20% 0%, rgba(52,211,153,0.18) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 100%, rgba(15,61,34,0.80) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 60% 40%, rgba(16,92,48,0.30) 0%, transparent 60%)' }} />
+      <section style={{ background: `linear-gradient(155deg, #1B4332 0%, #14352A 25%, #0F2922 55%, #0B1F1A 80%, #081A15 100%)`, position:'relative', overflow:'hidden' }}>
+        {/* mesh gradient layer — deep emerald shimmer */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'radial-gradient(ellipse 80% 60% at 20% 0%, rgba(52,211,153,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 100%, rgba(6,78,59,0.60) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 60% 40%, rgba(16,92,48,0.20) 0%, transparent 60%)' }} />
         {/* glass gloss — top diagonal highlight */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(120deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 30%, transparent 60%)' }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(125deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 25%, transparent 50%, rgba(255,255,255,0.015) 80%, rgba(255,255,255,0.04) 100%)' }} />
         {/* orange warmth — bottom right */}
-        <div className="absolute pointer-events-none" style={{ bottom:'-80px', right:'-60px', width:'550px', height:'550px', borderRadius:'50%', background:'radial-gradient(circle, rgba(232,98,26,0.16) 0%, rgba(245,166,35,0.05) 50%, transparent 70%)' }} />
+        <div className="absolute pointer-events-none" style={{ bottom:'-80px', right:'-60px', width:'550px', height:'550px', borderRadius:'50%', background:'radial-gradient(circle, rgba(232,98,26,0.12) 0%, rgba(245,166,35,0.04) 50%, transparent 70%)' }} />
         {/* emerald bloom — top left */}
-        <div className="absolute pointer-events-none" style={{ top:'-120px', left:'-60px', width:'600px', height:'600px', borderRadius:'50%', background:'radial-gradient(circle, rgba(52,211,153,0.12) 0%, transparent 65%)' }} />
-        {/* horizontal light band across mid */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.03) 40%, transparent 60%)' }} />
+        <div className="absolute pointer-events-none" style={{ top:'-120px', left:'-60px', width:'600px', height:'600px', borderRadius:'50%', background:'radial-gradient(circle, rgba(52,211,153,0.08) 0%, transparent 65%)' }} />
+        {/* subtle glossy sheen across surface */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(170deg, rgba(255,255,255,0.04) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.02) 100%)' }} />
         {/* fine grain texture */}
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E\")", opacity:1 }} />
 
@@ -731,7 +730,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
             `}</style>
 
             {/* ── Host carousel ── */}
-            <div className="relative w-full" style={{ height:'260px', marginTop:'100px' }}>
+            <div className="relative w-full" style={{ height:'200px', marginTop:'100px' }}>
               <HeroCarousel hosts={carouselHosts} />
             </div>
 
@@ -954,7 +953,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
       {/* ════════════════════════════════════════
           HOW IT WORKS
       ════════════════════════════════════════ */}
-      <div id="how" style={{ background:`linear-gradient(155deg, #0A2E1A 0%, #0D3820 30%, #155C30 65%, #1C7A42 100%)`, position:'relative', overflow:'hidden' }}>
+      <div id="how" style={{ background:`linear-gradient(155deg, #081A15 0%, #0F2922 30%, #14352A 65%, #1B4332 100%)`, position:'relative', overflow:'hidden' }}>
         <div className="absolute inset-0 pointer-events-none" style={{ background:'radial-gradient(ellipse 70% 60% at 90% 10%, rgba(52,211,153,0.14) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 10% 90%, rgba(232,98,26,0.10) 0%, transparent 60%)' }} />
         <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(120deg, rgba(255,255,255,0.07) 0%, transparent 40%)' }} />
         <div className="absolute pointer-events-none" style={{ top:'-100px', right:'-100px', width:'600px', height:'600px', borderRadius:'50%', background:'radial-gradient(circle, rgba(52,211,153,0.10) 0%, transparent 65%)' }} />
@@ -1019,13 +1018,10 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
         <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
           {CITIES.map(c => (
             <Link key={c.id} href={`/search?cityId=${c.id}`}
-              className="flex-shrink-0 flex items-center gap-2.5 px-4 py-3 rounded-2xl card card-hover"
-              style={{ minWidth:'130px' }}>
+              className="flex-shrink-0 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl transition-all hover:scale-105"
+              style={{ minWidth:'120px', background:'#FAFAF8', border:'1.5px solid rgba(15,61,34,0.12)', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
               <span className="text-2xl">{c.flag}</span>
-              <div>
-                <div className="text-[13px] font-bold" style={{ color:GREEN }}>{c.name}</div>
-                <div className="text-[11px] font-semibold" style={{ color:'#4A7A5C' }}>{c.hosts} hosts</div>
-              </div>
+              <div className="text-[13px] font-bold" style={{ color:GREEN }}>{c.name}</div>
             </Link>
           ))}
         </div>
@@ -1034,7 +1030,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
       {/* ════════════════════════════════════════
           PRICING CTA
       ════════════════════════════════════════ */}
-      <div style={{ background:`linear-gradient(150deg, #122E1C 0%, #0D3820 30%, #155C30 60%, #1A6B38 85%, #0F3D22 100%)`, position:'relative', overflow:'hidden' }}>
+      <div style={{ background:`linear-gradient(150deg, #081A15 0%, #0F2922 30%, #14352A 60%, #1B4332 85%, #0F2922 100%)`, position:'relative', overflow:'hidden' }}>
         <div className="absolute inset-0 pointer-events-none" style={{ background:'radial-gradient(ellipse 80% 50% at 15% 20%, rgba(52,211,153,0.13) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 85% 80%, rgba(232,98,26,0.14) 0%, transparent 60%)' }} />
         <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(125deg, rgba(255,255,255,0.08) 0%, transparent 35%, rgba(255,255,255,0.03) 100%)' }} />
         {/* subtle horizontal band */}

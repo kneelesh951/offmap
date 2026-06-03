@@ -164,23 +164,13 @@ export function Navbar({ user }: NavbarProps) {
       {/* Main header */}
       <header
         className="fixed top-0 left-0 right-0 z-30 h-[66px] flex items-center justify-between px-5 md:px-10 transition-all duration-500"
-        style={
-          scrolled
-            ? {
-                background: 'linear-gradient(135deg, #1E5C30 0%, #163D22 50%, #112E1A 100%)',
-                borderBottom: '1px solid rgba(255,255,255,0.14)',
-                boxShadow: '0 8px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(52,211,153,0.10), 0 0 80px rgba(22,100,48,0.18)',
-                backdropFilter: 'blur(40px) saturate(160%)',
-                WebkitBackdropFilter: 'blur(40px) saturate(160%)',
-              }
-            : {
-                background: 'linear-gradient(135deg, rgba(26,76,42,0.92) 0%, rgba(20,58,32,0.88) 50%, rgba(15,42,24,0.85) 100%)',
-                borderBottom: '1px solid rgba(255,255,255,0.12)',
-                backdropFilter: 'blur(48px) saturate(180%)',
-                WebkitBackdropFilter: 'blur(48px) saturate(180%)',
-                boxShadow: '0 4px 40px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(52,211,153,0.08)',
-              }
-        }
+        style={{
+          background: 'linear-gradient(180deg, #1B4332 0%, #14332A 50%, #0F2922 100%)',
+          borderBottom: '1px solid rgba(52,211,153,0.12)',
+          boxShadow: scrolled
+            ? '0 8px 40px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 30px 60px rgba(52,211,153,0.04)'
+            : '0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 30px 60px rgba(52,211,153,0.03)',
+        }}
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-1 select-none group flex-shrink-0">
@@ -207,12 +197,13 @@ export function Navbar({ user }: NavbarProps) {
 
         {/* Desktop nav — pill container */}
         <nav
-          className="hidden md:flex items-center p-1 gap-0.5"
+          className="hidden md:flex items-center p-1.5 gap-1"
           style={{
-            background: 'rgba(255,255,255,0.10)',
-            border: '1px solid rgba(255,255,255,0.28)',
+            background: 'rgba(255,255,255,0.08)',
+            border: '1.5px solid rgba(255,255,255,0.22)',
             borderRadius: '9999px',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 20px rgba(0,0,0,0.15)',
+            backdropFilter: 'blur(16px)',
           }}
         >
           {navLinks.map((l) => {
@@ -222,23 +213,29 @@ export function Navbar({ user }: NavbarProps) {
               <Link
                 key={l.href}
                 href={l.href}
-                className="px-4 py-1.5 rounded-full text-[13.5px] font-extrabold transition-all whitespace-nowrap"
+                className="px-5 py-2 rounded-full text-[13.5px] font-extrabold transition-all whitespace-nowrap"
                 style={{
-                  color: isPostTrip ? '#F5A623' : '#ffffff',
+                  color: isPostTrip ? '#F5A623' : active ? '#fff' : 'rgba(255,255,255,0.85)',
                   background: active
-                    ? 'rgba(255,255,255,0.22)'
+                    ? 'rgba(255,255,255,0.18)'
                     : 'transparent',
                   boxShadow: active
-                    ? '0 1px 6px rgba(0,0,0,0.22)'
+                    ? '0 2px 8px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.15)'
                     : 'none',
-                  letterSpacing: '-0.01em',
-                  textShadow: '0 1px 3px rgba(0,0,0,0.25)',
+                  letterSpacing: '0.01em',
+                  textShadow: '0 1px 4px rgba(0,0,0,0.30)',
                 }}
                 onMouseEnter={e => {
-                  if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.12)'
+                  if (!active) {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.12)'
+                    e.currentTarget.style.color = '#fff'
+                  }
                 }}
                 onMouseLeave={e => {
-                  if (!active) e.currentTarget.style.background = 'transparent'
+                  if (!active) {
+                    e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.color = isPostTrip ? '#F5A623' : 'rgba(255,255,255,0.85)'
+                  }
                 }}
               >
                 {l.label}
