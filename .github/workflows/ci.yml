@@ -1,6 +1,6 @@
 name: CI
 
-# Runs on every pull request and every push to main/staging.
+# Runs on every pull request and every push to main.
 # Catches TypeScript errors, lint issues, and broken builds
 # before they reach staging or production.
 
@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -32,13 +32,13 @@ jobs:
       # Run in mock mode — no real service keys needed in CI
       - name: Create mock .env for CI
         run: |
-          cat > .env.local << 'EOF'
+          cat > .env.local <<'EOF'
           MOCK_MODE=true
           NEXT_PUBLIC_APP_URL=http://localhost:3000
           NODE_ENV=test
-          # Dummy values to satisfy Next.js env validation
           NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=placeholder
           SUPABASE_SERVICE_ROLE_KEY=placeholder
           DATABASE_URL=postgresql://placeholder
           STRIPE_SECRET_KEY=sk_test_placeholder
@@ -54,6 +54,8 @@ jobs:
           RESEND_FROM_EMAIL=noreply@offmap.com
           RESEND_FROM_NAME=Offmap
           EOF
+          # Strip leading spaces from heredoc
+          sed -i 's/^[[:space:]]*//' .env.local
 
       - name: TypeScript check
         run: npm run typecheck
