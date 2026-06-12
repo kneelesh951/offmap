@@ -64,7 +64,7 @@ const LANGUAGES = [
   { code: 'sv', label: 'Swedish',    flag: '🇸🇪' },
 ]
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 const TERRA = '#E8621A'
 
 // Price range in euros per hour
@@ -194,7 +194,7 @@ function SearchPage() {
               className="w-full h-full object-cover"
               style={{ opacity: 0.45 }}
             />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(15,61,34,0.60) 0%, rgba(15,61,34,0.50) 40%, rgba(15,61,34,0.88) 80%, rgba(15,61,34,0.98) 100%)' }} />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(8,78,78,0.60) 0%, rgba(8,78,78,0.50) 40%, rgba(8,78,78,0.88) 80%, rgba(8,78,78,0.98) 100%)' }} />
             <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-transparent" />
           </div>
 
@@ -218,7 +218,7 @@ function SearchPage() {
                 style={{ background: '#fff', boxShadow: '0 16px 56px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.12)' }}>
                 <div className="flex flex-col sm:flex-row items-stretch">
                   {/* Keyword */}
-                  <div className="flex items-center gap-3 flex-1 px-5 py-4 border-b sm:border-b-0 sm:border-r rounded-l-2xl" style={{ borderColor: 'rgba(15,61,34,0.10)' }}>
+                  <div className="flex items-center gap-3 flex-1 px-5 py-4 border-b sm:border-b-0 sm:border-r rounded-l-2xl" style={{ borderColor: 'rgba(8,78,78,0.10)' }}>
                     <Search size={16} style={{ color: TERRA, flexShrink: 0 }} />
                     <div className="flex-1 min-w-0">
                       <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: TERRA }}>Search</div>
@@ -234,7 +234,7 @@ function SearchPage() {
                   </div>
 
                   {/* City autocomplete */}
-                  <div className="flex items-center px-5 py-4 border-b sm:border-b-0 sm:border-r min-w-[200px]" style={{ borderColor: 'rgba(15,61,34,0.10)' }}>
+                  <div className="flex items-center px-5 py-4 border-b sm:border-b-0 sm:border-r min-w-[200px]" style={{ borderColor: 'rgba(8,78,78,0.10)' }}>
                     <CityAutocomplete
                       cities={cities}
                       value={filters.cityId}
@@ -243,7 +243,7 @@ function SearchPage() {
                   </div>
 
                   {/* Sort */}
-                  <div className="flex items-center gap-3 px-5 py-4 border-b sm:border-b-0 sm:border-r min-w-[160px]" style={{ borderColor: 'rgba(15,61,34,0.10)' }}>
+                  <div className="flex items-center gap-3 px-5 py-4 border-b sm:border-b-0 sm:border-r min-w-[160px]" style={{ borderColor: 'rgba(8,78,78,0.10)' }}>
                     <div className="flex-1 min-w-0">
                       <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: TERRA }}>Sort by</div>
                       <select
@@ -264,7 +264,7 @@ function SearchPage() {
                   <button
                     onClick={() => { setPendingFilters(filters); setShowFilters(true) }}
                     className="flex items-center justify-center gap-2 px-5 py-4 text-[13px] font-bold border-b sm:border-b-0 sm:border-r transition-all hover:bg-green-50 relative"
-                    style={{ borderColor: 'rgba(15,61,34,0.10)', color: activeFilterCount > 0 ? TERRA : GREEN }}>
+                    style={{ borderColor: 'rgba(8,78,78,0.10)', color: activeFilterCount > 0 ? TERRA : GREEN }}>
                     <SlidersHorizontal size={15} />
                     Filters
                     {activeFilterCount > 0 && (
@@ -353,7 +353,7 @@ function SearchPage() {
 
         {/* ── Category sticky bar ───────────────────────── */}
         <div className="bg-white/95 backdrop-blur-sm border-b border-black/[0.07] px-5 md:px-11 py-3 sticky top-[66px] z-20"
-          style={{ boxShadow: '0 1px 0 rgba(15,61,34,0.06)' }}>
+          style={{ boxShadow: '0 1px 0 rgba(8,78,78,0.06)' }}>
           <div className="max-w-6xl mx-auto flex gap-2 no-scrollbar overflow-x-auto">
             <button
               onClick={() => setFilters(f => ({ ...f, category: '' }))}
@@ -465,7 +465,7 @@ function FilterDrawer({
                   onClick={() => setPending(f => ({ ...f, hostType: t.value }))}
                   className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all text-center"
                   style={{
-                    borderColor: pending.hostType === t.value ? '#E8621A' : 'rgba(15,61,34,0.12)',
+                    borderColor: pending.hostType === t.value ? '#E8621A' : 'rgba(8,78,78,0.12)',
                     background: pending.hostType === t.value ? 'rgba(232,98,26,0.06)' : 'transparent',
                     color: pending.hostType === t.value ? '#E8621A' : GREEN,
                   }}>
@@ -486,7 +486,7 @@ function FilterDrawer({
                     onClick={() => toggleLanguage(lang.code)}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-semibold border transition-all"
                     style={{
-                      borderColor: selected ? '#E8621A' : 'rgba(15,61,34,0.14)',
+                      borderColor: selected ? '#E8621A' : 'rgba(8,78,78,0.14)',
                       background: selected ? 'rgba(232,98,26,0.08)' : 'transparent',
                       color: selected ? '#E8621A' : GREEN,
                     }}>
@@ -504,7 +504,7 @@ function FilterDrawer({
               <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <label className="block text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: '#6EA880' }}>Min (€/hr)</label>
-                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border" style={{ borderColor: 'rgba(15,61,34,0.16)' }}>
+                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border" style={{ borderColor: 'rgba(8,78,78,0.16)' }}>
                     <span className="text-sm font-bold" style={{ color: '#9CAD9E' }}>€</span>
                     <input
                       type="number"
@@ -520,7 +520,7 @@ function FilterDrawer({
                 <div className="text-sm font-bold mt-5" style={{ color: '#9CAD9E' }}>–</div>
                 <div className="flex-1">
                   <label className="block text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: '#6EA880' }}>Max (€/hr)</label>
-                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border" style={{ borderColor: 'rgba(15,61,34,0.16)' }}>
+                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border" style={{ borderColor: 'rgba(8,78,78,0.16)' }}>
                     <span className="text-sm font-bold" style={{ color: '#9CAD9E' }}>€</span>
                     <input
                       type="number"
@@ -547,7 +547,7 @@ function FilterDrawer({
                     onClick={() => setPending(f => ({ ...f, minPrice: preset.min, maxPrice: preset.max }))}
                     className="px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all"
                     style={{
-                      borderColor: pending.minPrice === preset.min && pending.maxPrice === preset.max ? '#E8621A' : 'rgba(15,61,34,0.14)',
+                      borderColor: pending.minPrice === preset.min && pending.maxPrice === preset.max ? '#E8621A' : 'rgba(8,78,78,0.14)',
                       background: pending.minPrice === preset.min && pending.maxPrice === preset.max ? 'rgba(232,98,26,0.08)' : 'transparent',
                       color: pending.minPrice === preset.min && pending.maxPrice === preset.max ? '#E8621A' : GREEN,
                     }}>
@@ -566,7 +566,7 @@ function FilterDrawer({
                   onClick={() => setPending(f => ({ ...f, minRating: r }))}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold border transition-all"
                   style={{
-                    borderColor: pending.minRating === r ? '#E8621A' : 'rgba(15,61,34,0.14)',
+                    borderColor: pending.minRating === r ? '#E8621A' : 'rgba(8,78,78,0.14)',
                     background: pending.minRating === r ? 'rgba(232,98,26,0.08)' : 'transparent',
                     color: pending.minRating === r ? '#E8621A' : GREEN,
                   }}>
@@ -585,7 +585,7 @@ function FilterDrawer({
           <button
             onClick={onReset}
             className="flex-1 py-3 rounded-full text-[14px] font-bold border transition-all hover:bg-gray-50"
-            style={{ borderColor: 'rgba(15,61,34,0.20)', color: GREEN }}>
+            style={{ borderColor: 'rgba(8,78,78,0.20)', color: GREEN }}>
             Reset all
           </button>
           <button

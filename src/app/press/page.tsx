@@ -1,7 +1,7 @@
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 const RELEASES = [
   { date: 'March 2025', title: 'Offmap expands to Rome and Vienna, reaching 8 European cities', tag: 'Expansion' },
@@ -56,7 +56,7 @@ export default function PressPage() {
             <h2 className="font-serif text-3xl font-bold mb-10" style={{ color: GREEN, letterSpacing: '-0.5px' }}>Press releases</h2>
             <div className="space-y-4">
               {RELEASES.map(r => (
-                <div key={r.title} className="flex gap-5 p-6 rounded-2xl cursor-pointer group" style={{ border: '1px solid rgba(15,61,34,0.10)', backgroundColor: '#F7FAF8' }}>
+                <div key={r.title} className="flex gap-5 p-6 rounded-2xl cursor-pointer group" style={{ border: '1px solid rgba(8,78,78,0.10)', backgroundColor: '#F7FAF8' }}>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full text-white" style={{ backgroundColor: GREEN }}>{r.tag}</span>
@@ -75,7 +75,7 @@ export default function PressPage() {
         <div className="py-20 px-5 md:px-11" style={{ backgroundColor: '#F7FAF8' }}>
           <div className="max-w-3xl mx-auto">
             <h2 className="font-serif text-3xl font-bold mb-10" style={{ color: GREEN, letterSpacing: '-0.5px' }}>Company facts</h2>
-            <div className="divide-y rounded-2xl overflow-hidden bg-white" style={{ border: '1px solid rgba(15,61,34,0.10)' }}>
+            <div className="divide-y rounded-2xl overflow-hidden bg-white" style={{ border: '1px solid rgba(8,78,78,0.10)' }}>
               {FACTS.map(([label, value]) => (
                 <div key={label} className="flex gap-8 px-6 py-4">
                   <div className="w-48 flex-shrink-0 text-sm font-semibold" style={{ color: '#6EA880' }}>{label}</div>
@@ -90,14 +90,14 @@ export default function PressPage() {
         <div className="py-20 px-5 md:px-11 bg-white" id="kit">
           <div className="max-w-3xl mx-auto">
             <h2 className="font-serif text-3xl font-bold mb-4" style={{ color: GREEN, letterSpacing: '-0.5px' }}>Media kit</h2>
-            <p className="text-sm mb-8" style={{ color: '#4A7A5C' }}>Download assets for editorial use. Please credit "Offmap GmbH" when publishing.</p>
+            <p className="text-sm mb-8" style={{ color: '#4A8E8E' }}>Download assets for editorial use. Please credit "Offmap GmbH" when publishing.</p>
             <div className="grid sm:grid-cols-3 gap-4">
               {[
                 { icon: '🎨', label: 'Brand guidelines', desc: 'Colors, typography, logo usage rules' },
                 { icon: '🖼️', label: 'Logo pack', desc: 'SVG + PNG in all variants and sizes' },
                 { icon: '📸', label: 'Photography', desc: 'High-res editorial images of hosts and cities' },
               ].map(item => (
-                <div key={item.label} className="p-6 rounded-2xl text-center cursor-pointer" style={{ border: '1px solid rgba(15,61,34,0.10)', backgroundColor: '#F7FAF8' }}>
+                <div key={item.label} className="p-6 rounded-2xl text-center cursor-pointer" style={{ border: '1px solid rgba(8,78,78,0.10)', backgroundColor: '#F7FAF8' }}>
                   <div className="text-3xl mb-3">{item.icon}</div>
                   <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{item.label}</div>
                   <div className="text-xs" style={{ color: '#6EA880' }}>{item.desc}</div>

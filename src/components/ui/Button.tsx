@@ -8,7 +8,7 @@ const btn = cva(
     variants: {
       variant: {
         primary:   'bg-gradient-to-br from-terra to-[#F07830] text-white shadow-terra hover:shadow-terra-lg hover:-translate-y-0.5 active:translate-y-0 border border-white/10',
-        secondary: 'bg-white border border-ink/[0.18] text-ink-mid hover:border-ink/40 hover:text-ink hover:-translate-y-0.5 shadow-[0_1px_4px_rgba(15,61,34,0.06)]',
+        secondary: 'bg-white border border-ink/[0.18] text-ink-mid hover:border-ink/40 hover:text-ink hover:-translate-y-0.5 shadow-[0_1px_4px_rgba(8,78,78,0.06)]',
         ghost:     'bg-transparent text-terra hover:bg-terra/8 active:bg-terra/12',
         sage:      'bg-sage text-white hover:bg-[#486040] hover:-translate-y-0.5 shadow-[0_2px_12px_rgba(90,115,80,0.28)]',
         danger:    'bg-red-600 text-white hover:bg-red-700 hover:-translate-y-0.5',

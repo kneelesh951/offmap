@@ -5,8 +5,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        cream: '#FAF7F2',
+        cream: '#FAF5E9',
         sand: '#F2EDE4',
+        ivory: '#FAF5E9',
         terra: {
           DEFAULT: '#E8621A',
           dark: '#C4511A',
@@ -17,10 +18,21 @@ const config: Config = {
           pale: '#EAF0E6',
         },
         ink: {
-          DEFAULT: '#0F3D22',
-          mid: '#1E6038',
-          soft: '#2D6B3F',
-          muted: '#4A7A5C',
+          DEFAULT: '#084E4E',
+          mid: '#0C7B7B',
+          soft: '#0E9A9A',
+          muted: '#4A8E8E',
+        },
+        teal: {
+          DEFAULT: '#0C7B7B',
+          dark: '#084E4E',
+          deep: '#063B3B',
+          light: '#0E9A9A',
+        },
+        tangerine: {
+          DEFAULT: '#FFCC00',
+          dark: '#E6B800',
+          light: '#FFD633',
         },
       },
       fontFamily: {

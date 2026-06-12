@@ -33,7 +33,7 @@ function NewConversation() {
       .catch(() => setError('Network error — please try again.'))
   }, [hostId, router])
 
-  const GREEN = '#0F3D22'
+  const GREEN = '#084E4E'
 
   if (error) {
     return (
@@ -44,7 +44,7 @@ function NewConversation() {
           <button
             onClick={() => router.back()}
             className="mt-4 px-6 py-2.5 rounded-full text-sm font-semibold border"
-            style={{ borderColor: 'rgba(15,61,34,0.25)', color: GREEN }}>
+            style={{ borderColor: 'rgba(8,78,78,0.25)', color: GREEN }}>
             ← Go back
           </button>
         </div>
@@ -56,8 +56,8 @@ function NewConversation() {
     <div className="min-h-screen flex items-center justify-center bg-cream">
       <div className="text-center">
         <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
-          style={{ borderColor: '#0F3D22', borderTopColor: 'transparent' }} />
-        <p className="text-sm font-semibold" style={{ color: '#4A7A5C' }}>Starting conversation…</p>
+          style={{ borderColor: '#084E4E', borderTopColor: 'transparent' }} />
+        <p className="text-sm font-semibold" style={{ color: '#4A8E8E' }}>Starting conversation…</p>
       </div>
     </div>
   )
@@ -68,7 +68,7 @@ export default function NewConversationPage() {
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-cream">
         <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin"
-          style={{ borderColor: '#0F3D22', borderTopColor: 'transparent' }} />
+          style={{ borderColor: '#084E4E', borderTopColor: 'transparent' }} />
       </div>
     }>
       <NewConversation />

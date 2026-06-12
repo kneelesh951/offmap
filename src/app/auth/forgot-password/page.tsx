@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 const ORANGE = '#E8621A'
 const IS_MOCK = process.env.NEXT_PUBLIC_MOCK_MODE === 'true'
 
@@ -94,7 +94,7 @@ export default function ForgotPasswordPage() {
             {sent ? (
               <div className="text-center">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
-                  style={{ background: '#EAF5EE' }}>
+                  style={{ background: '#E5F2F2' }}>
                   <CheckCircle size={32} style={{ color: GREEN }} />
                 </div>
                 <h1 className="font-serif text-3xl font-bold mb-3" style={{ color: GREEN, letterSpacing: '-0.5px' }}>
@@ -110,7 +110,7 @@ export default function ForgotPasswordPage() {
                 <div className="space-y-3">
                   <button onClick={() => { setSent(false); setEmail('') }}
                     className="w-full py-3 rounded-full text-[13px] font-semibold border transition-colors hover:bg-green-50"
-                    style={{ borderColor: 'rgba(15,61,34,0.22)', color: GREEN }}>
+                    style={{ borderColor: 'rgba(8,78,78,0.22)', color: GREEN }}>
                     Try a different email
                   </button>
                   <Link href="/auth/login"
@@ -124,13 +124,13 @@ export default function ForgotPasswordPage() {
               <>
                 <div className="mb-8">
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5"
-                    style={{ background: '#EAF5EE' }}>
+                    style={{ background: '#E5F2F2' }}>
                     <Mail size={22} style={{ color: GREEN }} />
                   </div>
                   <h1 className="font-serif text-3xl font-bold mb-2" style={{ color: GREEN, letterSpacing: '-0.5px' }}>
                     Forgot password?
                   </h1>
-                  <p className="text-sm" style={{ color: '#4A7A5C' }}>
+                  <p className="text-sm" style={{ color: '#4A8E8E' }}>
                     Enter your email and we'll send a reset link.
                   </p>
                 </div>
@@ -158,7 +158,7 @@ export default function ForgotPasswordPage() {
                     {loading ? 'Sending link…' : 'Send reset link →'}
                   </button>
 
-                  <p className="text-center text-sm" style={{ color: '#4A7A5C' }}>
+                  <p className="text-center text-sm" style={{ color: '#4A8E8E' }}>
                     Remember your password?{' '}
                     <Link href="/auth/login" className="font-semibold hover:underline" style={{ color: ORANGE }}>
                       Sign in

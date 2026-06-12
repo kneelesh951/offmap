@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/Footer'
 import Link from 'next/link'
 import { BookingCard } from '@/components/booking/BookingCard'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 const TERRA = '#E8621A'
 
 export default async function TravelerDashboard() {
@@ -94,16 +94,10 @@ export default async function TravelerDashboard() {
       cardBg: 'linear-gradient(135deg,#0C3520,#1E6B40)',   // forest green
     },
     {
-      icon: '💬', title: 'Conversations', href: '/conversations',
-      desc: 'Direct messages with hosts you have unlocked.',
-      badge: convCount > 0 ? `${convCount} active` : null,
-      cardBg: 'linear-gradient(135deg,#1E40AF,#3B82F6)',   // cobalt blue
-    },
-    {
       icon: '💳', title: 'Subscription & billing', href: '/pricing',
       desc: 'Day pass · Week · Month · Annual — all under €50.',
       badge: sub ? sub.plan : null,
-      cardBg: 'linear-gradient(135deg,#92400E,#D97706)',   // amber gold
+      cardBg: 'linear-gradient(135deg,#B8860B,#E6B800)',   // warm yellow gold
     },
     {
       icon: '🌍', title: 'Explore cities', href: '/search',
@@ -127,11 +121,11 @@ export default async function TravelerDashboard() {
 
   const STATS = [
     { label: 'Conversations', value: convCount, href: '/conversations', icon: '💬',
-      bg: 'linear-gradient(135deg,#1E40AF,#3B82F6)' },   // cobalt blue
+      accent: '#084E4E' },
     { label: 'Saved hosts', value: wishCount, href: '/wishlists', icon: '❤️',
-      bg: 'linear-gradient(135deg,#5B21B6,#8B5CF6)' },   // warm plum
+      accent: '#084E4E' },
     { label: 'Cities live', value: cityCount, href: '/search', icon: '🌍',
-      bg: 'linear-gradient(135deg,#134E4A,#0D9488)' },   // teal
+      accent: '#084E4E' },
   ]
 
   return (
@@ -150,7 +144,7 @@ export default async function TravelerDashboard() {
           />
           {/* Gradient overlay */}
           <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(135deg,#0C3520 0%,#0F3D22 50%,#1C3A5E 100%)' }} />
+            style={{ background: 'linear-gradient(135deg,#0C3520 0%,#084E4E 50%,#1C3A5E 100%)' }} />
           <div className="absolute inset-0"
             style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(10,25,15,0.60) 100%)' }} />
           {/* Dot grid */}
@@ -197,19 +191,19 @@ export default async function TravelerDashboard() {
           {/* ── Subscription banner ─────────────────────── */}
           {sub ? (
             <div className="rounded-2xl px-6 py-5 mb-8 flex items-center justify-between flex-wrap gap-4"
-              style={{ background: 'linear-gradient(135deg,#ECFDF5,#D1FAE5)', border: '1.5px solid rgba(15,61,34,0.15)', boxShadow: '0 2px 12px rgba(15,61,34,0.08)' }}>
+              style={{ background: 'linear-gradient(135deg,#ECFDF5,#D1FAE5)', border: '1.5px solid rgba(8,78,78,0.15)', boxShadow: '0 2px 12px rgba(8,78,78,0.08)' }}>
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-[0.14em] mb-1.5" style={{ color: GREEN }}>✓ Active subscription</div>
                 <div className="font-serif text-2xl font-bold capitalize" style={{ color: GREEN }}>{sub.plan} pass</div>
                 {sub.expiresAt && (
-                  <div className="text-[13px] mt-0.5 font-medium" style={{ color: '#4A7A5C' }}>
+                  <div className="text-[13px] mt-0.5 font-medium" style={{ color: '#4A8E8E' }}>
                     Valid until {new Date(sub.expiresAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </div>
                 )}
               </div>
               <Link href="/pricing"
                 className="px-6 py-3 rounded-full text-[13px] font-bold transition-all hover:-translate-y-0.5"
-                style={{ border: '1.5px solid rgba(15,61,34,0.22)', backgroundColor: '#fff', color: GREEN, boxShadow: '0 2px 8px rgba(15,61,34,0.08)' }}>
+                style={{ border: '1.5px solid rgba(8,78,78,0.22)', backgroundColor: '#fff', color: GREEN, boxShadow: '0 2px 8px rgba(8,78,78,0.08)' }}>
                 Manage plan
               </Link>
             </div>
@@ -233,11 +227,17 @@ export default async function TravelerDashboard() {
           <div className="grid grid-cols-3 gap-4 mb-8">
             {STATS.map(s => (
               <Link key={s.label} href={s.href}
-                className="rounded-2xl p-6 text-center transition-all hover:-translate-y-1 hover:brightness-110"
-                style={{ background: s.bg, boxShadow: '0 4px 20px rgba(0,0,0,0.18)' }}>
-                <div className="text-3xl mb-3">{s.icon}</div>
-                <div className="font-serif text-5xl font-bold text-white mb-1" style={{ letterSpacing: '-0.03em' }}>{s.value}</div>
-                <div className="text-[11px] font-bold uppercase tracking-widest mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>{s.label}</div>
+                className="rounded-2xl p-6 text-center transition-all hover:-translate-y-1 group"
+                style={{
+                  background: 'rgba(255,255,255,0.55)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  border: '1.5px solid rgba(255,255,255,0.70)',
+                  boxShadow: '0 4px 24px rgba(8,78,78,0.08), inset 0 1px 0 rgba(255,255,255,0.80)',
+                }}>
+                <div className="text-2xl mb-2">{s.icon}</div>
+                <div className="font-serif text-5xl font-bold mb-1" style={{ color: s.accent, letterSpacing: '-0.03em' }}>{s.value}</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest mt-1" style={{ color: 'rgba(8,78,78,0.45)' }}>{s.label}</div>
               </Link>
             ))}
           </div>
@@ -284,7 +284,7 @@ export default async function TravelerDashboard() {
 
           {/* ── Become a host CTA ─────────────────────────── */}
           <div className="mt-8 rounded-2xl p-7 flex items-center justify-between gap-4 flex-wrap overflow-hidden relative"
-            style={{ background: 'linear-gradient(135deg,#0C3520 0%,#0F3D22 60%,#1a4a2e 100%)', boxShadow: '0 8px 32px rgba(15,61,34,0.28)' }}>
+            style={{ background: 'linear-gradient(135deg,#0C3520 0%,#084E4E 60%,#0a5e5e 100%)', boxShadow: '0 8px 32px rgba(8,78,78,0.28)' }}>
             <div className="absolute inset-0 opacity-[0.04]"
               style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
             <div className="absolute right-0 top-0 w-64 h-64 pointer-events-none"

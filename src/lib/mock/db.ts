@@ -56,6 +56,12 @@ export interface MockHostProfile {
   moderationStatus: 'pending' | 'approved' | 'rejected'
   isActive: boolean
   primaryPhotoUrl: string | null
+  idDocumentUrl: string | null
+  idDocumentType: string | null
+  idVerificationStatus: 'not_submitted' | 'pending' | 'verified' | 'rejected'
+  idVerifiedAt: string | null
+  idRejectionReason: string | null
+  introVideoUrl: string | null
   strikeCount: number
   cancellationCount: number
   noShowCount: number
@@ -163,6 +169,15 @@ export interface MockBooking {
   createdAt: string
 }
 
+export interface MockHostPhoto {
+  id: string
+  hostId: string        // host_profiles.id
+  publicUrl: string
+  isPrimary: boolean
+  displayOrder: number
+  createdAt: string
+}
+
 export interface MockNotification {
   id: string
   userId: string
@@ -204,6 +219,7 @@ class MockDatabase {
   tripHostResponses: Map<string, MockTripHostResponse> = new Map()
   notifications: Map<string, MockNotification> = new Map()
   bookings: Map<string, MockBooking> = new Map()
+  hostPhotos: Map<string, MockHostPhoto> = new Map()
 
   // Session store: sessionToken → userId
   sessions: Map<string, string> = new Map()
@@ -239,13 +255,13 @@ class MockDatabase {
       role: 'traveler',
       fullName: 'Alex Demo',
       avatarUrl: null,
-      bio: null,
-      homeCity: null,
-      homeCountry: null,
-      languages: [],
-      interests: [],
-      travelStyle: null,
-      profileCompleteness: 0,
+      bio: 'Curious traveler from London. I love exploring cities through food, street art, and conversations with locals. Always looking for the places that don\'t show up on Google Maps.',
+      homeCity: 'London',
+      homeCountry: 'United Kingdom',
+      languages: ['en', 'fr'],
+      interests: ['food-drink', 'art-culture', 'nightlife'],
+      travelStyle: 'solo',
+      profileCompleteness: 70,
       createdAt: new Date().toISOString(),
     }
     const demoHost: MockUser = {
@@ -276,7 +292,7 @@ class MockDatabase {
         languages: ['en', 'de', 'ar', 'fr', 'tr'], categories: ['food-drink', 'art-culture', 'nightlife'],
         hostType: 'female', hourlyRateCents: 2500, neighborhood: 'Neukölln',
         avgRating: '4.98', reviewCount: 143, isPremium: true, isFeatured: true,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -287,7 +303,7 @@ class MockDatabase {
         languages: ['en', 'de', 'ru'], categories: ['art-culture', 'history', 'nature'],
         hostType: 'male', hourlyRateCents: 3000, neighborhood: 'Mitte',
         avgRating: '4.85', reviewCount: 67, isPremium: false, isFeatured: true,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -298,7 +314,7 @@ class MockDatabase {
         languages: ['en', 'pt', 'es'], categories: ['food-drink', 'history', 'art-culture'],
         hostType: 'male', hourlyRateCents: 3000, neighborhood: 'Alfama',
         avgRating: '4.96', reviewCount: 98, isPremium: true, isFeatured: true,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -309,7 +325,7 @@ class MockDatabase {
         languages: ['en', 'nl', 'jp'], categories: ['nature', 'art-culture', 'food-drink'],
         hostType: 'female', hourlyRateCents: 2200, neighborhood: 'Jordaan',
         avgRating: '5.0', reviewCount: 211, isPremium: true, isFeatured: true,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -320,7 +336,7 @@ class MockDatabase {
         languages: ['en', 'es', 'ca', 'it'], categories: ['food-drink', 'history', 'art-culture'],
         hostType: 'female', hourlyRateCents: 2800, neighborhood: 'Gràcia',
         avgRating: '4.97', reviewCount: 76, isPremium: false, isFeatured: false,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -331,7 +347,7 @@ class MockDatabase {
         languages: ['en', 'de', 'fr'], categories: ['nightlife', 'art-culture', 'music'],
         hostType: 'male', hourlyRateCents: 2000, neighborhood: 'Friedrichshain',
         avgRating: '4.91', reviewCount: 44, isPremium: false, isFeatured: false,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -342,7 +358,7 @@ class MockDatabase {
         languages: ['en', 'de', 'da'], categories: ['nightlife', 'history', 'food-drink'],
         hostType: 'male', hourlyRateCents: 2800, neighborhood: 'Altona',
         avgRating: '4.93', reviewCount: 41, isPremium: false, isFeatured: true,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1560250097-0dc05329d0ea?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -353,7 +369,7 @@ class MockDatabase {
         languages: ['en', 'de', 'nl'], categories: ['history', 'food-drink', 'art-culture'],
         hostType: 'female', hourlyRateCents: 2400, neighborhood: 'Altstadt',
         avgRating: '4.91', reviewCount: 33, isPremium: false, isFeatured: false,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -364,7 +380,7 @@ class MockDatabase {
         languages: ['en', 'de', 'fr'], categories: ['food-drink', 'art-culture', 'nightlife'],
         hostType: 'male', hourlyRateCents: 3000, neighborhood: 'Sachsenhausen',
         avgRating: '4.88', reviewCount: 22, isPremium: false, isFeatured: false,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -375,7 +391,7 @@ class MockDatabase {
         languages: ['en', 'de', 'ja'], categories: ['art-culture', 'nightlife', 'food-drink'],
         hostType: 'female', hourlyRateCents: 2600, neighborhood: 'Altstadt',
         avgRating: '4.96', reviewCount: 18, isPremium: false, isFeatured: false,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -386,7 +402,7 @@ class MockDatabase {
         languages: ['en', 'de', 'sv'], categories: ['food-drink', 'nature', 'art-culture'],
         hostType: 'couple', hourlyRateCents: 2200, neighborhood: 'Stuttgarter Mitte',
         avgRating: '4.90', reviewCount: 14, isPremium: false, isFeatured: false,
-        moderationStatus: 'approved', isActive: true, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
+        moderationStatus: 'approved', isActive: true, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'verified' as const, idVerifiedAt: new Date().toISOString(), idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null,
         primaryPhotoUrl: 'https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?w=400&h=300&fit=crop',
         createdAt: new Date().toISOString(),
       },
@@ -407,6 +423,38 @@ class MockDatabase {
     ]
     hostUsers.forEach(u => this.users.set(u.id, { ...u, password: 'demo1234', role: 'host', avatarUrl: null, bio: null, homeCity: null, homeCountry: null, languages: [], interests: [], travelStyle: null, profileCompleteness: 0, createdAt: new Date().toISOString() }))
     profiles.forEach(p => this.hostProfiles.set(p.id, p))
+
+    // ── Host photos (gallery, 2-4 per host) ───────────────────────────────
+    const hostPhotoSeed: MockHostPhoto[] = [
+      // host-1 (Berlin street food — Amira)
+      { id: 'photo-1a', hostId: 'host-1', publicUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+      { id: 'photo-1b', hostId: 'host-1', publicUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop', isPrimary: false, displayOrder: 1, createdAt: new Date().toISOString() },
+      { id: 'photo-1c', hostId: 'host-1', publicUrl: 'https://images.unsplash.com/photo-1560439513-74b037a25d84?w=600&h=400&fit=crop', isPrimary: false, displayOrder: 2, createdAt: new Date().toISOString() },
+      // host-2 (Berlin photographer — Lars)
+      { id: 'photo-2a', hostId: 'host-2', publicUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+      { id: 'photo-2b', hostId: 'host-2', publicUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop', isPrimary: false, displayOrder: 1, createdAt: new Date().toISOString() },
+      { id: 'photo-2c', hostId: 'host-2', publicUrl: 'https://images.unsplash.com/photo-1560969184-10fe8719e047?w=600&h=400&fit=crop', isPrimary: false, displayOrder: 2, createdAt: new Date().toISOString() },
+      { id: 'photo-2d', hostId: 'host-2', publicUrl: 'https://images.unsplash.com/photo-1527866959252-deab85ef7d1b?w=600&h=400&fit=crop', isPrimary: false, displayOrder: 3, createdAt: new Date().toISOString() },
+      // host-3 (Lisbon — Marco)
+      { id: 'photo-3a', hostId: 'host-3', publicUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+      { id: 'photo-3b', hostId: 'host-3', publicUrl: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=600&h=400&fit=crop', isPrimary: false, displayOrder: 1, createdAt: new Date().toISOString() },
+      { id: 'photo-3c', hostId: 'host-3', publicUrl: 'https://images.unsplash.com/photo-1513735492246-483525079186?w=600&h=400&fit=crop', isPrimary: false, displayOrder: 2, createdAt: new Date().toISOString() },
+      // host-4 (Amsterdam — Yuki)
+      { id: 'photo-4a', hostId: 'host-4', publicUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+      { id: 'photo-4b', hostId: 'host-4', publicUrl: 'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=600&h=400&fit=crop', isPrimary: false, displayOrder: 1, createdAt: new Date().toISOString() },
+      { id: 'photo-4c', hostId: 'host-4', publicUrl: 'https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?w=600&h=400&fit=crop', isPrimary: false, displayOrder: 2, createdAt: new Date().toISOString() },
+      // host-5 (Barcelona — Sofia)
+      { id: 'photo-5a', hostId: 'host-5', publicUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+      { id: 'photo-5b', hostId: 'host-5', publicUrl: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&h=400&fit=crop', isPrimary: false, displayOrder: 1, createdAt: new Date().toISOString() },
+      // host-6 through host-11: primary photo only
+      { id: 'photo-6a', hostId: 'host-6', publicUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+      { id: 'photo-7a', hostId: 'host-7', publicUrl: 'https://images.unsplash.com/photo-1560250097-0dc05329d0ea?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+      { id: 'photo-8a', hostId: 'host-8', publicUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+      { id: 'photo-9a', hostId: 'host-9', publicUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+      { id: 'photo-10a', hostId: 'host-10', publicUrl: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+      { id: 'photo-11a', hostId: 'host-11', publicUrl: 'https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?w=600&h=400&fit=crop', isPrimary: true, displayOrder: 0, createdAt: new Date().toISOString() },
+    ]
+    hostPhotoSeed.forEach(p => this.hostPhotos.set(p.id, p))
 
     // ── Sample reviews ─────────────────────────────────────────────────────
     const sampleReviews: MockReview[] = [
@@ -534,8 +582,22 @@ class MockDatabase {
     return updated
   }
 
+  updateUserPassword(userId: string, newPassword: string): boolean {
+    const user = this.users.get(userId)
+    if (!user) return false
+    user.password = newPassword
+    this.users.set(userId, user)
+    return true
+  }
+
   getHostProfileByUserId(userId: string): MockHostProfile | undefined {
     return Array.from(this.hostProfiles.values()).find(h => h.userId === userId)
+  }
+
+  getHostPhotos(hostProfileId: string): MockHostPhoto[] {
+    return Array.from(this.hostPhotos.values())
+      .filter(p => p.hostId === hostProfileId)
+      .sort((a, b) => a.displayOrder - b.displayOrder)
   }
 
   getActiveSubscription(userId: string): MockSubscription | undefined {
@@ -560,6 +622,14 @@ class MockDatabase {
     const updated = { ...b, ...patch }
     this.bookings.set(id, updated)
     return updated
+  }
+
+  updateHostProfile(profileId: string, patch: Partial<MockHostProfile>): MockHostProfile | null {
+    const profile = this.hostProfiles.get(profileId)
+    if (!profile) return null
+    Object.assign(profile, patch)
+    this.hostProfiles.set(profileId, profile)
+    return profile
   }
 
   applyStrikesToHost(hostUserId: string, strikes: number, payoutFreezeDays: number): void {
@@ -638,6 +708,7 @@ class MockDatabase {
           hourlyRateCents: h.hourlyRateCents, neighborhood: h.neighborhood,
           avgRating: h.avgRating, reviewCount: h.reviewCount,
           responseRate: '95', isPremium: h.isPremium, isFeatured: h.isFeatured,
+          idVerificationStatus: h.idVerificationStatus,
           primaryPhotoUrl: h.primaryPhotoUrl,
           fullName: user?.fullName ?? null, avatarUrl: user?.avatarUrl ?? null,
         }
@@ -815,6 +886,12 @@ class MockDatabase {
       moderationStatus: 'pending',
       isActive: true,
       primaryPhotoUrl: null,
+      idDocumentUrl: null,
+      idDocumentType: null,
+      idVerificationStatus: 'not_submitted',
+      idVerifiedAt: null,
+      idRejectionReason: null,
+      introVideoUrl: null,
       strikeCount: 0,
       cancellationCount: 0,
       noShowCount: 0,

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 const TEAM = [
   { name: 'Neelesh', role: 'Founder & CEO', city: 'Frankfurt', bio: 'Visionary entrepreneur and the driving force behind Offmap. Passionate about authentic travel experiences and connecting people across cultures, Neelesh built Offmap to reimagine how travelers discover and experience cities — through the eyes of the people who live there.' },
@@ -56,10 +56,10 @@ export default function AboutPage() {
             <h2 className="font-serif text-4xl font-bold mb-12 text-center" style={{ color: GREEN, letterSpacing: '-1px' }}>Our values</h2>
             <div className="grid md:grid-cols-2 gap-6">
               {VALUES.map(v => (
-                <div key={v.title} className="bg-white rounded-2xl p-8 border" style={{ borderColor: 'rgba(15,61,34,0.10)' }}>
+                <div key={v.title} className="bg-white rounded-2xl p-8 border" style={{ borderColor: 'rgba(8,78,78,0.10)' }}>
                   <div className="text-3xl mb-4">{v.icon}</div>
                   <h3 className="font-serif text-xl font-bold mb-3" style={{ color: GREEN }}>{v.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: '#4A7A5C' }}>{v.body}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: '#4A8E8E' }}>{v.body}</p>
                 </div>
               ))}
             </div>
@@ -73,7 +73,7 @@ export default function AboutPage() {
             <h2 className="font-serif text-4xl font-bold mb-12 text-center" style={{ color: GREEN, letterSpacing: '-1px' }}>People behind Offmap</h2>
             <div className="grid md:grid-cols-2 gap-6">
               {TEAM.map(m => (
-                <div key={m.name} className="flex gap-5 p-6 rounded-2xl border" style={{ borderColor: 'rgba(15,61,34,0.10)' }}>
+                <div key={m.name} className="flex gap-5 p-6 rounded-2xl border" style={{ borderColor: 'rgba(8,78,78,0.10)' }}>
                   <div className="w-14 h-14 rounded-2xl flex items-center justify-center font-serif text-xl font-bold text-white flex-shrink-0"
                     style={{ backgroundColor: GREEN }}>
                     {m.name.split(' ').map(n => n[0]).join('')}
@@ -81,7 +81,7 @@ export default function AboutPage() {
                   <div>
                     <div className="font-bold text-base" style={{ color: GREEN }}>{m.name}</div>
                     <div className="text-sm font-medium mb-2" style={{ color: '#E8621A' }}>{m.role} · {m.city}</div>
-                    <p className="text-sm leading-relaxed" style={{ color: '#4A7A5C' }}>{m.bio}</p>
+                    <p className="text-sm leading-relaxed" style={{ color: '#4A8E8E' }}>{m.bio}</p>
                   </div>
                 </div>
               ))}

@@ -190,12 +190,24 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
 
         {/* Messages area — subtle pattern background */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '30px 28px', display: 'flex', flexDirection: 'column', gap: '6px', background: 'linear-gradient(180deg, #F5F1EB 0%, #EDE8E0 50%, #E8E3DA 100%)' }}>
+
+          {/* Safety banner — pinned at top */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '14px 18px', borderRadius: '12px', background: 'linear-gradient(135deg, #FEF3C7, #FDE68A)', border: '1px solid #F59E0B', marginBottom: '16px' }}>
+            <Shield size={18} style={{ color: '#B45309', flexShrink: 0, marginTop: '2px' }} />
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: '#92400E', marginBottom: '4px' }}>Safety reminder</div>
+              <div style={{ fontSize: '12px', lineHeight: 1.6, color: '#78350F' }}>
+                Before meeting in person, do a quick video or phone call to verify each other. Meet in a public place and share your plans with someone you trust. Offmap cannot monitor or mediate in-person meetups.
+              </div>
+            </div>
+          </div>
+
           {msgs.length === 0 && (
             <div style={{ textAlign: 'center', padding: '80px 40px' }}>
               <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'linear-gradient(135deg,#E8621A,#D4540F)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 10px 30px rgba(232,98,26,0.30)' }}>
                 <Send size={28} style={{ color: '#fff', transform: 'rotate(-15deg)' }} />
               </div>
-              <div style={{ fontSize: '22px', fontWeight: 700, color: '#0F3D22', marginBottom: '10px', fontFamily: 'var(--font-fraunces), Georgia, serif', letterSpacing: '-0.02em' }}>
+              <div style={{ fontSize: '22px', fontWeight: 700, color: '#084E4E', marginBottom: '10px', fontFamily: 'var(--font-fraunces), Georgia, serif', letterSpacing: '-0.02em' }}>
                 Start your conversation
               </div>
               <div style={{ fontSize: '14px', fontWeight: 500, color: '#6B8F7B', lineHeight: 1.7, maxWidth: '300px', margin: '0 auto' }}>
@@ -215,7 +227,7 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
                     <div style={{ width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-fraunces), Georgia, serif', fontSize: '10px', fontWeight: 700, color: '#fff', background: 'linear-gradient(135deg,#E8621A,#D4540F)' }}>
                       {otherUserName[0]}
                     </div>
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#0F3D22' }}>{otherUserName}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#084E4E' }}>{otherUserName}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', flexDirection: isMe ? 'row-reverse' : 'row' }}>
@@ -229,7 +241,7 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
                       letterSpacing: '0.01em',
                       ...(isMe
                         ? { background: 'linear-gradient(135deg,#E8621A,#D4540F)', color: '#fff', borderRadius: '20px 20px 6px 20px', boxShadow: '0 4px 18px rgba(232,98,26,0.25)' }
-                        : { background: '#fff', color: '#1A2B1F', borderRadius: '20px 20px 20px 6px', boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid rgba(15,61,34,0.06)' }
+                        : { background: '#fff', color: '#1A2B1F', borderRadius: '20px 20px 20px 6px', boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid rgba(8,78,78,0.06)' }
                       ),
                     }}
                   >
@@ -244,9 +256,9 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
         </div>
 
         {/* Input bar — elevated */}
-        <div style={{ backgroundColor: '#fff', borderTop: '1px solid rgba(15,61,34,0.08)', padding: '18px 24px', boxShadow: '0 -6px 24px rgba(0,0,0,0.04)' }}>
+        <div style={{ backgroundColor: '#fff', borderTop: '1px solid rgba(8,78,78,0.08)', padding: '18px 24px', boxShadow: '0 -6px 24px rgba(0,0,0,0.04)' }}>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
-            <div style={{ flex: 1, borderRadius: '16px', border: '2px solid rgba(15,61,34,0.10)', backgroundColor: '#F8F5F0', overflow: 'hidden', transition: 'border-color 0.2s, box-shadow 0.2s' }}>
+            <div style={{ flex: 1, borderRadius: '16px', border: '2px solid rgba(8,78,78,0.10)', backgroundColor: '#F8F5F0', overflow: 'hidden', transition: 'border-color 0.2s, box-shadow 0.2s' }}>
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -255,7 +267,7 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
                 rows={1}
                 style={{ width: '100%', padding: '14px 20px', backgroundColor: 'transparent', color: '#1A2B1F', fontSize: '14.5px', resize: 'none', outline: 'none', fontFamily: 'inherit', border: 'none', lineHeight: 1.5 }}
                 onFocus={(e) => { const p = e.target.parentElement!; p.style.borderColor = '#E8621A'; p.style.boxShadow = '0 0 0 3px rgba(232,98,26,0.08)'; p.style.backgroundColor = '#fff' }}
-                onBlur={(e) => { const p = e.target.parentElement!; p.style.borderColor = 'rgba(15,61,34,0.10)'; p.style.boxShadow = 'none'; p.style.backgroundColor = '#F8F5F0' }}
+                onBlur={(e) => { const p = e.target.parentElement!; p.style.borderColor = 'rgba(8,78,78,0.10)'; p.style.boxShadow = 'none'; p.style.backgroundColor = '#F8F5F0' }}
               />
             </div>
             <button onClick={send} disabled={!input.trim() || sending}

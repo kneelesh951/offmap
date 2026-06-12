@@ -2,7 +2,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { CheckCircle2, XCircle } from 'lucide-react'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 const RULES = [
   {
@@ -73,13 +73,13 @@ export default function HostGuidelinesPage() {
             <h2 className="font-serif text-3xl font-bold mb-10" style={{ color: GREEN, letterSpacing: '-0.5px' }}>Core standards</h2>
             <div className="space-y-6">
               {RULES.map((r, i) => (
-                <div key={r.title} className="flex gap-5 p-6 rounded-2xl" style={{ backgroundColor: '#F7FAF8', border: '1px solid rgba(15,61,34,0.08)' }}>
+                <div key={r.title} className="flex gap-5 p-6 rounded-2xl" style={{ backgroundColor: '#F7FAF8', border: '1px solid rgba(8,78,78,0.08)' }}>
                   <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0" style={{ backgroundColor: GREEN }}>
                     {i + 1}
                   </div>
                   <div>
                     <h3 className="font-bold text-base mb-1.5" style={{ color: GREEN }}>{r.title}</h3>
-                    <p className="text-sm leading-relaxed" style={{ color: '#4A7A5C' }}>{r.body}</p>
+                    <p className="text-sm leading-relaxed" style={{ color: '#4A8E8E' }}>{r.body}</p>
                   </div>
                 </div>
               ))}
@@ -91,7 +91,7 @@ export default function HostGuidelinesPage() {
         <div className="py-20 px-5 md:px-11" style={{ backgroundColor: '#FFF5F0' }}>
           <div className="max-w-3xl mx-auto">
             <h2 className="font-serif text-3xl font-bold mb-4" style={{ color: GREEN, letterSpacing: '-0.5px' }}>Strictly prohibited</h2>
-            <p className="text-sm mb-8" style={{ color: '#4A7A5C' }}>The following result in immediate account suspension and may be reported to law enforcement authorities.</p>
+            <p className="text-sm mb-8" style={{ color: '#4A8E8E' }}>The following result in immediate account suspension and may be reported to law enforcement authorities.</p>
             <div className="space-y-3">
               {PROHIBITED.map(item => (
                 <div key={item} className="flex items-start gap-3 p-4 bg-white rounded-xl" style={{ border: '1px solid rgba(232,98,26,0.15)' }}>
@@ -109,10 +109,10 @@ export default function HostGuidelinesPage() {
             <h2 className="font-serif text-3xl font-bold mb-10" style={{ color: GREEN, letterSpacing: '-0.5px' }}>Safety & liability</h2>
             <div className="grid sm:grid-cols-2 gap-5">
               {SAFETY.map(s => (
-                <div key={s.title} className="p-6 rounded-2xl" style={{ backgroundColor: '#F7FAF8', border: '1px solid rgba(15,61,34,0.08)' }}>
+                <div key={s.title} className="p-6 rounded-2xl" style={{ backgroundColor: '#F7FAF8', border: '1px solid rgba(8,78,78,0.08)' }}>
                   <div className="text-3xl mb-3">{s.icon}</div>
                   <h3 className="font-bold text-base mb-2" style={{ color: GREEN }}>{s.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: '#4A7A5C' }}>{s.body}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: '#4A8E8E' }}>{s.body}</p>
                 </div>
               ))}
             </div>

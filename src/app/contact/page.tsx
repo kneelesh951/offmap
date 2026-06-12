@@ -5,7 +5,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ArrowLeft, Mail, MessageSquare, HelpCircle, AlertTriangle, CheckCircle } from 'lucide-react'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 const ORANGE = '#E8621A'
 
 const TOPICS = [
@@ -67,7 +67,7 @@ export default function ContactPage() {
             <h1 className="font-serif text-3xl font-bold mb-2" style={{ color: GREEN, letterSpacing: '-0.03em' }}>
               Get in touch
             </h1>
-            <p className="text-[14px]" style={{ color: '#4A7A5C' }}>
+            <p className="text-[14px]" style={{ color: '#4A8E8E' }}>
               We typically reply within a few hours. For urgent safety concerns, we respond within 1 hour.
             </p>
           </div>
@@ -87,18 +87,18 @@ export default function ContactPage() {
               ].map(item => (
                 <Link key={item.title} href={item.href}
                   className="flex items-start gap-3 p-4 rounded-2xl bg-white transition-all hover:-translate-y-0.5"
-                  style={{ border: '1px solid rgba(15,61,34,0.10)', boxShadow: '0 2px 8px rgba(15,61,34,0.05)' }}>
+                  style={{ border: '1px solid rgba(8,78,78,0.10)', boxShadow: '0 2px 8px rgba(8,78,78,0.05)' }}>
                   <item.icon size={18} className="mt-0.5 flex-shrink-0" style={{ color: ORANGE }} />
                   <div>
                     <div className="font-bold text-[13px]" style={{ color: GREEN }}>{item.title}</div>
-                    <div className="text-[12px]" style={{ color: '#4A7A5C' }}>{item.desc}</div>
+                    <div className="text-[12px]" style={{ color: '#4A8E8E' }}>{item.desc}</div>
                   </div>
                 </Link>
               ))}
 
               {/* Response times */}
               <div className="rounded-2xl p-5 mt-6"
-                style={{ background: `linear-gradient(135deg, ${GREEN} 0%, #1a4a2e 100%)` }}>
+                style={{ background: `linear-gradient(135deg, ${GREEN} 0%, #0a5e5e 100%)` }}>
                 <h3 className="font-bold text-white text-[13px] mb-3">Response times</h3>
                 {[
                   ['🚨 Safety', '< 1 hour'],
@@ -116,12 +116,12 @@ export default function ContactPage() {
             {/* Right — form */}
             <div className="md:col-span-2">
               <div className="bg-white rounded-2xl p-7"
-                style={{ border: '1px solid rgba(15,61,34,0.10)', boxShadow: '0 2px 16px rgba(15,61,34,0.07)' }}>
+                style={{ border: '1px solid rgba(8,78,78,0.10)', boxShadow: '0 2px 16px rgba(8,78,78,0.07)' }}>
 
                 {success ? (
                   <div className="text-center py-10">
                     <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
-                      style={{ background: '#EAF5EE' }}>
+                      style={{ background: '#E5F2F2' }}>
                       <CheckCircle size={28} style={{ color: GREEN }} />
                     </div>
                     <h2 className="font-serif text-2xl font-bold mb-2" style={{ color: GREEN }}>Message sent!</h2>
@@ -130,7 +130,7 @@ export default function ContactPage() {
                     </p>
                     <button onClick={() => { setSuccess(false); setForm({ name: '', email: '', topic: '', message: '' }) }}
                       className="px-6 py-2.5 rounded-full text-[13px] font-semibold border transition-colors hover:bg-green-50"
-                      style={{ borderColor: 'rgba(15,61,34,0.25)', color: GREEN }}>
+                      style={{ borderColor: 'rgba(8,78,78,0.25)', color: GREEN }}>
                       Send another message
                     </button>
                   </div>
@@ -154,7 +154,7 @@ export default function ContactPage() {
                         <input type="text" value={form.name} onChange={e => set('name', e.target.value)}
                           placeholder="Alex Smith" required
                           className="w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                          style={{ borderColor: 'rgba(15,61,34,0.18)' }} />
+                          style={{ borderColor: 'rgba(8,78,78,0.18)' }} />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: GREEN }}>
@@ -163,7 +163,7 @@ export default function ContactPage() {
                         <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
                           placeholder="you@example.com" required
                           className="w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                          style={{ borderColor: 'rgba(15,61,34,0.18)' }} />
+                          style={{ borderColor: 'rgba(8,78,78,0.18)' }} />
                       </div>
                     </div>
 
@@ -173,7 +173,7 @@ export default function ContactPage() {
                       </label>
                       <select value={form.topic} onChange={e => set('topic', e.target.value)} required
                         className="w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
-                        style={{ borderColor: 'rgba(15,61,34,0.18)', color: form.topic ? '#111' : '#9CA3AF' }}>
+                        style={{ borderColor: 'rgba(8,78,78,0.18)', color: form.topic ? '#111' : '#9CA3AF' }}>
                         <option value="" disabled>Select a topic…</option>
                         {TOPICS.map(t => (
                           <option key={t.value} value={t.value}>{t.label}</option>
@@ -189,7 +189,7 @@ export default function ContactPage() {
                         rows={5} maxLength={2000} required
                         placeholder="Tell us what's going on. The more detail you provide, the faster we can help."
                         className="w-full rounded-xl border px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
-                        style={{ borderColor: 'rgba(15,61,34,0.18)' }} />
+                        style={{ borderColor: 'rgba(8,78,78,0.18)' }} />
                       <div className="text-right text-[11px] text-gray-400 mt-1">{form.message.length}/2000</div>
                     </div>
 

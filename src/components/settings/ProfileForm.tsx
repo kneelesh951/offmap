@@ -227,7 +227,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       {/* ── Avatar section ─────────────────────────────────────────────── */}
       <div
         className="rounded-2xl p-6"
-        style={{ background: '#fff', border: '1.5px solid rgba(15,61,34,0.10)', boxShadow: '0 2px 16px rgba(15,61,34,0.06)' }}
+        style={{ background: '#fff', border: '1.5px solid rgba(8,78,78,0.10)', boxShadow: '0 2px 16px rgba(8,78,78,0.06)' }}
       >
         <div className="flex items-center gap-5">
           {/* Avatar circle */}
@@ -273,7 +273,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             >
               {uploading ? 'Uploading…' : 'Upload photo'}
             </button>
-            <p className="text-[12px] mt-1.5" style={{ color: 'rgba(15,61,34,0.45)' }}>
+            <p className="text-[12px] mt-1.5" style={{ color: 'rgba(8,78,78,0.45)' }}>
               JPG, PNG or WebP · Max 3MB
             </p>
             {avatarError && (
@@ -294,13 +294,13 @@ export function ProfileForm({ user }: ProfileFormProps) {
       {/* ── Profile completeness bar ────────────────────────────────────── */}
       <div
         className="rounded-2xl p-5"
-        style={{ background: '#fff', border: '1.5px solid rgba(15,61,34,0.10)', boxShadow: '0 2px 16px rgba(15,61,34,0.06)' }}
+        style={{ background: '#fff', border: '1.5px solid rgba(8,78,78,0.10)', boxShadow: '0 2px 16px rgba(8,78,78,0.06)' }}
       >
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[13px] font-bold" style={{ color: '#0F3D22' }}>Profile completeness</span>
+          <span className="text-[13px] font-bold" style={{ color: '#084E4E' }}>Profile completeness</span>
           <span className="text-[13px] font-extrabold" style={{ color: '#E8621A' }}>{completeness}%</span>
         </div>
-        <div className="w-full h-2.5 rounded-full overflow-hidden" style={{ background: 'rgba(15,61,34,0.10)' }}>
+        <div className="w-full h-2.5 rounded-full overflow-hidden" style={{ background: 'rgba(8,78,78,0.10)' }}>
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
@@ -312,19 +312,19 @@ export function ProfileForm({ user }: ProfileFormProps) {
           />
         </div>
         {completeness < 100 && (
-          <p className="text-[12px] mt-2" style={{ color: 'rgba(15,61,34,0.55)' }}>{hint}</p>
+          <p className="text-[12px] mt-2" style={{ color: 'rgba(8,78,78,0.55)' }}>{hint}</p>
         )}
       </div>
 
       {/* ── Form fields ─────────────────────────────────────────────────── */}
       <div
         className="rounded-2xl p-6 space-y-5"
-        style={{ background: '#fff', border: '1.5px solid rgba(15,61,34,0.10)', boxShadow: '0 2px 16px rgba(15,61,34,0.06)' }}
+        style={{ background: '#fff', border: '1.5px solid rgba(8,78,78,0.10)', boxShadow: '0 2px 16px rgba(8,78,78,0.06)' }}
       >
 
         {/* Full name */}
         <div>
-          <label className="block text-[13px] font-bold mb-1.5" style={{ color: '#0F3D22' }}>
+          <label className="block text-[13px] font-bold mb-1.5" style={{ color: '#084E4E' }}>
             Full name
           </label>
           <input
@@ -336,17 +336,17 @@ export function ProfileForm({ user }: ProfileFormProps) {
             className="w-full px-4 py-2.5 rounded-xl text-[14px] outline-none transition-all"
             style={{
               background: '#F5F2EC',
-              border: '1.5px solid rgba(15,61,34,0.15)',
-              color: '#0F3D22',
+              border: '1.5px solid rgba(8,78,78,0.15)',
+              color: '#084E4E',
             }}
             onFocus={e => { e.currentTarget.style.borderColor = '#E8621A'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,26,0.12)' }}
-            onBlur={e => { e.currentTarget.style.borderColor = 'rgba(15,61,34,0.15)'; e.currentTarget.style.boxShadow = 'none' }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'rgba(8,78,78,0.15)'; e.currentTarget.style.boxShadow = 'none' }}
           />
         </div>
 
         {/* Bio */}
         <div>
-          <label className="block text-[13px] font-bold mb-1.5" style={{ color: '#0F3D22' }}>
+          <label className="block text-[13px] font-bold mb-1.5" style={{ color: '#084E4E' }}>
             Bio
           </label>
           <textarea
@@ -358,13 +358,13 @@ export function ProfileForm({ user }: ProfileFormProps) {
             className="w-full px-4 py-2.5 rounded-xl text-[14px] outline-none transition-all resize-none"
             style={{
               background: '#F5F2EC',
-              border: '1.5px solid rgba(15,61,34,0.15)',
-              color: '#0F3D22',
+              border: '1.5px solid rgba(8,78,78,0.15)',
+              color: '#084E4E',
             }}
             onFocus={e => { e.currentTarget.style.borderColor = '#E8621A'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,26,0.12)' }}
-            onBlur={e => { e.currentTarget.style.borderColor = 'rgba(15,61,34,0.15)'; e.currentTarget.style.boxShadow = 'none' }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'rgba(8,78,78,0.15)'; e.currentTarget.style.boxShadow = 'none' }}
           />
-          <p className="text-[12px] mt-1 text-right" style={{ color: bio.length > 450 ? '#E8621A' : 'rgba(15,61,34,0.40)' }}>
+          <p className="text-[12px] mt-1 text-right" style={{ color: bio.length > 450 ? '#E8621A' : 'rgba(8,78,78,0.40)' }}>
             {bio.length}/500
           </p>
         </div>
@@ -372,7 +372,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
         {/* Home city + country */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-[13px] font-bold mb-1.5" style={{ color: '#0F3D22' }}>
+            <label className="block text-[13px] font-bold mb-1.5" style={{ color: '#084E4E' }}>
               Home city
             </label>
             <input
@@ -382,13 +382,13 @@ export function ProfileForm({ user }: ProfileFormProps) {
               maxLength={100}
               placeholder="e.g. London"
               className="w-full px-4 py-2.5 rounded-xl text-[14px] outline-none transition-all"
-              style={{ background: '#F5F2EC', border: '1.5px solid rgba(15,61,34,0.15)', color: '#0F3D22' }}
+              style={{ background: '#F5F2EC', border: '1.5px solid rgba(8,78,78,0.15)', color: '#084E4E' }}
               onFocus={e => { e.currentTarget.style.borderColor = '#E8621A'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,26,0.12)' }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(15,61,34,0.15)'; e.currentTarget.style.boxShadow = 'none' }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(8,78,78,0.15)'; e.currentTarget.style.boxShadow = 'none' }}
             />
           </div>
           <div>
-            <label className="block text-[13px] font-bold mb-1.5" style={{ color: '#0F3D22' }}>
+            <label className="block text-[13px] font-bold mb-1.5" style={{ color: '#084E4E' }}>
               Home country
             </label>
             <input
@@ -398,16 +398,16 @@ export function ProfileForm({ user }: ProfileFormProps) {
               maxLength={100}
               placeholder="e.g. United Kingdom"
               className="w-full px-4 py-2.5 rounded-xl text-[14px] outline-none transition-all"
-              style={{ background: '#F5F2EC', border: '1.5px solid rgba(15,61,34,0.15)', color: '#0F3D22' }}
+              style={{ background: '#F5F2EC', border: '1.5px solid rgba(8,78,78,0.15)', color: '#084E4E' }}
               onFocus={e => { e.currentTarget.style.borderColor = '#E8621A'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232,98,26,0.12)' }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(15,61,34,0.15)'; e.currentTarget.style.boxShadow = 'none' }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(8,78,78,0.15)'; e.currentTarget.style.boxShadow = 'none' }}
             />
           </div>
         </div>
 
         {/* Travel style */}
         <div>
-          <label className="block text-[13px] font-bold mb-2" style={{ color: '#0F3D22' }}>
+          <label className="block text-[13px] font-bold mb-2" style={{ color: '#084E4E' }}>
             Travel style
           </label>
           <div className="flex flex-wrap gap-2">
@@ -422,7 +422,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                   style={
                     selected
                       ? { background: 'linear-gradient(135deg,#E8621A,#F5A623)', color: '#fff', boxShadow: '0 3px 12px rgba(232,98,26,0.35)' }
-                      : { background: '#F5F2EC', color: 'rgba(15,61,34,0.65)', border: '1.5px solid rgba(15,61,34,0.15)' }
+                      : { background: '#F5F2EC', color: 'rgba(8,78,78,0.65)', border: '1.5px solid rgba(8,78,78,0.15)' }
                   }
                 >
                   {TRAVEL_STYLE_LABELS[style]}
@@ -434,7 +434,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
         {/* Languages */}
         <div>
-          <label className="block text-[13px] font-bold mb-2" style={{ color: '#0F3D22' }}>
+          <label className="block text-[13px] font-bold mb-2" style={{ color: '#084E4E' }}>
             Languages I speak
           </label>
           <div className="flex flex-wrap gap-2">
@@ -449,7 +449,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                   style={
                     selected
                       ? { background: 'linear-gradient(135deg,#E8621A,#F5A623)', color: '#fff', boxShadow: '0 2px 8px rgba(232,98,26,0.35)' }
-                      : { background: '#F5F2EC', color: 'rgba(15,61,34,0.60)', border: '1.5px solid rgba(15,61,34,0.12)' }
+                      : { background: '#F5F2EC', color: 'rgba(8,78,78,0.60)', border: '1.5px solid rgba(8,78,78,0.12)' }
                   }
                 >
                   {LANGUAGE_LABELS[lang]}
@@ -461,7 +461,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
         {/* Interests */}
         <div>
-          <label className="block text-[13px] font-bold mb-2" style={{ color: '#0F3D22' }}>
+          <label className="block text-[13px] font-bold mb-2" style={{ color: '#084E4E' }}>
             Interests
           </label>
           <div className="flex flex-wrap gap-2">
@@ -476,7 +476,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                   style={
                     selected
                       ? { background: 'linear-gradient(135deg,#E8621A,#F5A623)', color: '#fff', boxShadow: '0 2px 10px rgba(232,98,26,0.35)' }
-                      : { background: '#F5F2EC', color: 'rgba(15,61,34,0.65)', border: '1.5px solid rgba(15,61,34,0.15)' }
+                      : { background: '#F5F2EC', color: 'rgba(8,78,78,0.65)', border: '1.5px solid rgba(8,78,78,0.15)' }
                   }
                 >
                   {CATEGORY_LABELS[cat]}

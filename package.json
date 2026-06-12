@@ -13,12 +13,15 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.81",
+    "@ai-sdk/react": "^3.0.199",
     "@hookform/resolvers": "^3.9.0",
     "@react-email/components": "^0.0.21",
     "@supabase/ssr": "^0.4.1",
     "@supabase/supabase-js": "^2.106.2",
     "@upstash/ratelimit": "^2.0.1",
     "@upstash/redis": "^1.31.5",
+    "ai": "^6.0.197",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",

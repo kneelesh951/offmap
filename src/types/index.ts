@@ -49,6 +49,7 @@ export interface HostSearchResult {
   responseRate: string | null
   isPremium: boolean
   isFeatured: boolean
+  idVerificationStatus?: string | null
   primaryPhotoUrl: string | null
   // User info
   fullName: string | null

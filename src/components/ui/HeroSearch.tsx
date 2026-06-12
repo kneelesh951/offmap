@@ -27,11 +27,11 @@ const fieldCls = "flex flex-col gap-0.5 px-4 py-3 hover:bg-stone-50 transition-c
 const labelCls = "text-[9px] font-bold uppercase tracking-widest"
 const inputCls: React.CSSProperties = {
   background: 'transparent', border: 'none', outline: 'none',
-  fontSize: '13px', fontWeight: 600, color: '#0F3D22',
+  fontSize: '13px', fontWeight: 600, color: '#084E4E',
   fontFamily: 'inherit', width: '100%', appearance: 'none' as const,
   cursor: 'pointer', padding: 0,
 }
-const divider = <div className="self-stretch w-px my-3 flex-shrink-0" style={{ background: 'rgba(15,61,34,0.10)' }} />
+const divider = <div className="self-stretch w-px my-3 flex-shrink-0" style={{ background: 'rgba(8,78,78,0.10)' }} />
 
 export function HeroSearch() {
   const router = useRouter()
@@ -81,12 +81,12 @@ export function HeroSearch() {
         style={{ background: '#fff', boxShadow: '0 20px 64px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.10)' }}>
 
         {/* Tabs */}
-        <div className="flex" style={{ borderBottom: '1px solid rgba(15,61,34,0.09)' }}>
+        <div className="flex" style={{ borderBottom: '1px solid rgba(8,78,78,0.09)' }}>
           {(['find', 'trip'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
               className="flex items-center gap-1.5 px-5 py-3 text-[13px] font-bold transition-all"
               style={{
-                color: tab === t ? '#E8621A' : '#4A7A5C',
+                color: tab === t ? '#E8621A' : '#4A8E8E',
                 borderBottom: tab === t ? '2px solid #E8621A' : '2px solid transparent',
                 marginBottom: '-1px',
                 background: tab === t ? 'rgba(232,98,26,0.02)' : 'transparent',
@@ -109,7 +109,7 @@ export function HeroSearch() {
                 <span className={labelCls} style={{ color: '#E8621A' }}>When</span>
                 <input type="date" value={findWhen} min={today}
                   onChange={e => setFindWhen(e.target.value)}
-                  style={{ ...inputCls, colorScheme: 'light', color: findWhen ? '#0F3D22' : '#9CAD9E' }} />
+                  style={{ ...inputCls, colorScheme: 'light', color: findWhen ? '#084E4E' : '#9CAD9E' }} />
               </div>
               {divider}
               <div className={fieldCls} style={{ minWidth: '120px' }}>
@@ -151,14 +151,14 @@ export function HeroSearch() {
                 <span className={labelCls} style={{ color: '#E8621A' }}>Arrival</span>
                 <input type="date" value={tripArrival} min={today}
                   onChange={e => setTripArrival(e.target.value)}
-                  style={{ ...inputCls, colorScheme: 'light', color: tripArrival ? '#0F3D22' : '#9CAD9E' }} />
+                  style={{ ...inputCls, colorScheme: 'light', color: tripArrival ? '#084E4E' : '#9CAD9E' }} />
               </div>
               {divider}
               <div className={fieldCls} style={{ minWidth: '110px' }}>
                 <span className={labelCls} style={{ color: '#E8621A' }}>Departure</span>
                 <input type="date" value={tripDeparture} min={tripArrival || today}
                   onChange={e => setTripDeparture(e.target.value)}
-                  style={{ ...inputCls, colorScheme: 'light', color: tripDeparture ? '#0F3D22' : '#9CAD9E' }} />
+                  style={{ ...inputCls, colorScheme: 'light', color: tripDeparture ? '#084E4E' : '#9CAD9E' }} />
               </div>
               {divider}
               <div className={fieldCls} style={{ minWidth: '110px' }}>

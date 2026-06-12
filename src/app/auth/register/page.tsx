@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff, ArrowLeft, CheckCircle2 } from 'lucide-react'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 const IS_MOCK = process.env.NEXT_PUBLIC_MOCK_MODE === 'true'
 
 export default function RegisterPage() {
@@ -63,11 +63,11 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-white">
       <div className="text-center max-w-md">
         <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
-          style={{ backgroundColor: '#EAF5EE' }}>
+          style={{ backgroundColor: '#E5F2F2' }}>
           <CheckCircle2 size={32} style={{ color: GREEN }} />
         </div>
         <h2 className="font-serif text-2xl font-bold mb-3" style={{ color: GREEN }}>Check your email</h2>
-        <p className="text-sm leading-relaxed mb-6" style={{ color: '#4A7A5C' }}>
+        <p className="text-sm leading-relaxed mb-6" style={{ color: '#4A8E8E' }}>
           We sent a confirmation link. Click it to activate your account.
         </p>
         <Link href="/auth/login" className="font-semibold hover:underline" style={{ color: '#E8621A' }}>Back to sign in</Link>
@@ -141,7 +141,7 @@ export default function RegisterPage() {
 
             <div className="mb-7">
               <h1 className="font-serif text-3xl font-bold mb-2" style={{ color: GREEN, letterSpacing: '-0.5px' }}>Create your account</h1>
-              <p className="text-sm" style={{ color: '#4A7A5C' }}>
+              <p className="text-sm" style={{ color: '#4A8E8E' }}>
                 Already have an account?{' '}
                 <Link href="/auth/login" className="font-semibold hover:underline" style={{ color: '#E8621A' }}>Sign in</Link>
               </p>
@@ -197,7 +197,7 @@ export default function RegisterPage() {
               <div className="flex items-start gap-3 py-1">
                 <input type="checkbox" id="gdpr" checked={gdpr} onChange={e => setGdpr(e.target.checked)}
                   className="mt-0.5 h-4 w-4 cursor-pointer rounded" style={{ accentColor: GREEN }} />
-                <label htmlFor="gdpr" className="text-[12px] leading-relaxed cursor-pointer" style={{ color: '#4A7A5C' }}>
+                <label htmlFor="gdpr" className="text-[12px] leading-relaxed cursor-pointer" style={{ color: '#4A8E8E' }}>
                   I agree to the{' '}
                   <Link href="/privacy" className="font-semibold underline underline-offset-2" style={{ color: '#E8621A' }}>Privacy Policy</Link>
                   {' '}and{' '}

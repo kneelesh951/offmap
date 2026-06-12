@@ -203,6 +203,16 @@ export const hostProfiles = pgTable(
     strikesResetAt: timestamp('strikes_reset_at', { withTimezone: true }),
     payoutFrozenUntil: timestamp('payout_frozen_until', { withTimezone: true }),
 
+    // ID verification (free, mandatory for hosts)
+    idDocumentUrl: text('id_document_url'),             // storage path or URL of uploaded ID
+    idDocumentType: text('id_document_type'),            // 'passport' | 'drivers_license' | 'national_id'
+    idVerificationStatus: text('id_verification_status').default('not_submitted'), // 'not_submitted' | 'pending' | 'verified' | 'rejected'
+    idVerifiedAt: timestamp('id_verified_at', { withTimezone: true }),
+    idRejectionReason: text('id_rejection_reason'),
+
+    // Intro video (optional, 30 sec max)
+    introVideoUrl: text('intro_video_url'),
+
     // Moderation
     moderationStatus: moderationStatusEnum('moderation_status')
       .default('pending')

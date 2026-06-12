@@ -2,9 +2,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { X, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
+import { X, AlertTriangle, CheckCircle, XCircle, Shield } from 'lucide-react'
 
-const GREEN  = '#0F3D22'
+const GREEN  = '#084E4E'
 const ORANGE = '#E8621A'
 
 const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
@@ -31,6 +31,7 @@ interface Booking {
   createdAt: string
   cancellationReason?: string | null
   hostId?: string
+  travelerId?: string
   conversationId?: string | null
   // Populated server-side
   travelerName?: string
@@ -43,6 +44,81 @@ interface Props {
 }
 
 function fmt(cents: number) { return `€${(cents / 100).toFixed(2)}` }
+
+// ── Accept Confirmation Modal (with safety checkboxes) ──────────────────────
+function AcceptModal({
+  booking, onClose, onAccept,
+}: {
+  booking: Booking; onClose: () => void; onAccept: () => void
+}) {
+  const [checks, setChecks] = useState([false, false, false])
+  const allChecked = checks.every(Boolean)
+  const labels = [
+    'I will do a verification call with the traveler before meeting',
+    'I will meet in a public location first',
+    'I understand I am responsible for my own safety and insurance',
+  ]
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      style={{ backgroundColor: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-black/[0.08]"
+          style={{ background: 'linear-gradient(135deg,#0C3520,#084E4E)' }}>
+          <div className="flex items-center gap-2">
+            <Shield size={18} color="#F5A623" />
+            <h2 className="font-bold text-base text-white">Accept booking</h2>
+          </div>
+          <button onClick={onClose}><X size={18} className="text-white/60 hover:text-white" /></button>
+        </div>
+        <div className="p-6 space-y-5">
+          <div className="rounded-xl p-4 space-y-3" style={{ background: '#FFFBEB', border: '1.5px solid #F59E0B' }}>
+            <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#92400E' }}>Safety checklist</p>
+            {labels.map((label, i) => (
+              <label key={i} className="flex items-start gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={checks[i]}
+                  onChange={() => setChecks(prev => prev.map((v, j) => j === i ? !v : v))}
+                  className="mt-0.5 accent-amber-600 w-4 h-4 flex-shrink-0"
+                />
+                <span className="text-[12px] leading-snug" style={{ color: '#78350F' }}>{label}</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="rounded-xl p-4" style={{ background: '#F7FAF8', border: '1.5px solid rgba(8,78,78,0.10)' }}>
+            <p className="text-[12px] leading-relaxed text-gray-500">
+              <strong style={{ color: GREEN }}>Booking details:</strong>{' '}
+              {booking.durationHours}h session · You earn {fmt(booking.hostPayoutCents)}
+              {booking.sessionDate && (
+                <> · {new Date(booking.sessionDate).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}</>
+              )}
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <button onClick={onClose} className="flex-1 py-3 rounded-full border text-sm font-semibold"
+              style={{ borderColor: 'rgba(8,78,78,0.22)', color: GREEN }}>
+              Go back
+            </button>
+            <button onClick={onAccept} disabled={!allChecked}
+              className="flex-1 py-3 rounded-full text-white text-sm font-bold disabled:opacity-40 transition-all hover:-translate-y-0.5"
+              style={{ background: `linear-gradient(135deg,#2D6A4F,#0a5e5e)`, boxShadow: allChecked ? '0 2px 12px rgba(45,106,79,0.35)' : 'none' }}>
+              Confirm acceptance
+            </button>
+          </div>
+
+          <p className="text-center text-[10px] text-gray-400">
+            By accepting, you commit to meeting the traveler safely.{' '}
+            <a href="/host-guidelines" className="underline hover:text-gray-600">Read our safety guidelines</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // ── Cancel Confirmation Modal ────────────────────────────────────────────────
 function CancelModal({
@@ -138,12 +214,12 @@ function CancelModal({
             <textarea value={reason} onChange={e => setReason(e.target.value)} rows={2} maxLength={300}
               placeholder="Let the other party know why you're cancelling…"
               className="w-full rounded-xl border px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
-              style={{ borderColor: 'rgba(15,61,34,0.18)' }} />
+              style={{ borderColor: 'rgba(8,78,78,0.18)' }} />
           </div>
           {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
           <div className="flex gap-3">
             <button onClick={onClose} className="flex-1 py-3 rounded-full border text-sm font-semibold"
-              style={{ borderColor: 'rgba(15,61,34,0.22)', color: GREEN }}>
+              style={{ borderColor: 'rgba(8,78,78,0.22)', color: GREEN }}>
               Keep booking
             </button>
             <button onClick={handleCancel} disabled={loading}
@@ -162,6 +238,7 @@ function CancelModal({
 export function BookingCard({ booking, role }: Props) {
   const router = useRouter()
   const [showCancel, setShowCancel] = useState(false)
+  const [showAccept, setShowAccept] = useState(false)
   const [acting, setActing] = useState(false)
   const [feedback, setFeedback] = useState<{ msg: string; ok: boolean } | null>(null)
 
@@ -191,12 +268,12 @@ export function BookingCard({ booking, role }: Props) {
   return (
     <>
       <div className="rounded-2xl overflow-hidden"
-        style={{ background: 'rgba(255,255,255,0.80)', border: '2px solid rgba(15,61,34,0.12)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
+        style={{ background: 'rgba(255,255,255,0.80)', border: '2px solid rgba(8,78,78,0.12)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
 
         {/* Header row */}
         <div className="flex items-center gap-3 px-5 pt-5 pb-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
-            style={{ background: 'rgba(15,61,34,0.08)', border: '1px solid rgba(15,61,34,0.12)' }}>🗓️</div>
+            style={{ background: 'rgba(8,78,78,0.08)', border: '1px solid rgba(8,78,78,0.12)' }}>🗓️</div>
           <div className="flex-1 min-w-0">
             <div className="font-bold text-[14px]" style={{ color: GREEN }}>
               {role === 'traveler' ? (
@@ -209,7 +286,17 @@ export function BookingCard({ booking, role }: Props) {
                     {otherParty ?? 'Host'}
                   </Link>
                 </>
-              ) : `Booking from ${otherParty ?? 'Traveler'}`}
+              ) : (
+                <>Booking from{' '}
+                  <Link
+                    href={booking.travelerId ? `/travelers/${booking.travelerId}` : '#'}
+                    className="underline underline-offset-2 hover:opacity-70 transition-opacity"
+                    style={{ color: GREEN }}
+                  >
+                    {otherParty ?? 'Traveler'}
+                  </Link>
+                </>
+              )}
             </div>
             <div className="text-[12px] text-gray-500">
               {booking.sessionDate
@@ -227,7 +314,7 @@ export function BookingCard({ booking, role }: Props) {
         {/* Note */}
         {booking.noteFromTraveler && (
           <div className="mx-5 mb-3 px-4 py-2.5 rounded-xl text-[12px] italic text-gray-500"
-            style={{ background: 'rgba(15,61,34,0.04)', border: '1px solid rgba(15,61,34,0.08)' }}>
+            style={{ background: 'rgba(8,78,78,0.04)', border: '1px solid rgba(8,78,78,0.08)' }}>
             "{booking.noteFromTraveler}"
           </div>
         )}
@@ -247,7 +334,7 @@ export function BookingCard({ booking, role }: Props) {
         {/* Feedback flash */}
         {feedback && (
           <div className="mx-5 mb-3 px-4 py-2.5 rounded-xl text-[12px] font-semibold flex items-center gap-2"
-            style={{ background: feedback.ok ? '#EAF5EE' : '#FEF2F2', color: feedback.ok ? GREEN : '#DC2626' }}>
+            style={{ background: feedback.ok ? '#E5F2F2' : '#FEF2F2', color: feedback.ok ? GREEN : '#DC2626' }}>
             {feedback.ok ? <CheckCircle size={14} /> : <XCircle size={14} />}
             {feedback.msg}
           </div>
@@ -259,9 +346,9 @@ export function BookingCard({ booking, role }: Props) {
             {/* HOST actions on pending */}
             {role === 'host' && booking.status === 'pending' && (
               <>
-                <button onClick={() => act('accept')} disabled={acting}
+                <button onClick={() => setShowAccept(true)} disabled={acting}
                   className="px-5 py-2 rounded-full text-white text-[13px] font-bold disabled:opacity-60 transition-all hover:-translate-y-0.5"
-                  style={{ background: `linear-gradient(135deg,#2D6A4F,#1a4a2e)`, boxShadow: '0 2px 12px rgba(45,106,79,0.35)' }}>
+                  style={{ background: `linear-gradient(135deg,#2D6A4F,#0a5e5e)`, boxShadow: '0 2px 12px rgba(45,106,79,0.35)' }}>
                   {acting ? '…' : '✓ Accept'}
                 </button>
                 <button onClick={() => act('decline')} disabled={acting}
@@ -277,7 +364,7 @@ export function BookingCard({ booking, role }: Props) {
               <Link
                 href={`/conversations/${booking.conversationId}`}
                 className="px-5 py-2 rounded-full text-[13px] font-semibold border transition-colors hover:bg-green-50 inline-flex items-center gap-1.5"
-                style={{ borderColor: 'rgba(15,61,34,0.25)', color: GREEN }}>
+                style={{ borderColor: 'rgba(8,78,78,0.25)', color: GREEN }}>
                 💬 Message host
               </Link>
             )}
@@ -318,6 +405,14 @@ export function BookingCard({ booking, role }: Props) {
           </div>
         )}
       </div>
+
+      {showAccept && (
+        <AcceptModal
+          booking={booking}
+          onClose={() => setShowAccept(false)}
+          onAccept={() => { setShowAccept(false); act('accept') }}
+        />
+      )}
 
       {showCancel && (
         <CancelModal

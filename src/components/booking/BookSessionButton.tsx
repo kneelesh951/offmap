@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Calendar, Clock, ChevronDown, ChevronUp, X, MapPin } from 'lucide-react'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 const ORANGE = '#E8621A'
 const SERVICE_FEE_PCT = 5
 const COMMISSION_PCT = 15
@@ -38,6 +38,8 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [safetyChecks, setSafetyChecks] = useState([false, false, false])
+  const allSafetyChecked = safetyChecks.every(Boolean)
 
   const baseAmount     = sessionRateCents * duration
   const serviceFee     = Math.round(baseAmount * SERVICE_FEE_PCT / 100)
@@ -107,14 +109,14 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
       {/* Modal overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-[80px]"
           style={{ backgroundColor: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
           onClick={e => { if (e.target === e.currentTarget) setOpen(false) }}
         >
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden">
+          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col" style={{ maxHeight: 'calc(100vh - 160px)' }}>
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-black/[0.08]"
-              style={{ background: 'linear-gradient(135deg,#0C3520,#0F3D22)' }}>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-black/[0.08] flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg,#0C3520,#084E4E)' }}>
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: 'rgba(245,166,35,0.85)' }}>Book a session</p>
                 <h2 className="font-serif text-lg font-bold text-white">with {hostName}</h2>
@@ -124,7 +126,7 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
               </button>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-6 space-y-5 overflow-y-auto flex-1">
               {success ? (
                 <div className="text-center py-6">
                   <div className="text-4xl mb-3">🎉</div>
@@ -150,7 +152,7 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
                         min={minDate()}
                         onChange={e => setSessionDate(e.target.value)}
                         className="w-full rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                        style={{ borderColor: 'rgba(15,61,34,0.18)', color: GREEN }}
+                        style={{ borderColor: 'rgba(8,78,78,0.18)', color: GREEN }}
                       />
                     </div>
                     <div>
@@ -162,7 +164,7 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
                         value={sessionTime}
                         onChange={e => setSessionTime(e.target.value)}
                         className="w-full rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                        style={{ borderColor: 'rgba(15,61,34,0.18)', color: GREEN }}
+                        style={{ borderColor: 'rgba(8,78,78,0.18)', color: GREEN }}
                       />
                     </div>
                   </div>
@@ -175,7 +177,7 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
                     <div className="flex items-center gap-3">
                       <button onClick={() => setDuration(d => Math.max(1, d - 1))}
                         className="w-9 h-9 rounded-full border-2 flex items-center justify-center font-bold transition-colors hover:border-orange-400"
-                        style={{ borderColor: 'rgba(15,61,34,0.20)', color: GREEN }}>
+                        style={{ borderColor: 'rgba(8,78,78,0.20)', color: GREEN }}>
                         <ChevronDown size={16} />
                       </button>
                       <span className="font-serif text-2xl font-bold w-16 text-center" style={{ color: GREEN }}>
@@ -183,7 +185,7 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
                       </span>
                       <button onClick={() => setDuration(d => Math.min(8, d + 1))}
                         className="w-9 h-9 rounded-full border-2 flex items-center justify-center font-bold transition-colors hover:border-orange-400"
-                        style={{ borderColor: 'rgba(15,61,34,0.20)', color: GREEN }}>
+                        style={{ borderColor: 'rgba(8,78,78,0.20)', color: GREEN }}>
                         <ChevronUp size={16} />
                       </button>
                       <span className="text-sm text-gray-400 ml-1">max 8h</span>
@@ -202,7 +204,7 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
                       maxLength={150}
                       placeholder="e.g. street food, hidden bars, local markets, history…"
                       className="w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                      style={{ borderColor: 'rgba(15,61,34,0.18)' }}
+                      style={{ borderColor: 'rgba(8,78,78,0.18)' }}
                     />
                   </div>
 
@@ -218,7 +220,7 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
                       maxLength={150}
                       placeholder="e.g. my hotel lobby, a metro station, city centre…"
                       className="w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                      style={{ borderColor: 'rgba(15,61,34,0.18)' }}
+                      style={{ borderColor: 'rgba(8,78,78,0.18)' }}
                     />
                   </div>
 
@@ -234,12 +236,12 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
                       rows={2}
                       placeholder="Dietary restrictions, mobility needs, group size, languages…"
                       className="w-full rounded-xl border px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
-                      style={{ borderColor: 'rgba(15,61,34,0.18)' }}
+                      style={{ borderColor: 'rgba(8,78,78,0.18)' }}
                     />
                   </div>
 
                   {/* Fee breakdown */}
-                  <div className="rounded-xl p-4 space-y-2" style={{ background: '#F9F7F4', border: '1.5px solid rgba(15,61,34,0.10)' }}>
+                  <div className="rounded-xl p-4 space-y-2" style={{ background: '#F9F7F4', border: '1.5px solid rgba(8,78,78,0.10)' }}>
                     <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: GREEN }}>Price breakdown</p>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Session rate ({duration}h × {formatCents(sessionRateCents)})</span>
@@ -258,6 +260,26 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
                     </p>
                   </div>
 
+                  {/* Safety acknowledgment */}
+                  <div className="rounded-xl p-4 space-y-3" style={{ background: '#FFFBEB', border: '1.5px solid #F59E0B' }}>
+                    <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#92400E' }}>Safety checklist</p>
+                    {[
+                      'I will verify my host via a call and meet in a public place',
+                      'I have shared (or will share) my plans with someone I trust',
+                      'I understand Offmap cannot track or mediate in-person meetups',
+                    ].map((label, i) => (
+                      <label key={i} className="flex items-start gap-2.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={safetyChecks[i]}
+                          onChange={() => setSafetyChecks(prev => prev.map((v, j) => j === i ? !v : v))}
+                          className="mt-0.5 accent-amber-600 w-4 h-4 flex-shrink-0"
+                        />
+                        <span className="text-[12px] leading-snug" style={{ color: '#78350F' }}>{label}</span>
+                      </label>
+                    ))}
+                  </div>
+
                   {error && (
                     <div className="text-[13px] px-4 py-3 rounded-xl font-medium"
                       style={{ backgroundColor: '#FEF2F2', border: '1px solid rgba(220,38,38,0.20)', color: '#DC2626' }}>
@@ -268,7 +290,7 @@ export function BookSessionButton({ hostUserId, hostName, sessionRateCents, conv
                   {/* Confirm button */}
                   <button
                     onClick={handleBook}
-                    disabled={loading}
+                    disabled={loading || !allSafetyChecked}
                     className="w-full py-4 rounded-full text-white font-bold text-[14px] disabled:opacity-60 transition-all hover:-translate-y-0.5"
                     style={{ background: `linear-gradient(135deg,${ORANGE},#F07830)`, boxShadow: '0 4px 24px rgba(232,98,26,0.40)' }}
                   >

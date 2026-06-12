@@ -21,7 +21,7 @@ export function DateInput({ label, value, onChange, min, max, required, error }:
 
   return (
     <div>
-      <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px', color: '#0F3D22', fontSize: '14px', letterSpacing: '-0.01em' }}>
+      <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px', color: '#084E4E', fontSize: '14px', letterSpacing: '-0.01em' }}>
         {label}
         {required && <span style={{ color: '#E8621A', marginLeft: '3px' }}>*</span>}
       </label>
@@ -37,10 +37,10 @@ export function DateInput({ label, value, onChange, min, max, required, error }:
           width: '100%',
           padding: '13px 44px 13px 16px',
           borderRadius: '12px',
-          border: error ? '2px solid #dc2626' : value ? '2px solid #0F3D22' : '2px solid #d1d5db',
+          border: error ? '2px solid #dc2626' : value ? '2px solid #084E4E' : '2px solid #d1d5db',
           fontSize: '15px',
           fontWeight: 600,
-          color: value ? '#0F3D22' : '#9ca3af',
+          color: value ? '#084E4E' : '#9ca3af',
           backgroundColor: '#fff',
           transition: 'all 0.2s',
           minHeight: '48px',
@@ -58,7 +58,7 @@ export function DateInput({ label, value, onChange, min, max, required, error }:
           top: '50%',
           transform: 'translateY(-50%)',
           pointerEvents: 'none',
-          color: value ? '#0F3D22' : '#9ca3af',
+          color: value ? '#084E4E' : '#9ca3af',
           display: 'flex',
           alignItems: 'center',
         }}>

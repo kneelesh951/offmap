@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
+const TEAL_DARK = '#063B3B'
 const TERRA = '#E8621A'
 
 const CATEGORIES = [
@@ -17,12 +18,12 @@ const CATEGORIES = [
 ]
 
 const HOST_TYPES = [
-  { value: 'any',    label: 'Any' },
-  { value: 'male',   label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'couple', label: 'Couple' },
-  { value: 'family', label: 'Family' },
-  { value: 'group',  label: 'Group' },
+  { value: 'any',    label: 'Any',    icon: '🌍' },
+  { value: 'male',   label: 'Male',   icon: '👨' },
+  { value: 'female', label: 'Female', icon: '👩' },
+  { value: 'couple', label: 'Couple', icon: '👫' },
+  { value: 'family', label: 'Family', icon: '👨‍👩‍👧' },
+  { value: 'group',  label: 'Group',  icon: '👥' },
 ]
 
 type City = { id: string; name: string; country: string; flagEmoji: string; hostCount: number }
@@ -92,14 +93,14 @@ function CityAutocomplete({ value, onChange, cities }: { value: string; onChange
         onKeyDown={handleKey}
         style={{
           width: '100%', padding: '14px 44px 14px 16px', borderRadius: '14px', boxSizing: 'border-box',
-          border: `2px solid ${value ? GREEN : 'rgba(15,61,34,0.15)'}`,
+          border: `2px solid ${value ? GREEN : 'rgba(8,78,78,0.15)'}`,
           fontSize: '15px', fontWeight: 600, outline: 'none',
-          background: value ? '#EAF5EE' : '#FAFAF8', color: GREEN,
+          background: value ? '#E5F2F2' : '#FAFAF8', color: GREEN,
           fontFamily: 'inherit', transition: 'all 0.2s',
         }}
       />
       {/* chevron / clear icon */}
-      <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', fontSize: '16px', color: 'rgba(15,61,34,0.45)' }}>
+      <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', fontSize: '16px', color: 'rgba(8,78,78,0.45)' }}>
         {value ? '✓' : '⌄'}
       </span>
 
@@ -108,7 +109,7 @@ function CityAutocomplete({ value, onChange, cities }: { value: string; onChange
           role="listbox"
           style={{
             position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, zIndex: 50,
-            background: '#fff', borderRadius: '14px', border: '2px solid rgba(15,61,34,0.12)',
+            background: '#fff', borderRadius: '14px', border: '2px solid rgba(8,78,78,0.12)',
             boxShadow: '0 12px 40px rgba(0,0,0,0.13)', padding: '6px', margin: 0, listStyle: 'none',
             maxHeight: '220px', overflowY: 'auto',
           }}>
@@ -122,7 +123,7 @@ function CityAutocomplete({ value, onChange, cities }: { value: string; onChange
               style={{
                 padding: '10px 14px', borderRadius: '10px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: '10px',
-                background: idx === activeIdx ? '#EAF5EE' : city.id === value ? 'rgba(15,61,34,0.06)' : 'transparent',
+                background: idx === activeIdx ? '#E5F2F2' : city.id === value ? 'rgba(8,78,78,0.06)' : 'transparent',
                 transition: 'background 0.1s',
               }}>
               <span style={{ fontSize: '20px', flexShrink: 0 }}>{city.flagEmoji}</span>
@@ -139,7 +140,7 @@ function CityAutocomplete({ value, onChange, cities }: { value: string; onChange
       {open && filtered.length === 0 && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, zIndex: 50,
-          background: '#fff', borderRadius: '14px', border: '2px solid rgba(15,61,34,0.12)',
+          background: '#fff', borderRadius: '14px', border: '2px solid rgba(8,78,78,0.12)',
           boxShadow: '0 12px 40px rgba(0,0,0,0.13)', padding: '16px',
           fontSize: '13px', color: '#6B8F7A', fontWeight: 600, textAlign: 'center',
         }}>
@@ -156,6 +157,7 @@ export default function PostTripPage() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [posted, setPosted] = useState(false)
   const [cities, setCities] = useState<City[]>([])
 
   useEffect(() => {
@@ -214,8 +216,18 @@ export default function PostTripPage() {
         }),
       })
       const json = await res.json()
-      if (!res.ok) { setError(json.error?.message ?? 'Something went wrong'); setLoading(false); return }
-      router.push('/trips')
+      if (!res.ok) {
+        // If not authenticated, redirect to login
+        if (res.status === 401) {
+          router.push('/auth/login?redirect=/trips/post')
+          return
+        }
+        setError(json.error?.message ?? 'Something went wrong')
+        setLoading(false)
+        return
+      }
+      setPosted(true)
+      setLoading(false)
     } catch {
       setError('Network error — please try again')
       setLoading(false)
@@ -234,7 +246,7 @@ export default function PostTripPage() {
           alt="European city"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(15,61,34,0.82) 0%, rgba(15,61,34,0.55) 50%, rgba(10,30,18,0.88) 100%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(8,78,78,0.82) 0%, rgba(8,78,78,0.55) 50%, rgba(10,30,18,0.88) 100%)' }} />
 
         {/* Content over image */}
         <div className="relative z-10 flex flex-col justify-between h-full p-12 pt-24">
@@ -275,6 +287,98 @@ export default function PostTripPage() {
       <div className="flex-1 flex flex-col overflow-y-auto" style={{ background: '#F4F0EB', paddingTop: '80px' }}>
         <div style={{ maxWidth: '520px', margin: '0 auto', padding: '40px 28px 60px', width: '100%' }}>
 
+          {/* ── Success confirmation ── */}
+          {posted && (
+            <div style={{ textAlign: 'center', paddingTop: '40px' }}>
+              <div style={{
+                width: '88px', height: '88px', borderRadius: '50%', margin: '0 auto 24px',
+                background: 'linear-gradient(135deg, #2D6A4F, #40916C)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 8px 32px rgba(45,106,79,0.35)',
+                animation: 'popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+
+              <h2 className="font-serif" style={{ fontSize: '32px', fontWeight: 800, color: GREEN, letterSpacing: '-0.03em', marginBottom: '10px' }}>
+                Trip posted!
+              </h2>
+              <p style={{ fontSize: '15px', color: '#6B8F7A', fontWeight: 500, lineHeight: 1.6, maxWidth: '360px', margin: '0 auto 8px' }}>
+                Your trip to <strong style={{ color: GREEN }}>{cities.find(c => c.id === form.cityId)?.name ?? 'your destination'}</strong> is now live.
+                Local hosts in the area will see your request and can respond directly.
+              </p>
+              <p style={{ fontSize: '13px', color: '#6B8F7A', fontWeight: 600, marginBottom: '32px' }}>
+                Hosts typically reply within 4 minutes.
+              </p>
+
+              {/* Trip summary card */}
+              <div style={{
+                borderRadius: '20px', padding: '24px', textAlign: 'left', margin: '0 auto 32px',
+                background: 'linear-gradient(135deg, #E5F2F2, #F0FAF4)',
+                border: '1.5px solid rgba(8,78,78,0.12)', maxWidth: '380px',
+              }}>
+                <p style={{ fontWeight: 800, color: GREEN, marginBottom: '14px', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Trip details
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px', color: GREEN, fontWeight: 600 }}>
+                  <div className="flex items-center gap-2">
+                    <span>📍</span>
+                    <span>{cities.find(c => c.id === form.cityId)?.name ?? '—'}, {cities.find(c => c.id === form.cityId)?.country ?? ''}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span>🗓️</span>
+                    <span>{form.arrivalDate} → {form.departureDate}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span>👥</span>
+                    <span>{form.numTravelers} traveler{form.numTravelers > 1 ? 's' : ''}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span>🏷️</span>
+                    <span>{form.categories.map(c => CATEGORIES.find(cat => cat.value === c)?.label.replace(/^\S+\s/, '') ?? c).join(', ')}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
+                <button
+                  onClick={() => router.push('/trips')}
+                  style={{
+                    padding: '14px 40px', borderRadius: '14px', border: 'none', cursor: 'pointer',
+                    fontWeight: 800, fontSize: '15px', color: '#fff',
+                    background: `linear-gradient(135deg, ${TERRA}, #F07830)`,
+                    boxShadow: '0 6px 20px rgba(232,98,26,0.35)',
+                    transition: 'all 0.2s',
+                  }}>
+                  View My Trips →
+                </button>
+                <button
+                  onClick={() => router.push('/search')}
+                  style={{
+                    padding: '12px 32px', borderRadius: '14px',
+                    border: `2px solid ${GREEN}`, background: 'transparent',
+                    cursor: 'pointer', fontWeight: 700, fontSize: '14px', color: GREEN,
+                    transition: 'all 0.2s',
+                  }}>
+                  Browse Hosts in {cities.find(c => c.id === form.cityId)?.name ?? 'the city'}
+                </button>
+              </div>
+
+              <style>{`
+                @keyframes popIn {
+                  0% { transform: scale(0); opacity: 0; }
+                  100% { transform: scale(1); opacity: 1; }
+                }
+              `}</style>
+            </div>
+          )}
+
+          {/* ── Form (hidden after posting) ── */}
+          {!posted && <>
+
           {/* Back link */}
           <Link href="/dashboard"
             className="inline-flex items-center gap-2 text-[13px] font-semibold mb-8 hover:opacity-70 transition-opacity"
@@ -295,7 +399,7 @@ export default function PostTripPage() {
                       className="flex items-center justify-center font-bold text-[13px] transition-all"
                       style={{
                         width: '32px', height: '32px', borderRadius: '50%',
-                        background: done ? TERRA : active ? GREEN : 'rgba(15,61,34,0.12)',
+                        background: done ? TERRA : active ? GREEN : 'rgba(8,78,78,0.12)',
                         color: (done || active) ? '#fff' : '#6B8F7A',
                         flexShrink: 0,
                       }}>
@@ -307,7 +411,7 @@ export default function PostTripPage() {
                     </span>
                   </div>
                   {s < 3 && (
-                    <div className="mx-3" style={{ height: '2px', width: '28px', borderRadius: '1px', background: s < step ? TERRA : 'rgba(15,61,34,0.15)', flexShrink: 0 }} />
+                    <div className="mx-3" style={{ height: '2px', width: '28px', borderRadius: '1px', background: s < step ? TERRA : 'rgba(8,78,78,0.15)', flexShrink: 0 }} />
                   )}
                 </div>
               )
@@ -315,7 +419,7 @@ export default function PostTripPage() {
           </div>
 
           {/* Form card */}
-          <div style={{ background: '#fff', borderRadius: '24px', padding: '36px', boxShadow: '0 8px 40px rgba(0,0,0,0.10)', border: '1px solid rgba(15,61,34,0.07)' }}>
+          <div style={{ background: '#fff', borderRadius: '24px', padding: '36px', boxShadow: '0 8px 40px rgba(0,0,0,0.10)', border: '1px solid rgba(8,78,78,0.07)' }}>
 
             {/* Step 1 */}
             {step === 1 && (
@@ -345,7 +449,8 @@ export default function PostTripPage() {
                         min={field.min}
                         value={(form as any)[field.key]}
                         onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))}
-                        style={{ width: '100%', padding: '14px 16px', borderRadius: '14px', border: `2px solid ${(form as any)[field.key] ? GREEN : 'rgba(15,61,34,0.15)'}`, fontSize: '14px', fontWeight: 600, outline: 'none', background: (form as any)[field.key] ? '#EAF5EE' : '#FAFAF8', color: GREEN, fontFamily: 'inherit', colorScheme: 'light', cursor: 'pointer', boxSizing: 'border-box', transition: 'all 0.2s' }}
+                        className="date-input-styled"
+                        style={{ width: '100%', padding: '14px 16px', borderRadius: '14px', border: `2px solid ${(form as any)[field.key] ? GREEN : 'rgba(8,78,78,0.15)'}`, fontSize: '15px', fontWeight: 700, outline: 'none', background: (form as any)[field.key] ? '#E5F2F2' : '#FAFAF8', color: TEAL_DARK, fontFamily: 'inherit', colorScheme: 'light', cursor: 'pointer', boxSizing: 'border-box', transition: 'all 0.2s', letterSpacing: '0.02em' }}
                       />
                     </div>
                   ))}
@@ -361,7 +466,7 @@ export default function PostTripPage() {
                         onClick={() => setForm(f => ({ ...f, numTravelers: n }))}
                         style={{
                           width: '48px', height: '48px', borderRadius: '14px', border: '2px solid',
-                          borderColor: form.numTravelers === n ? GREEN : 'rgba(15,61,34,0.15)',
+                          borderColor: form.numTravelers === n ? GREEN : 'rgba(8,78,78,0.15)',
                           background: form.numTravelers === n ? GREEN : '#FAFAF8',
                           color: form.numTravelers === n ? '#fff' : GREEN,
                           fontWeight: 800, fontSize: '15px', cursor: 'pointer', transition: 'all 0.15s',
@@ -388,7 +493,7 @@ export default function PostTripPage() {
                         onClick={() => setForm(f => ({ ...f, categories: toggleArray(f.categories, c.value) }))}
                         style={{
                           padding: '10px 18px', borderRadius: '999px', border: '2px solid',
-                          borderColor: form.categories.includes(c.value) ? TERRA : 'rgba(15,61,34,0.15)',
+                          borderColor: form.categories.includes(c.value) ? TERRA : 'rgba(8,78,78,0.15)',
                           background: form.categories.includes(c.value) ? 'rgba(232,98,26,0.08)' : '#FAFAF8',
                           color: form.categories.includes(c.value) ? TERRA : GREEN,
                           fontWeight: 700, fontSize: '13px', cursor: 'pointer', transition: 'all 0.15s',
@@ -405,19 +510,25 @@ export default function PostTripPage() {
                   </label>
                   <p style={{ fontSize: '12px', color: '#6B8F7A', fontWeight: 500, marginBottom: '14px' }}>Optional</p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                    {HOST_TYPES.map(h => (
-                      <button key={h.value} type="button"
-                        onClick={() => setForm(f => ({ ...f, hostTypePreference: h.value }))}
-                        style={{
-                          padding: '10px 18px', borderRadius: '999px', border: '2px solid',
-                          borderColor: form.hostTypePreference === h.value ? GREEN : 'rgba(15,61,34,0.15)',
-                          background: form.hostTypePreference === h.value ? GREEN : '#FAFAF8',
-                          color: form.hostTypePreference === h.value ? '#fff' : GREEN,
-                          fontWeight: 700, fontSize: '13px', cursor: 'pointer', transition: 'all 0.15s',
-                        }}>
-                        {h.label}
-                      </button>
-                    ))}
+                    {HOST_TYPES.map(h => {
+                      const selected = form.hostTypePreference === h.value
+                      return (
+                        <button key={h.value} type="button"
+                          onClick={() => setForm(f => ({ ...f, hostTypePreference: h.value }))}
+                          style={{
+                            padding: '12px 20px', borderRadius: '16px', border: '2px solid',
+                            borderColor: selected ? GREEN : 'rgba(8,78,78,0.15)',
+                            background: selected ? GREEN : '#FAFAF8',
+                            color: selected ? '#fff' : GREEN,
+                            fontWeight: 700, fontSize: '13px', cursor: 'pointer', transition: 'all 0.15s',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+                            minWidth: '72px',
+                          }}>
+                          <span style={{ fontSize: '22px', lineHeight: 1 }}>{h.icon}</span>
+                          <span>{h.label}</span>
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -437,7 +548,7 @@ export default function PostTripPage() {
                     value={form.noteToHosts}
                     maxLength={200}
                     onChange={e => setForm(f => ({ ...f, noteToHosts: e.target.value }))}
-                    style={{ width: '100%', padding: '14px 16px', borderRadius: '14px', border: '2px solid rgba(15,61,34,0.15)', fontSize: '14px', fontWeight: 500, outline: 'none', background: '#FAFAF8', color: GREEN, fontFamily: 'inherit', lineHeight: 1.6, resize: 'vertical', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '14px 16px', borderRadius: '14px', border: '2px solid rgba(8,78,78,0.15)', fontSize: '14px', fontWeight: 500, outline: 'none', background: '#FAFAF8', color: GREEN, fontFamily: 'inherit', lineHeight: 1.6, resize: 'vertical', boxSizing: 'border-box' }}
                   />
                 </div>
 
@@ -451,12 +562,12 @@ export default function PostTripPage() {
                     placeholder="e.g. €50–€100 per person, flexible"
                     value={form.budgetRange}
                     onChange={e => setForm(f => ({ ...f, budgetRange: e.target.value }))}
-                    style={{ width: '100%', padding: '14px 16px', borderRadius: '14px', border: '2px solid rgba(15,61,34,0.15)', fontSize: '14px', fontWeight: 500, outline: 'none', background: '#FAFAF8', color: GREEN, fontFamily: 'inherit', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '14px 16px', borderRadius: '14px', border: '2px solid rgba(8,78,78,0.15)', fontSize: '14px', fontWeight: 500, outline: 'none', background: '#FAFAF8', color: GREEN, fontFamily: 'inherit', boxSizing: 'border-box' }}
                   />
                 </div>
 
                 {/* Summary */}
-                <div style={{ borderRadius: '16px', padding: '20px', background: 'linear-gradient(135deg, #EAF5EE, #F0FAF4)', border: '1.5px solid rgba(15,61,34,0.12)' }}>
+                <div style={{ borderRadius: '16px', padding: '20px', background: 'linear-gradient(135deg, #E5F2F2, #F0FAF4)', border: '1.5px solid rgba(8,78,78,0.12)' }}>
                   <p style={{ fontWeight: 800, color: GREEN, marginBottom: '14px', fontSize: '14px', fontFamily: 'var(--font-fraunces), Georgia, serif', letterSpacing: '-0.01em' }}>
                     📋 Your trip summary
                   </p>
@@ -483,7 +594,7 @@ export default function PostTripPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '32px', alignItems: 'center' }}>
               {step > 1 ? (
                 <button onClick={() => setStep(s => s - 1)}
-                  style={{ padding: '12px 24px', borderRadius: '12px', border: '2px solid rgba(15,61,34,0.20)', background: '#fff', cursor: 'pointer', fontWeight: 700, color: GREEN, fontSize: '14px', transition: 'all 0.2s' }}>
+                  style={{ padding: '12px 24px', borderRadius: '12px', border: '2px solid rgba(8,78,78,0.20)', background: '#fff', cursor: 'pointer', fontWeight: 700, color: GREEN, fontSize: '14px', transition: 'all 0.2s' }}>
                   ← Back
                 </button>
               ) : <div />}
@@ -515,6 +626,8 @@ export default function PostTripPage() {
           <p style={{ textAlign: 'center', color: '#6B8F7A', fontSize: '13px', fontWeight: 600, marginTop: '20px' }}>
             Posting is free · Subscribe from €6 to read host responses
           </p>
+
+          </>}
         </div>
       </div>
     </div>

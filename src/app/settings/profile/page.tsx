@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import Link from 'next/link'
+import { SettingsSidebar } from '@/components/settings/SettingsSidebar'
 import { ProfileForm } from '@/components/settings/ProfileForm'
 import type { SessionUser } from '@/types'
 
@@ -83,13 +83,6 @@ export default async function ProfileSettingsPage() {
 
   if (!userData || !sessionUser) redirect('/auth/login?redirect=/settings/profile')
 
-  const SIDEBAR_TABS = [
-    { label: 'Profile', href: '/settings/profile', active: true, disabled: false },
-    { label: 'Account', href: '/settings/account', active: false, disabled: true },
-    { label: 'Subscription', href: '/pricing', active: false, disabled: false },
-    { label: 'Privacy', href: '/settings/privacy', active: false, disabled: true },
-  ]
-
   return (
     <>
       <Navbar user={sessionUser} />
@@ -98,7 +91,7 @@ export default async function ProfileSettingsPage() {
         {/* Header band */}
         <div
           className="relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg,#0C3520 0%,#0F3D22 60%,#1a4a2e 100%)' }}
+          style={{ background: 'linear-gradient(135deg,#0C3520 0%,#084E4E 60%,#0a5e5e 100%)' }}
         >
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -121,48 +114,7 @@ export default async function ProfileSettingsPage() {
 
         <div className="max-w-5xl mx-auto px-5 md:px-11 py-8">
           <div className="flex gap-8 items-start">
-
-            {/* Sidebar */}
-            <aside className="hidden md:flex flex-col gap-1 w-52 flex-shrink-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3 px-3" style={{ color: 'rgba(15,61,34,0.45)' }}>
-                Settings
-              </p>
-              {SIDEBAR_TABS.map((tab) => (
-                tab.disabled ? (
-                  <span
-                    key={tab.label}
-                    className="flex items-center px-4 py-2.5 rounded-xl text-[14px] font-medium cursor-not-allowed"
-                    style={{ color: 'rgba(15,61,34,0.30)' }}
-                  >
-                    {tab.label}
-                    <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: 'rgba(15,61,34,0.08)', color: 'rgba(15,61,34,0.35)' }}>
-                      soon
-                    </span>
-                  </span>
-                ) : (
-                  <Link
-                    key={tab.label}
-                    href={tab.href}
-                    className="flex items-center px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-all"
-                    style={
-                      tab.active
-                        ? {
-                            background: '#0F3D22',
-                            color: '#fff',
-                            boxShadow: '0 2px 8px rgba(15,61,34,0.25)',
-                          }
-                        : {
-                            color: 'rgba(15,61,34,0.70)',
-                          }
-                    }
-                  >
-                    {tab.label}
-                  </Link>
-                )
-              ))}
-            </aside>
-
-            {/* Main content */}
+            <SettingsSidebar active="profile" />
             <div className="flex-1 min-w-0">
               <ProfileForm user={userData} />
             </div>

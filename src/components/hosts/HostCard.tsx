@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { Star, Heart, MapPin } from 'lucide-react'
+import { Star, Heart, MapPin, Shield } from 'lucide-react'
 import { formatCents, formatRating, getInitials } from '@/lib/utils'
 import type { HostSearchResult } from '@/types'
 
@@ -51,12 +51,12 @@ export function HostCard({ host }: HostCardProps) {
   const gradient = CITY_GRADIENTS[host.cityId] ?? 'from-terra via-terra-dark to-amber-800'
 
   return (
-    <Link href={`/hosts/${host.userId}`} className="block group">
+    <Link href={`/hosts/${host.userId}`} className="block group h-full">
       <div
-        className="bg-white rounded-2xl overflow-hidden card-hover"
+        className="rounded-2xl overflow-hidden card-hover h-full flex flex-col"
         style={{
-          border: '1px solid rgba(15,61,34,0.08)',
-          boxShadow: '0 2px 8px rgba(15,61,34,0.07), 0 1px 2px rgba(15,61,34,0.04)',
+          border: '1px solid rgba(17,80,104,0.25)',
+          boxShadow: '0 4px 16px rgba(12,53,71,0.20), 0 1px 4px rgba(12,53,71,0.10)',
         }}
       >
         {/* ── Photo / cover ──────────────────────────────── */}
@@ -124,26 +124,34 @@ export function HostCard({ host }: HostCardProps) {
         </div>
 
         {/* ── Body ───────────────────────────────────────── */}
-        <div className="pt-8 px-4 pb-4">
-          <div className="font-serif text-[17px] font-bold text-ink leading-tight group-hover:text-ink-mid transition-colors">
-            {host.fullName ?? 'Local host'}
+        <div className="pt-8 px-4 pb-4 flex-1 flex flex-col" style={{ background: 'linear-gradient(160deg, #0C3547, #0E4155, #115068)', borderTop: '2px solid rgba(255,255,255,0.12)' }}>
+          <div className="flex items-center gap-2">
+            <div className="font-serif text-[17px] font-bold leading-tight" style={{ color: '#fff' }}>
+              {host.fullName ?? 'Local host'}
+            </div>
+            {host.idVerificationStatus === 'verified' && (
+              <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(184,134,11,0.25)', border: '1px solid rgba(184,134,11,0.40)' }}>
+                <Shield size={9} style={{ color: '#F5D060' }} />
+                <span className="text-[9px] font-bold" style={{ color: '#F5D060' }}>ID</span>
+              </div>
+            )}
           </div>
 
           {host.headline && (
-            <p className="text-[12px] text-ink-soft mt-0.5 leading-snug line-clamp-2">
+            <p className="text-[12.5px] mt-0.5 leading-snug line-clamp-2" style={{ color: 'rgba(255,255,255,0.82)', fontWeight: 500 }}>
               {host.headline}
             </p>
           )}
 
           {host.neighborhood && (
-            <div className="flex items-center gap-1 mt-1.5 text-[11px] text-ink-muted font-medium">
-              <MapPin size={10} className="text-terra/70" />
+            <div className="flex items-center gap-1 mt-1.5 text-[11.5px] font-semibold" style={{ color: 'rgba(255,255,255,0.70)' }}>
+              <MapPin size={10} style={{ color: '#F5A623' }} />
               {host.neighborhood}
               {host.isFeatured && <span className="ml-0.5">{host.flagEmoji} {host.cityName}</span>}
             </div>
           )}
 
-          <div className="text-[11px] font-semibold text-ink-muted mt-1.5 tracking-wide">
+          <div className="text-[11.5px] font-semibold mt-1.5 tracking-wide" style={{ color: 'rgba(255,255,255,0.65)' }}>
             {host.languages.slice(0, 5).map(l => l.toUpperCase()).join(' · ')}
           </div>
 
@@ -151,22 +159,23 @@ export function HostCard({ host }: HostCardProps) {
             {host.categories.slice(0, 3).map(cat => (
               <span
                 key={cat}
-                className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${CATEGORY_COLORS[cat] ?? 'bg-sand text-ink-mid border border-black/10'}`}
+                className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
+                style={{ background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.90)', border: '1px solid rgba(255,255,255,0.20)' }}
               >
                 {cat.replace('-', ' ')}
               </span>
             ))}
           </div>
 
-          <div className="flex items-center justify-between mt-3 pt-3 border-t border-black/[0.06]">
-            <div className="text-[13px] font-bold text-terra">
+          <div className="flex items-center justify-between mt-auto pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.10)' }}>
+            <div className="text-[13px] font-bold" style={{ color: '#F5A623' }}>
               {formatCents(host.hourlyRateCents)}
               {host.hourlyRateCents
-                ? <span className="text-ink-muted font-normal text-[11px] ml-1">/hr</span>
-                : <span className="text-ink-muted font-normal text-[11px]">Rate on request</span>}
+                ? <span className="font-normal text-[11px] ml-1" style={{ color: 'rgba(255,255,255,0.60)' }}>/hr</span>
+                : <span className="font-normal text-[11px]" style={{ color: 'rgba(255,255,255,0.60)' }}>Rate on request</span>}
             </div>
             <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
-              style={{ backgroundColor: '#EAF5EE', color: '#1E6038', border: '1px solid rgba(15,61,34,0.12)' }}>
+              style={{ background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.90)', border: '1px solid rgba(255,255,255,0.22)' }}>
               Free to browse
             </span>
           </div>

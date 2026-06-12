@@ -4,7 +4,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import Link from 'next/link'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 export default async function ConversationsPage() {
   const isMock = process.env.MOCK_MODE === 'true'
@@ -64,10 +64,10 @@ export default async function ConversationsPage() {
           <h1 className="font-serif text-3xl font-bold mb-6" style={{ color: GREEN, letterSpacing: '-0.5px' }}>Conversations</h1>
 
           {convs.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-2xl" style={{ border: '1px solid rgba(15,61,34,0.10)' }}>
+            <div className="text-center py-20 bg-white rounded-2xl" style={{ border: '1px solid rgba(8,78,78,0.10)' }}>
               <div className="text-5xl mb-4">💬</div>
               <h3 className="font-serif text-xl font-bold mb-2" style={{ color: GREEN }}>No conversations yet</h3>
-              <p className="text-sm font-medium mb-6" style={{ color: '#2D6B3F' }}>Subscribe to connect with a local host</p>
+              <p className="text-sm font-medium mb-6" style={{ color: '#2A8080' }}>Subscribe to connect with a local host</p>
               <Link href="/search" className="inline-block px-6 py-3 rounded-full text-white font-bold text-sm"
                 style={{ background: 'linear-gradient(135deg,#E8621A,#F07830)' }}>
                 Find a local host →
@@ -78,14 +78,14 @@ export default async function ConversationsPage() {
               {convs.map(c => (
                 <Link key={c.id} href={`/conversations/${c.id}`}
                   className="flex items-center gap-4 bg-white rounded-2xl px-5 py-4 hover:shadow-md transition-all hover:-translate-y-0.5 group"
-                  style={{ border: '1px solid rgba(15,61,34,0.10)' }}>
+                  style={{ border: '1px solid rgba(8,78,78,0.10)' }}>
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center font-serif text-lg font-bold text-white flex-shrink-0"
                     style={{ background: 'linear-gradient(135deg,#E8621A,#F07830)' }}>
                     {c.initials}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-bold text-sm group-hover:underline" style={{ color: GREEN }}>{c.otherName}</div>
-                    <div className="text-xs font-medium mt-0.5" style={{ color: '#4A7A5C' }}>
+                    <div className="text-xs font-medium mt-0.5" style={{ color: '#4A8E8E' }}>
                       {c.lastMessageAt
                         ? `Last message ${new Date(c.lastMessageAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`
                         : `Connected ${new Date(c.unlockedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`}

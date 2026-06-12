@@ -4,7 +4,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { HomeClient } from '@/components/home/HomeClient'
 
-const GREEN = '#0F3D22'
+const GREEN = '#009B4D'
 
 export default async function HomePage() {
   const isMock = process.env.MOCK_MODE === 'true'

@@ -6,7 +6,7 @@ import Link from 'next/link'
 const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
   open:      { label: 'Open',      color: '#15803d', bg: '#dcfce7' },
   matched:   { label: 'Matched',   color: '#1d4ed8', bg: '#dbeafe' },
-  expired:   { label: 'Expired',   color: '#2D6B3F', bg: '#f3f4f6' },
+  expired:   { label: 'Expired',   color: '#2A8080', bg: '#f3f4f6' },
   cancelled: { label: 'Cancelled', color: '#dc2626', bg: '#fee2e2' },
 }
 
@@ -56,19 +56,19 @@ export default function MyTripsPage() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <Link href="/dashboard" style={{ color: '#0F3D22', fontWeight: 700, textDecoration: 'none', fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+            <Link href="/dashboard" style={{ color: '#084E4E', fontWeight: 700, textDecoration: 'none', fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
               ← Back to Dashboard
             </Link>
-            <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#0F3D22', fontFamily: 'var(--font-fraunces), Georgia, serif', marginBottom: '6px' }}>
+            <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#084E4E', fontFamily: 'var(--font-fraunces), Georgia, serif', marginBottom: '6px' }}>
               My Trips
             </h1>
-            <p style={{ color: '#2D6B3F', fontSize: '15px' }}>Track your trip requests and see which hosts have responded.</p>
+            <p style={{ color: '#2A8080', fontSize: '15px' }}>Track your trip requests and see which hosts have responded.</p>
           </div>
           <Link
             href="/trips/post"
             style={{
               padding: '12px 24px', borderRadius: '10px', fontWeight: 700, fontSize: '15px',
-              backgroundColor: '#0F3D22', color: '#fff', textDecoration: 'none',
+              backgroundColor: '#084E4E', color: '#fff', textDecoration: 'none',
               display: 'inline-flex', alignItems: 'center', gap: '8px',
             }}
           >
@@ -77,7 +77,7 @@ export default function MyTripsPage() {
         </div>
 
         {loading && (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: '#2D6B3F' }}>Loading your trips...</div>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: '#2A8080' }}>Loading your trips...</div>
         )}
 
         {error && (
@@ -89,11 +89,11 @@ export default function MyTripsPage() {
         {!loading && !error && trips.length === 0 && (
           <div style={{ textAlign: 'center', padding: '80px 24px', backgroundColor: '#fff', borderRadius: '16px', border: '2px dashed #d1d5db' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>✈️</div>
-            <h3 style={{ fontWeight: 700, color: '#0F3D22', marginBottom: '8px', fontSize: '18px' }}>No trips posted yet</h3>
-            <p style={{ color: '#2D6B3F', marginBottom: '24px', fontSize: '15px' }}>Post your first trip and local hosts will reach out to you.</p>
+            <h3 style={{ fontWeight: 700, color: '#084E4E', marginBottom: '8px', fontSize: '18px' }}>No trips posted yet</h3>
+            <p style={{ color: '#2A8080', marginBottom: '24px', fontSize: '15px' }}>Post your first trip and local hosts will reach out to you.</p>
             <Link
               href="/trips/post"
-              style={{ padding: '12px 28px', borderRadius: '10px', backgroundColor: '#0F3D22', color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '15px' }}
+              style={{ padding: '12px 28px', borderRadius: '10px', backgroundColor: '#084E4E', color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '15px' }}
             >
               Post Your First Trip
             </Link>
@@ -109,9 +109,9 @@ export default function MyTripsPage() {
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '18px' }}>{trip.flagEmoji}</span>
-                      <h3 style={{ fontWeight: 700, color: '#0F3D22', fontSize: '17px', margin: 0 }}>{trip.cityName}</h3>
+                      <h3 style={{ fontWeight: 700, color: '#084E4E', fontSize: '17px', margin: 0 }}>{trip.cityName}</h3>
                     </div>
-                    <p style={{ color: '#2D6B3F', fontSize: '13px' }}>
+                    <p style={{ color: '#2A8080', fontSize: '13px' }}>
                       {fmt(trip.arrivalDate)} → {fmt(trip.departureDate)} · {trip.numTravelers} traveler{trip.numTravelers > 1 ? 's' : ''}
                     </p>
                   </div>
@@ -124,7 +124,7 @@ export default function MyTripsPage() {
                 </div>
 
                 {trip.noteToHosts && (
-                  <p style={{ color: '#0F3D22', fontSize: '14px', lineHeight: '1.6', marginBottom: '16px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <p style={{ color: '#084E4E', fontSize: '14px', lineHeight: '1.6', marginBottom: '16px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {trip.noteToHosts}
                   </p>
                 )}
@@ -145,7 +145,7 @@ export default function MyTripsPage() {
                   <Link
                     href={`/trips/${trip.id}`}
                     style={{
-                      fontSize: '14px', fontWeight: 700, color: '#0F3D22', textDecoration: 'none',
+                      fontSize: '14px', fontWeight: 700, color: '#084E4E', textDecoration: 'none',
                       display: 'inline-flex', alignItems: 'center', gap: '4px',
                     }}
                   >

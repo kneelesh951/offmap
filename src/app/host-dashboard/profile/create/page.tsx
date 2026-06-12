@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { createHostProfileSchema, type CreateHostInput, VALID_LANGUAGES, VALID_CATEGORIES } from '@/lib/validators'
 import { CheckCircle2, ChevronRight, ArrowLeft } from 'lucide-react'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 const LANGUAGE_LABELS: Record<string, string> = {
   en:'English', de:'Deutsch', fr:'Français', es:'Español', it:'Italiano',
@@ -91,7 +91,7 @@ export default function CreateHostProfile() {
 
       {/* ── Left sidebar ─────────────────────────────────────────── */}
       <div className="hidden lg:flex lg:w-72 xl:w-80 flex-col p-10 fixed top-0 left-0 h-full overflow-y-auto"
-        style={{ background: `linear-gradient(160deg, ${GREEN} 0%, #1a4a2e 100%)` }}>
+        style={{ background: `linear-gradient(160deg, ${GREEN} 0%, #0a5e5e 100%)` }}>
 
         {/* Grain overlay */}
         <div className="absolute inset-0 opacity-20 pointer-events-none"
@@ -173,7 +173,7 @@ export default function CreateHostProfile() {
 
         {/* Mobile header */}
         <div className="lg:hidden flex items-center justify-between px-5 h-[66px]"
-          style={{ background: `linear-gradient(135deg, ${GREEN}, #1a4a2e)`, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          style={{ background: `linear-gradient(135deg, ${GREEN}, #0a5e5e)`, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <Link href="/" className="flex items-center select-none">
             <span className="font-serif font-extrabold text-white" style={{ fontSize: '19px', letterSpacing: '-0.04em' }}>Off</span>
             <span className="font-serif font-extrabold" style={{
@@ -189,7 +189,7 @@ export default function CreateHostProfile() {
         <div className="lg:hidden flex gap-1.5 px-5 py-3 bg-white border-b border-black/[0.07]">
           {STEPS.map((_, i) => (
             <div key={i} className="h-1 flex-1 rounded-full transition-all duration-300"
-              style={{ backgroundColor: i <= step ? '#E8621A' : 'rgba(15,61,34,0.10)' }} />
+              style={{ backgroundColor: i <= step ? '#E8621A' : 'rgba(8,78,78,0.10)' }} />
           ))}
         </div>
 
@@ -212,7 +212,7 @@ export default function CreateHostProfile() {
                     <h1 className="font-serif text-3xl font-bold mb-2" style={{ color: GREEN, letterSpacing: '-0.03em' }}>
                       Tell travelers about yourself
                     </h1>
-                    <p className="text-[14px] leading-relaxed" style={{ color: '#4A7A5C' }}>
+                    <p className="text-[14px] leading-relaxed" style={{ color: '#4A8E8E' }}>
                       This is the first thing travelers see. Be specific — generic bios get fewer messages.
                     </p>
                   </div>
@@ -266,7 +266,7 @@ export default function CreateHostProfile() {
                     <h1 className="font-serif text-3xl font-bold mb-2" style={{ color: GREEN, letterSpacing: '-0.03em' }}>
                       Where are you based?
                     </h1>
-                    <p className="text-[14px] leading-relaxed" style={{ color: '#4A7A5C' }}>
+                    <p className="text-[14px] leading-relaxed" style={{ color: '#4A8E8E' }}>
                       Travelers search by city. If your city isn&apos;t listed, we&apos;ll add it soon.
                     </p>
                   </div>
@@ -286,9 +286,9 @@ export default function CreateHostProfile() {
                                   backgroundColor: '#FEF0E8',
                                   boxShadow: '0 0 0 3px rgba(232,98,26,0.10)',
                                 } : {
-                                  border: '1.5px solid rgba(15,61,34,0.12)',
+                                  border: '1.5px solid rgba(8,78,78,0.12)',
                                   backgroundColor: '#fff',
-                                  boxShadow: '0 1px 4px rgba(15,61,34,0.05)',
+                                  boxShadow: '0 1px 4px rgba(8,78,78,0.05)',
                                 }}>
                                 <input {...register('cityId')} type="radio" value={city.id} className="sr-only" />
                                 <span className="text-2xl">{city.flagEmoji}</span>
@@ -331,7 +331,7 @@ export default function CreateHostProfile() {
                     <h1 className="font-serif text-3xl font-bold mb-2" style={{ color: GREEN, letterSpacing: '-0.03em' }}>
                       Your languages & interests
                     </h1>
-                    <p className="text-[14px] leading-relaxed" style={{ color: '#4A7A5C' }}>
+                    <p className="text-[14px] leading-relaxed" style={{ color: '#4A8E8E' }}>
                       Travelers filter by language and category — pick everything that applies.
                     </p>
                   </div>
@@ -354,8 +354,8 @@ export default function CreateHostProfile() {
                               color: '#fff',
                               boxShadow: '0 2px 8px rgba(232,98,26,0.30)',
                             } : {
-                              border: '1.5px solid rgba(15,61,34,0.14)',
-                              color: '#4A7A5C',
+                              border: '1.5px solid rgba(8,78,78,0.14)',
+                              color: '#4A8E8E',
                               backgroundColor: '#fff',
                             }}>
                             {LANGUAGE_LABELS[l] ?? l.toUpperCase()}
@@ -380,17 +380,17 @@ export default function CreateHostProfile() {
                           <button type="button" key={c} onClick={() => toggle('categories', c)}
                             className="px-4 py-2 rounded-full text-[13px] font-semibold transition-all"
                             style={cats.includes(c) ? {
-                              background: `linear-gradient(135deg, ${GREEN}, #2D6B3F)`,
+                              background: `linear-gradient(135deg, ${GREEN}, #2A8080)`,
                               color: '#fff',
-                              boxShadow: '0 2px 8px rgba(15,61,34,0.25)',
+                              boxShadow: '0 2px 8px rgba(8,78,78,0.25)',
                             } : cats.length >= 5 ? {
-                              border: '1.5px solid rgba(15,61,34,0.08)',
-                              color: 'rgba(15,61,34,0.30)',
+                              border: '1.5px solid rgba(8,78,78,0.08)',
+                              color: 'rgba(8,78,78,0.30)',
                               backgroundColor: '#F8F5F0',
                               cursor: 'not-allowed',
                             } : {
-                              border: '1.5px solid rgba(15,61,34,0.14)',
-                              color: '#4A7A5C',
+                              border: '1.5px solid rgba(8,78,78,0.14)',
+                              color: '#4A8E8E',
                               backgroundColor: '#fff',
                             }}>
                             {CATEGORY_LABELS[c] ?? c}
@@ -416,9 +416,9 @@ export default function CreateHostProfile() {
                               backgroundColor: '#FEF0E8',
                               boxShadow: '0 0 0 3px rgba(232,98,26,0.10)',
                             } : {
-                              border: '1.5px solid rgba(15,61,34,0.12)',
+                              border: '1.5px solid rgba(8,78,78,0.12)',
                               backgroundColor: '#fff',
-                              boxShadow: '0 1px 4px rgba(15,61,34,0.05)',
+                              boxShadow: '0 1px 4px rgba(8,78,78,0.05)',
                             }}>
                             <input {...register('hostType')} type="radio" value={opt.value} className="sr-only" />
                             <div className="text-xl mb-1.5">{opt.emoji}</div>
@@ -442,7 +442,7 @@ export default function CreateHostProfile() {
                     <h1 className="font-serif text-3xl font-bold mb-2" style={{ color: GREEN, letterSpacing: '-0.03em' }}>
                       Set your hourly rate
                     </h1>
-                    <p className="text-[14px] leading-relaxed" style={{ color: '#4A7A5C' }}>
+                    <p className="text-[14px] leading-relaxed" style={{ color: '#4A8E8E' }}>
                       Optional — some hosts prefer to discuss rates in chat. You can update this any time.
                     </p>
                   </div>
@@ -476,7 +476,7 @@ export default function CreateHostProfile() {
                     <div>
                       <p className="overline text-terra mb-3">Profile preview</p>
                       <div className="rounded-2xl overflow-hidden"
-                        style={{ border: '1px solid rgba(15,61,34,0.10)', boxShadow: '0 2px 8px rgba(15,61,34,0.06)' }}>
+                        style={{ border: '1px solid rgba(8,78,78,0.10)', boxShadow: '0 2px 8px rgba(8,78,78,0.06)' }}>
                         {/* Cover */}
                         <div className="h-24 bg-gradient-to-br from-slate-500 via-slate-700 to-slate-900 relative">
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -524,13 +524,13 @@ export default function CreateHostProfile() {
                 {step > 0 ? (
                   <button type="button" onClick={() => setStep(s => s - 1)}
                     className="flex items-center gap-1.5 text-[13px] font-semibold transition-colors hover:text-ink"
-                    style={{ color: '#4A7A5C' }}>
+                    style={{ color: '#4A8E8E' }}>
                     <ArrowLeft size={15} /> Back
                   </button>
                 ) : (
                   <Link href="/host-dashboard"
                     className="flex items-center gap-1.5 text-[13px] font-semibold transition-colors hover:text-ink"
-                    style={{ color: '#4A7A5C' }}>
+                    style={{ color: '#4A8E8E' }}>
                     <ArrowLeft size={15} /> Cancel
                   </Link>
                 )}
@@ -544,7 +544,7 @@ export default function CreateHostProfile() {
                 ) : (
                   <button type="submit" disabled={isSubmitting}
                     className="flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-[13px] disabled:opacity-60 transition-all hover:-translate-y-0.5 active:translate-y-0"
-                    style={{ background: `linear-gradient(135deg, ${GREEN}, #2D6B3F)`, boxShadow: '0 4px 20px rgba(15,61,34,0.30)' }}>
+                    style={{ background: `linear-gradient(135deg, ${GREEN}, #2A8080)`, boxShadow: '0 4px 20px rgba(8,78,78,0.30)' }}>
                     {isSubmitting ? 'Creating profile…' : <><span>Create my profile</span><ChevronRight size={15} /></>}
                   </button>
                 )}

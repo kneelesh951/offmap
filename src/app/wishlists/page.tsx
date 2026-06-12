@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/Footer'
 import Link from 'next/link'
 import { WishlistGrid } from './WishlistGrid'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 export default async function WishlistsPage() {
   const isMock = process.env.MOCK_MODE === 'true'
@@ -86,15 +86,15 @@ export default async function WishlistsPage() {
       <main className="min-h-screen pt-[68px]" style={{ backgroundColor: '#FAF7F2' }}>
         <div className="max-w-5xl mx-auto px-5 md:px-11 py-10">
           <h1 className="font-serif text-3xl font-bold mb-2" style={{ color: GREEN, letterSpacing: '-0.5px' }}>Saved hosts</h1>
-          <p className="text-sm font-medium mb-8" style={{ color: '#4A7A5C' }}>
+          <p className="text-sm font-medium mb-8" style={{ color: '#4A8E8E' }}>
             Hosts you have saved for later. Click to view their profile.
           </p>
 
           {hosts.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-2xl" style={{ border: '1px solid rgba(15,61,34,0.10)' }}>
+            <div className="text-center py-20 bg-white rounded-2xl" style={{ border: '1px solid rgba(8,78,78,0.10)' }}>
               <div className="text-5xl mb-4">❤️</div>
               <h3 className="font-serif text-xl font-bold mb-2" style={{ color: GREEN }}>No saved hosts yet</h3>
-              <p className="text-sm font-medium mb-6" style={{ color: '#2D6B3F' }}>
+              <p className="text-sm font-medium mb-6" style={{ color: '#2A8080' }}>
                 Browse hosts and tap the heart icon to save them here
               </p>
               <Link href="/search" className="inline-block px-6 py-3 rounded-full text-white font-bold text-sm"

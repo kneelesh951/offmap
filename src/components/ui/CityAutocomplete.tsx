@@ -18,7 +18,7 @@ interface Props {
   onChange: (id: string) => void
 }
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 const TERRA = '#E8621A'
 
 function FlagImg({ countryCode, size = 20 }: { countryCode: string; size?: number }) {
@@ -152,7 +152,7 @@ export function CityAutocomplete({ cities, value, onChange }: Props) {
             background: '#fff',
             borderRadius: 14,
             boxShadow: '0 16px 48px rgba(0,0,0,0.20), 0 2px 8px rgba(0,0,0,0.10)',
-            border: '1px solid rgba(15,61,34,0.10)',
+            border: '1px solid rgba(8,78,78,0.10)',
             overflow: 'hidden',
             zIndex: 9999,
             maxHeight: 340,
@@ -174,7 +174,7 @@ export function CityAutocomplete({ cities, value, onChange }: Props) {
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '10px 14px', cursor: 'pointer',
                   background: isActive ? 'rgba(232,98,26,0.08)' : isSelected ? 'rgba(232,98,26,0.05)' : '#fff',
-                  borderBottom: i < suggestions.length - 1 ? '1px solid rgba(15,61,34,0.04)' : 'none',
+                  borderBottom: i < suggestions.length - 1 ? '1px solid rgba(8,78,78,0.04)' : 'none',
                 }}
                 onMouseEnter={e => { setActiveIndex(i); e.currentTarget.style.background = 'rgba(232,98,26,0.08)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = isSelected ? 'rgba(232,98,26,0.05)' : '#fff' }}

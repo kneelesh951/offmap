@@ -318,14 +318,14 @@ Travelers verify their identity to reassure hosts they are real people.
 ### host_profiles cancellation tracking fields
 - `cancellation_count`, `no_show_count`, `strike_count`, `payout_frozen_until`
 
-### AI Travel Concierge (parked — build after Phase 2)
-Smart host recommender chatbot on a `/plan` page.
-- Level 1: FAQ bot (static knowledge, system prompt only)
-- Level 2: Host recommender — Claude API + tool call to `/api/hosts/search` → returns real hosts inline in chat (BEST STARTING POINT)
-- Level 3: Full trip planner with session history in Supabase
-- Tech: Vercel AI SDK + Anthropic Claude API (claude-sonnet-4-6) + streaming `/api/ai/chat` route
-- Revenue hook: 3 free messages → "Subscribe to continue" gate
-- Full idea documented in conversation history
+### AI Travel Concierge (parked — build after Phase 0 launch)
+Smart host recommender chatbot. Full plan: `docs/AI_CHATBOT_PLAN.md`
+- Model: Claude Haiku 4.5 (~$5/month at 1K conversations)
+- Tech: Vercel AI SDK + `@ai-sdk/anthropic` + streaming `/api/ai/chat` route
+- Tool calls to existing APIs (`/api/hosts/search`, `/api/cities`, `/api/stats`) — no hardcoded knowledge
+- Placement: floating button (every page) + homepage section + `/plan` page
+- Revenue: 3 free messages → subscribe gate
+- Phase A: search + recommend hosts. Phase B: trip planner. Phase C: booking integration.
 
 ### Revenue Priority Order
 1. Booking commissions — highest revenue per transaction, proves on-platform payments
@@ -596,6 +596,12 @@ Build in this sequence. Each step delivers standalone value regardless of how ma
 
 ---
 
+## Phase 0 Launch Plan (3-Month Roadmap)
+
+Full launch plan: `docs/LAUNCH_PLAN.md` — covers security hardening, testing, deployment, budget (~€75–95/mo infrastructure), marketing channels, German company registration path (Kleingewerbe → UG → GmbH), legal requirements, and investor readiness timeline (pitch at Month 6–9).
+
+---
+
 ## Production Readiness — Known Issues & Fixes (June 2026)
 
 Full UAT report and deployment guide: `docs/UAT_AND_DEPLOYMENT.md`
@@ -688,3 +694,144 @@ Weakest link is Supabase — already mitigated by Redis cache layer (fail open t
 | Live Now (⚡ 4 min) | Hardcoded JSX | ❌ Static |
 | Verified Hosts count | `GET /api/stats` | ✅ Mock + production |
 | Pricing (€6/day) | Hardcoded JSX | ✅ Honest — prices are real |
+
+---
+
+## Safety Guidelines — Implementation Status & Plan
+
+### Already Built (June 2026)
+- **FAQ page** — "Meeting Safety" section with 6 entries covering verification calls, public meeting places, sharing plans, platform limitations, emergency procedures, dispute scope
+- **FAQ hosts section** — "How should I verify a traveler before meeting?" entry added
+- **Chat window** — Yellow safety banner pinned at top of every conversation: "Before meeting in person, do a quick video or phone call to verify each other. Meet in a public place and share your plans with someone you trust."
+- **Terms of Service** — New Section 4 "In-person meetings & platform limitations" — explicit that Offmap has no tracking/monitoring/control over meetups, users meet at own risk, platform cannot mediate in-person disputes
+- **Host guidelines page** — Safety & liability section (public meeting location, emergency contacts, insurance disclaimer)
+
+### Build with Booking Flow (Phase 1)
+When building the booking feature, these safety checkpoints are **mandatory** — do not ship bookings without them:
+
+**Booking confirmation page (traveler side) — mandatory acknowledgment checkboxes:**
+- [ ] "I will verify my host via video/phone call before meeting"
+- [ ] "I will meet in a public place first"
+- [ ] "I have shared my plans with someone I trust"
+- [ ] "I understand Offmap cannot track or mediate what happens during in-person meetups"
+All 4 must be checked before the "Confirm Booking" button activates.
+
+**Booking acceptance (host side) — mandatory acknowledgment checkboxes:**
+- [ ] "I will do a verification call with the traveler before meeting"
+- [ ] "I will meet in a public location"
+- [ ] "I understand I am responsible for my own safety and insurance"
+
+**Booking confirmation email (both sides):**
+Include safety checklist as a section in the email body — verification call reminder, meeting location, share-plans reminder.
+
+**24-hour reminder email (both sides):**
+"Your meetup is tomorrow. Quick checklist: verification call done? Meeting point confirmed? Plans shared with a friend?"
+
+**Post-session review prompt:**
+Before written review, ask "Did you feel safe during this meetup?" (Yes/No). Flag "No" answers for immediate platform review.
+
+### Booking Flow — Mock Mode Implementation Plan
+Full booking flow can be built in mock mode without Stripe Connect:
+- **DB**: `bookings` table (traveler_id, host_id, conversation_id, session_date, status, amount_cents, service_fee_cents, platform_fee_cents, host_payout_cents, safety_acknowledged_at)
+- **API**: `POST /api/bookings` (create), `PATCH /api/bookings/[id]` (accept/decline/cancel), `GET /api/bookings` (list for dashboard)
+- **UI**: "Book a Session" on host profile → date/time picker → fee breakdown → safety checkboxes → confirm
+- **Mock mode**: instant booking, no real payment — same pattern as subscription mock
+- **Production**: Stripe Connect Express for hosts, PaymentIntent with automatic transfer, real refund processing
+
+---
+
+## Production Monitoring, Security Scanning & Deployment Strategy
+
+### Vulnerability Scanning (Phase 0 — before go-live)
+
+| Tool | What it does | Cost | When to add |
+|---|---|---|---|
+| `npm audit` | Checks npm dependencies for known CVEs | Free (built-in) | Run in CI now |
+| **Snyk** | Deep dependency + code scanning, PR checks | Free ≤200 tests/mo | Add to GitHub Actions CI |
+| **GitHub Dependabot** | Auto-opens PRs to bump vulnerable deps | Free | Enable in repo settings |
+| **Mozilla Observatory** | Scans HTTP headers (CSP, HSTS, X-Frame-Options) | Free (web tool) | Run manually before launch |
+| **Next.js Security Headers** | Add `Content-Security-Policy`, `X-Content-Type-Options`, `Strict-Transport-Security` in `next.config.js` | Free | Before first deploy |
+
+**CI pipeline addition** (add to `.github/workflows/ci.yml`):
+```yaml
+- name: Security audit
+  run: npm audit --audit-level=high
+- name: Snyk test
+  uses: snyk/actions/node@master
+  env:
+    SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+```
+
+### Proactive Alerts (Phase 0–1)
+
+| Alert | Tool | Threshold | Action |
+|---|---|---|---|
+| Site down | Betterstack | 2 consecutive failures (2 min) | SMS + email to founder |
+| Error spike | Sentry | >50 errors in 5 min | Sentry email alert |
+| Slow API | Vercel Analytics | P95 >500ms for 10 min | Vercel Slack notification |
+| Auth brute force | Upstash rate limiter | >20 failed logins from 1 IP in 5 min | Already blocked by middleware; log to Sentry |
+| Stripe webhook failure | Stripe Dashboard | >3 consecutive failures | Stripe email alert (auto-configured) |
+| DB connection exhaustion | Supabase Dashboard | >50 of 60 connections used | Supabase alert (configure in dashboard) |
+| SSL certificate expiry | Betterstack | 14 days before expiry | Betterstack email alert |
+
+### Production Deployment Architecture
+
+**Hosting: Vercel (recommended for solo founder)**
+- Zero-config Next.js deployment, automatic HTTPS, preview deploys on PRs
+- Edge network for static assets + ISR pages
+- Serverless functions for API routes (auto-scaling, no server management)
+- One-click rollback if a deploy breaks something
+
+**Caching Architecture (Phase 1)**
+
+```
+Request → Vercel Edge (static/ISR cache)
+        → Serverless Function
+            → Upstash Redis (check cache first)
+                → miss → Supabase Postgres (source of truth)
+                → hit → return cached result
+```
+
+| Resource | Cache layer | TTL | Invalidation |
+|---|---|---|---|
+| Home page | Vercel ISR | 5 min | On-demand via `revalidatePath('/')` |
+| Host profile | Vercel ISR | 60s | On profile update webhook |
+| Search results | Upstash Redis | 2 min | Key = hash of query params |
+| Subscription status | Upstash Redis | 5 min | Stripe webhook invalidates |
+| City list | Build-time static | Until redeploy | Redeploy after adding cities |
+
+**Production Stack Cost (Phase 0–1)**
+
+| Service | Plan | Monthly cost |
+|---|---|---|
+| Vercel | Pro | $20 |
+| Supabase | Pro (Frankfurt) | $25 |
+| Upstash Redis | Pay-as-you-go | ~$10 |
+| Sentry | Free tier | $0 |
+| Betterstack | Starter | ~$20 |
+| Stripe | Pay-per-transaction | 1.5% + €0.25/txn |
+| **Total** | | **~$75–95/month** |
+
+### Security Hardening Checklist (before go-live)
+
+- [ ] Add Sentry (`@sentry/nextjs`) — error tracking + performance monitoring
+- [ ] Add security headers in `next.config.js` (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- [ ] Enable Dependabot in GitHub repo settings
+- [ ] Add `npm audit --audit-level=high` to CI pipeline
+- [ ] Run Mozilla Observatory scan and fix any issues
+- [ ] Enable Supabase email verification (Auth settings in dashboard)
+- [ ] Set `NEXT_PUBLIC_APP_URL` in Vercel env for CSRF origin check
+- [ ] Enable Supabase PITR (Point-in-Time Recovery) on Pro plan
+- [ ] Configure Betterstack uptime monitors for critical endpoints
+- [ ] Review and test all Stripe webhook handlers with test events
+- [ ] Verify RLS policies work correctly with real Supabase auth (not just mock)
+
+### Scaling Triggers
+
+| Milestone | Action |
+|---|---|
+| 500 users | Add Betterstack uptime monitoring |
+| 1K users | Review Supabase connection pooling, consider read replicas |
+| 5K users | Add Grafana Cloud for unified dashboard |
+| 10K+ hosts | Move search to Typesense or Postgres full-text with GIN indexes |
+| 50K users | Evaluate dedicated infrastructure (Railway/Fly.io) vs staying on Vercel |

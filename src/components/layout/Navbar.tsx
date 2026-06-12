@@ -6,7 +6,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { Menu, X } from 'lucide-react'
 import type { SessionUser } from '@/types'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 interface NavbarProps { user?: SessionUser | null }
 
@@ -72,13 +72,13 @@ export function Navbar({ user }: NavbarProps) {
         <div className="fixed inset-0 z-40 md:hidden">
           <div
             className="absolute inset-0 backdrop-blur-sm"
-            style={{ backgroundColor: 'rgba(15,61,34,0.55)' }}
+            style={{ backgroundColor: 'rgba(8,78,78,0.55)' }}
             onClick={() => setMenuOpen(false)}
           />
           <nav
             className="absolute top-0 left-0 right-0 p-4 pt-20 flex flex-col gap-1"
             style={{
-              background: `linear-gradient(160deg, #1C7A42 0%, #0D3820 50%, #0A2E1A 100%)`,
+              background: 'linear-gradient(160deg, #0C7B7B 0%, #063B3B 50%, #042D2D 100%)',
               borderBottom: '1px solid rgba(255,255,255,0.10)',
               backdropFilter: 'blur(24px)',
             }}
@@ -121,7 +121,7 @@ export function Navbar({ user }: NavbarProps) {
                     My Dashboard
                   </Link>
                   <Link
-                    href="/settings/profile"
+                    href={user.role === 'host' ? '/host-dashboard/profile/create' : '/settings/profile'}
                     onClick={() => setMenuOpen(false)}
                     className="block text-center px-4 py-3 rounded-full text-[14px] font-semibold transition-all hover:bg-white/10"
                     style={{ color: '#fff', border: '1px solid rgba(255,255,255,0.28)' }}
@@ -165,11 +165,11 @@ export function Navbar({ user }: NavbarProps) {
       <header
         className="fixed top-0 left-0 right-0 z-30 h-[66px] flex items-center justify-between px-5 md:px-10 transition-all duration-500"
         style={{
-          background: 'linear-gradient(180deg, #1B4332 0%, #14332A 50%, #0F2922 100%)',
-          borderBottom: '1px solid rgba(52,211,153,0.12)',
+          background: 'linear-gradient(180deg, #0C7B7B 0%, #063B3B 50%, #042D2D 100%)',
+          borderBottom: '1px solid rgba(12,123,123,0.25)',
           boxShadow: scrolled
-            ? '0 8px 40px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 30px 60px rgba(52,211,153,0.04)'
-            : '0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 30px 60px rgba(52,211,153,0.03)',
+            ? '0 8px 40px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 30px 60px rgba(12,123,123,0.06)'
+            : '0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 30px 60px rgba(12,123,123,0.04)',
         }}
       >
         {/* Logo */}
@@ -275,7 +275,7 @@ export function Navbar({ user }: NavbarProps) {
                   <div
                     className="absolute right-0 mt-2 w-52 rounded-2xl overflow-hidden"
                     style={{
-                      background: 'linear-gradient(160deg,#1a4a2e,#0f3d22)',
+                      background: 'linear-gradient(160deg,#0C7B7B,#063B3B)',
                       border: '1px solid rgba(255,255,255,0.14)',
                       boxShadow: '0 16px 48px rgba(0,0,0,0.45)',
                       zIndex: 50,
@@ -297,7 +297,7 @@ export function Navbar({ user }: NavbarProps) {
                         <span style={{ fontSize: '15px' }}>🏠</span> Dashboard
                       </Link>
                       <Link
-                        href="/settings/profile"
+                        href={user.role === 'host' ? '/host-dashboard/profile/create' : '/settings/profile'}
                         onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-colors hover:bg-white/10"
                         style={{ color: 'rgba(255,255,255,0.85)' }}

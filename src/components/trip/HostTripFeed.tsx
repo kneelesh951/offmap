@@ -81,7 +81,7 @@ export function HostTripFeed({ hostCityId }: { hostCityId: string }) {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '32px', color: '#4A7A5C', fontSize: '14px' }}>
+      <div style={{ textAlign: 'center', padding: '32px', color: '#4A8E8E', fontSize: '14px' }}>
         Loading trip requests...
       </div>
     )
@@ -100,7 +100,7 @@ export function HostTripFeed({ hostCityId }: { hostCityId: string }) {
       <div style={{ textAlign: 'center', padding: '40px 20px', backgroundColor: '#fff', borderRadius: '16px', border: '2px dashed #d1d5db' }}>
         <div style={{ fontSize: '36px', marginBottom: '12px' }}>✈️</div>
         <p style={{ fontWeight: 600, color: '#1a2e1a', marginBottom: '4px', fontSize: '15px' }}>No trip requests yet</p>
-        <p style={{ color: '#2D6B3F', fontSize: '13px' }}>When travelers post trips to your city, they will appear here.</p>
+        <p style={{ color: '#2A8080', fontSize: '13px' }}>When travelers post trips to your city, they will appear here.</p>
       </div>
     )
   }
@@ -115,7 +115,7 @@ export function HostTripFeed({ hostCityId }: { hostCityId: string }) {
         return (
           <div key={trip.id} style={{
             backgroundColor: '#fff', borderRadius: '16px', padding: '20px',
-            border: hasResponded ? '2px solid #bbf7d0' : '1px solid rgba(15,61,34,0.10)',
+            border: hasResponded ? '2px solid #bbf7d0' : '1px solid rgba(8,78,78,0.10)',
             transition: 'all 0.2s',
           }}>
             {/* Header */}
@@ -133,7 +133,7 @@ export function HostTripFeed({ hostCityId }: { hostCityId: string }) {
                   <span style={{ fontWeight: 700, color: '#1a2e1a', fontSize: '15px' }}>
                     {trip.travelerName ?? 'Traveler'}
                   </span>
-                  <span style={{ color: '#4A7A5C', fontSize: '13px' }}>
+                  <span style={{ color: '#4A8E8E', fontSize: '13px' }}>
                     {trip.flagEmoji} {trip.cityName}
                   </span>
                   {hasResponded && (
@@ -142,7 +142,7 @@ export function HostTripFeed({ hostCityId }: { hostCityId: string }) {
                     </span>
                   )}
                 </div>
-                <div style={{ color: '#2D6B3F', fontSize: '13px', marginTop: '2px' }}>
+                <div style={{ color: '#2A8080', fontSize: '13px', marginTop: '2px' }}>
                   {fmt(trip.arrivalDate)} → {fmt(trip.departureDate)} · {trip.numTravelers} traveler{trip.numTravelers > 1 ? 's' : ''}
                   {trip.hostResponsesCount > 0 && ` · ${trip.hostResponsesCount} host${trip.hostResponsesCount > 1 ? 's' : ''} responded`}
                 </div>
@@ -183,7 +183,7 @@ export function HostTripFeed({ hostCityId }: { hostCityId: string }) {
             {isResponding && !hasResponded && (
               <div style={{ backgroundColor: '#f9fafb', borderRadius: '12px', padding: '16px', marginBottom: '14px', border: '1px solid #e5e7eb' }}>
                 <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#1a2e1a', marginBottom: '6px' }}>
-                  Message to {trip.travelerName ?? 'traveler'} <span style={{ color: '#4A7A5C', fontWeight: 400 }}>(optional)</span>
+                  Message to {trip.travelerName ?? 'traveler'} <span style={{ color: '#4A8E8E', fontWeight: 400 }}>(optional)</span>
                 </label>
                 <textarea
                   rows={3}
@@ -207,7 +207,7 @@ export function HostTripFeed({ hostCityId }: { hostCityId: string }) {
                     style={{
                       padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: submitting ? 'not-allowed' : 'pointer',
                       fontWeight: 700, fontSize: '13px', color: '#fff',
-                      backgroundColor: submitting ? '#9ca3af' : '#0F3D22',
+                      backgroundColor: submitting ? '#9ca3af' : '#084E4E',
                     }}
                   >
                     {submitting ? 'Sending...' : 'Send Response'}

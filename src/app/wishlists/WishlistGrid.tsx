@@ -49,7 +49,7 @@ export function WishlistGrid({ hosts: initialHosts }: { hosts: WishlistHost[] })
       {hosts.map(host => (
         <div key={host.hostId}
           className="bg-white rounded-2xl overflow-hidden hover:shadow-lg transition-all hover:-translate-y-0.5"
-          style={{ border: '1px solid rgba(15,61,34,0.08)', boxShadow: '0 2px 8px rgba(15,61,34,0.07)' }}>
+          style={{ border: '1px solid rgba(8,78,78,0.08)', boxShadow: '0 2px 8px rgba(8,78,78,0.07)' }}>
 
           <Link href={`/hosts/${host.userId}`}>
             <div className="relative h-48 overflow-hidden">
@@ -80,7 +80,7 @@ export function WishlistGrid({ hosts: initialHosts }: { hosts: WishlistHost[] })
           <div className="p-4">
             <div className="flex items-start justify-between gap-2">
               <Link href={`/hosts/${host.userId}`} className="flex-1 min-w-0">
-                <div className="font-serif text-[16px] font-bold leading-tight hover:underline" style={{ color: '#0F3D22' }}>
+                <div className="font-serif text-[16px] font-bold leading-tight hover:underline" style={{ color: '#084E4E' }}>
                   {host.fullName}
                 </div>
               </Link>

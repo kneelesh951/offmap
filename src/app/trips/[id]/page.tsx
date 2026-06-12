@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/Footer'
 import { TripResponsesList } from './TripResponsesList'
 import Link from 'next/link'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 const CATEGORY_LABELS: Record<string, string> = {
   'food-drink': '🍴 Food & Drink', 'art-culture': '🎨 Art & Culture', 'nature': '🌿 Nature',
@@ -147,12 +147,12 @@ export default async function TripDetailPage({ params }: Props) {
           </Link>
 
           {/* Trip header card */}
-          <div className="bg-white rounded-2xl p-6 mb-6" style={{ border: '1px solid rgba(15,61,34,0.10)' }}>
+          <div className="bg-white rounded-2xl p-6 mb-6" style={{ border: '1px solid rgba(8,78,78,0.10)' }}>
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">{trip.flagEmoji}</span>
               <div>
                 <h1 className="font-serif text-2xl font-bold" style={{ color: GREEN }}>{trip.cityName}</h1>
-                <p className="text-sm" style={{ color: '#4A7A5C' }}>
+                <p className="text-sm" style={{ color: '#4A8E8E' }}>
                   {fmt(arrivalDate)} → {fmt(departureDate)} · {trip.numTravelers} traveler{trip.numTravelers > 1 ? 's' : ''}
                 </p>
               </div>
@@ -195,10 +195,10 @@ export default async function TripDetailPage({ params }: Props) {
           </div>
 
           {responses.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl" style={{ border: '1px solid rgba(15,61,34,0.10)' }}>
+            <div className="text-center py-16 bg-white rounded-2xl" style={{ border: '1px solid rgba(8,78,78,0.10)' }}>
               <div className="text-4xl mb-4">⏳</div>
               <h3 className="font-serif text-lg font-bold mb-2" style={{ color: GREEN }}>No responses yet</h3>
-              <p className="text-sm" style={{ color: '#4A7A5C' }}>
+              <p className="text-sm" style={{ color: '#4A8E8E' }}>
                 Verified hosts in {trip.cityName} will see your trip and reach out. This usually takes 24–48 hours.
               </p>
             </div>

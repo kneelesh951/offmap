@@ -13,7 +13,7 @@ export function HostGrid({ hosts, onConnectClick, loading }: HostGridProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="bg-white rounded-2xl overflow-hidden"
-            style={{ border: '1px solid rgba(15,61,34,0.08)', boxShadow: '0 2px 8px rgba(15,61,34,0.06)' }}>
+            style={{ border: '1px solid rgba(8,78,78,0.08)', boxShadow: '0 2px 8px rgba(8,78,78,0.06)' }}>
             <div className="h-52 shimmer" />
             <div className="p-4 pt-8 space-y-2.5">
               <div className="h-4 shimmer rounded-lg w-2/3" />

@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 const TRAVELER_FEATURES = [
   {
@@ -103,7 +103,7 @@ export default async function WelcomePage() {
 
         {/* ── Hero band ──────────────────────────────── */}
         <div className="relative overflow-hidden"
-          style={{ background: `linear-gradient(135deg, ${GREEN} 0%, #1a4a2e 100%)` }}>
+          style={{ background: `linear-gradient(135deg, ${GREEN} 0%, #0a5e5e 100%)` }}>
           <div className="absolute inset-0 bg-gradient-to-br from-terra/10 via-transparent to-transparent" />
           <div className="absolute inset-0 opacity-20"
             style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E\")" }} />
@@ -145,8 +145,8 @@ export default async function WelcomePage() {
                 <div key={f.title}
                   className="bg-white rounded-2xl p-7 card-hover"
                   style={{
-                    border: f.highlight ? `2px solid ${GREEN}` : '1px solid rgba(15,61,34,0.09)',
-                    boxShadow: f.highlight ? '0 4px 24px rgba(15,61,34,0.14)' : '0 2px 8px rgba(15,61,34,0.06)',
+                    border: f.highlight ? `2px solid ${GREEN}` : '1px solid rgba(8,78,78,0.09)',
+                    boxShadow: f.highlight ? '0 4px 24px rgba(8,78,78,0.14)' : '0 2px 8px rgba(8,78,78,0.06)',
                   }}>
                   {f.highlight && (
                     <div className="inline-block text-[10px] font-bold px-2.5 py-1 rounded-full text-white mb-4"
@@ -156,7 +156,7 @@ export default async function WelcomePage() {
                   )}
                   <div className="text-3xl mb-4">{f.icon}</div>
                   <h3 className="font-serif text-lg font-bold mb-2" style={{ color: GREEN }}>{f.title}</h3>
-                  <p className="text-[13px] leading-relaxed mb-5" style={{ color: '#4A7A5C' }}>{f.desc}</p>
+                  <p className="text-[13px] leading-relaxed mb-5" style={{ color: '#4A8E8E' }}>{f.desc}</p>
                   <Link href={f.href}
                     className="inline-flex items-center gap-1.5 text-[13px] font-bold transition-all hover:gap-3"
                     style={{ color: '#E8621A' }}>
@@ -185,7 +185,7 @@ export default async function WelcomePage() {
 
         {/* ── Quick links ────────────────────────────── */}
         <div className="py-16 px-5 md:px-11 relative overflow-hidden"
-          style={{ background: `linear-gradient(135deg, ${GREEN} 0%, #1a4a2e 100%)` }}>
+          style={{ background: `linear-gradient(135deg, ${GREEN} 0%, #0a5e5e 100%)` }}>
           <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
           <div className="relative max-w-4xl mx-auto">
             <h2 className="font-serif text-2xl font-bold text-white mb-8 text-center"

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 const AMOUNTS = [
   { label: 'Day pass', price: '€6', desc: 'Perfect for a single city trip', plan: 'day' },
@@ -40,11 +40,11 @@ export default function GiftCardsPage() {
         <div className="py-20 px-5 md:px-11 bg-white">
           <div className="max-w-4xl mx-auto">
             <h2 className="font-serif text-3xl font-bold mb-3 text-center" style={{ color: GREEN, letterSpacing: '-0.5px' }}>Choose a plan to gift</h2>
-            <p className="text-center text-sm mb-10" style={{ color: '#4A7A5C' }}>Recipients redeem online and can use their subscription across all 8 Offmap cities.</p>
+            <p className="text-center text-sm mb-10" style={{ color: '#4A8E8E' }}>Recipients redeem online and can use their subscription across all 8 Offmap cities.</p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {AMOUNTS.map(a => (
                 <div key={a.plan} className="rounded-2xl p-6 text-center relative" style={{
-                  border: a.popular ? `2px solid ${GREEN}` : '1px solid rgba(15,61,34,0.12)',
+                  border: a.popular ? `2px solid ${GREEN}` : '1px solid rgba(8,78,78,0.12)',
                   backgroundColor: a.popular ? '#F7FAF8' : '#fff',
                 }}>
                   {a.popular && (
@@ -75,10 +75,10 @@ export default function GiftCardsPage() {
                 { step: '2', icon: '🎁', title: 'They receive', desc: 'Forward the code (or print the PDF) to the lucky recipient. Valid for 12 months.' },
                 { step: '3', icon: '🌍', title: 'They explore', desc: 'They create a free account, enter the code, and unlock any host in any Offmap city.' },
               ].map(s => (
-                <div key={s.step} className="bg-white p-6 rounded-2xl" style={{ border: '1px solid rgba(15,61,34,0.10)' }}>
+                <div key={s.step} className="bg-white p-6 rounded-2xl" style={{ border: '1px solid rgba(8,78,78,0.10)' }}>
                   <div className="text-4xl mb-3">{s.icon}</div>
                   <div className="font-bold text-sm mb-2" style={{ color: GREEN }}>{s.title}</div>
-                  <div className="text-sm" style={{ color: '#4A7A5C' }}>{s.desc}</div>
+                  <div className="text-sm" style={{ color: '#4A8E8E' }}>{s.desc}</div>
                 </div>
               ))}
             </div>

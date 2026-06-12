@@ -3,10 +3,46 @@ import { cookies } from 'next/headers'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import { Star, Globe, Clock, MessageCircle } from 'lucide-react'
+import { Star, Globe, Clock, MessageCircle, MapPin, Shield, ChevronRight, Users, Calendar, Compass, Coffee, Palette, Music, Landmark, TreePine, Utensils, ShoppingBag } from 'lucide-react'
 import { BookSessionButton } from '@/components/booking/BookSessionButton'
 import { formatCents, formatRating, getInitials } from '@/lib/utils'
 import Link from 'next/link'
+
+const TEAL = '#0C7B7B'
+const TEAL_DARK = '#084E4E'
+const TEAL_DEEP = '#063B3B'
+
+/* Map category slugs to icons and friendly labels */
+const CATEGORY_META: Record<string, { icon: any; label: string; description: string }> = {
+  'food-drink': { icon: Utensils, label: 'Food & Drink', description: 'Local restaurants, street food, hidden bars' },
+  'art-culture': { icon: Palette, label: 'Art & Culture', description: 'Galleries, street art, cultural gems' },
+  'nightlife': { icon: Music, label: 'Nightlife', description: 'Best bars, clubs, live music scenes' },
+  'history': { icon: Landmark, label: 'History', description: 'Stories behind the streets and landmarks' },
+  'nature': { icon: TreePine, label: 'Nature', description: 'Parks, hikes, outdoor escapes nearby' },
+  'shopping': { icon: ShoppingBag, label: 'Shopping', description: 'Local boutiques, markets, vintage finds' },
+  'adventure': { icon: Compass, label: 'Adventure', description: 'Off-the-beaten-path experiences' },
+  'coffee': { icon: Coffee, label: 'Coffee & Cafes', description: 'Best coffee spots and cozy cafes' },
+}
+
+/* Map host type to a friendly description */
+function hostTypeLabel(type: string): string {
+  switch (type) {
+    case 'female': return 'Female host'
+    case 'male': return 'Male host'
+    case 'couple': return 'Couple'
+    case 'family': return 'Family'
+    case 'group': return 'Group of friends'
+    default: return 'Open to all travelers'
+  }
+}
+
+/* Full language name lookup */
+const LANG_NAMES: Record<string, string> = {
+  en: 'English', de: 'German', fr: 'French', es: 'Spanish', pt: 'Portuguese',
+  it: 'Italian', nl: 'Dutch', ar: 'Arabic', tr: 'Turkish', ru: 'Russian',
+  ja: 'Japanese', zh: 'Chinese', ko: 'Korean', sv: 'Swedish', pl: 'Polish',
+  cs: 'Czech', el: 'Greek', hi: 'Hindi', he: 'Hebrew', th: 'Thai',
+}
 
 interface Props { params: { id: string } }
 
@@ -24,14 +60,13 @@ export default async function HostProfilePage({ params }: Props) {
     const me = mockGetUser(token)
     if (me) sessionUser = { id: me.id, email: me.email, role: me.role as any, fullName: me.fullName, avatarUrl: null }
 
-    // params.id can be either a host profile id (host-1) or a userId (user-host-1)
     const profile = mockDb.hostProfiles.get(params.id)
       ?? mockDb.getHostProfileByUserId(params.id)
     if (!profile || !profile.isActive) notFound()
 
     const city = mockDb.cities.get(profile.cityId)
     const hostUser = mockDb.getUserById(profile.userId)
-    host = { ...profile, cityName: city?.name ?? '', flagEmoji: city?.flagEmoji ?? '', fullName: hostUser?.fullName ?? '', avatarUrl: profile.primaryPhotoUrl }
+    host = { ...profile, cityName: city?.name ?? '', flagEmoji: city?.flagEmoji ?? '', fullName: hostUser?.fullName ?? '', avatarUrl: profile.primaryPhotoUrl, idVerificationStatus: profile.idVerificationStatus, introVideoUrl: profile.introVideoUrl }
 
     recentReviews = Array.from(mockDb.reviews.values())
       .filter(r => r.revieweeId === profile.userId)
@@ -47,7 +82,7 @@ export default async function HostProfilePage({ params }: Props) {
     if (authUser) sessionUser = { id: authUser.id, email: authUser.email!, role: authUser.user_metadata?.role ?? 'traveler', fullName: authUser.user_metadata?.full_name ?? null, avatarUrl: null }
 
     try {
-      const [row] = await db.select({ id: hostProfiles.id, userId: hostProfiles.userId, cityId: hostProfiles.cityId, headline: hostProfiles.headline, bio: hostProfiles.bio, languages: hostProfiles.languages, categories: hostProfiles.categories, hostType: hostProfiles.hostType, hourlyRateCents: hostProfiles.hourlyRateCents, neighborhood: hostProfiles.neighborhood, avgRating: hostProfiles.avgRating, reviewCount: hostProfiles.reviewCount, responseRate: hostProfiles.responseRate, isPremium: hostProfiles.isPremium, cityName: cities.name, flagEmoji: cities.flagEmoji, fullName: users.fullName, avatarUrl: users.avatarUrl })
+      const [row] = await db.select({ id: hostProfiles.id, userId: hostProfiles.userId, cityId: hostProfiles.cityId, headline: hostProfiles.headline, bio: hostProfiles.bio, languages: hostProfiles.languages, categories: hostProfiles.categories, hostType: hostProfiles.hostType, hourlyRateCents: hostProfiles.hourlyRateCents, neighborhood: hostProfiles.neighborhood, avgRating: hostProfiles.avgRating, reviewCount: hostProfiles.reviewCount, responseRate: hostProfiles.responseRate, isPremium: hostProfiles.isPremium, idVerificationStatus: hostProfiles.idVerificationStatus, introVideoUrl: hostProfiles.introVideoUrl, cityName: cities.name, flagEmoji: cities.flagEmoji, fullName: users.fullName, avatarUrl: users.avatarUrl })
         .from(hostProfiles).leftJoin(users, eq(hostProfiles.userId, users.id)).leftJoin(cities, eq(hostProfiles.cityId, cities.id))
         .where(and(eq(hostProfiles.userId, params.id), eq(hostProfiles.isActive, true), eq(hostProfiles.moderationStatus, 'approved'))).limit(1)
       if (!row) notFound()
@@ -67,106 +102,245 @@ export default async function HostProfilePage({ params }: Props) {
     }
   }
 
+  const firstName = host.fullName?.split(' ')[0] ?? 'Host'
+  const heroPhoto = host.avatarUrl ?? host.primaryPhotoUrl ?? null
+
   return (
     <>
       <Navbar user={sessionUser} />
       <main className="min-h-screen bg-cream pt-[66px]">
-        {/* Cover */}
-        <div className="h-56 md:h-72 bg-gradient-to-br from-terra/70 via-terra to-amber-700 relative overflow-hidden">
-          {photos[0]?.publicUrl && (
-            <img src={photos[0].publicUrl} alt="" className="w-full h-full object-cover" />
+        {/* ═══════ HERO SECTION ═══════ */}
+        <div className="relative overflow-hidden" style={{ minHeight: '420px' }}>
+          {/* Background — large host photo or city gradient */}
+          {heroPhoto ? (
+            <img
+              src={heroPhoto.replace('w=400', 'w=1400').replace('h=300', 'h=600')}
+              alt={host.fullName}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ objectPosition: 'center 30%' }}
+            />
+          ) : (
+            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${TEAL_DEEP} 0%, ${TEAL} 50%, ${TEAL_DARK} 100%)` }} />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent" />
-        </div>
+          {/* Overlay */}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(4,45,45,0.3) 0%, rgba(4,45,45,0.55) 50%, rgba(4,45,45,0.85) 100%)' }} />
+          {/* Glossy sheen */}
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 40%)' }} />
 
-        <div className="max-w-4xl mx-auto px-5 md:px-11 -mt-16 relative z-10 pb-20">
-          <div className="bg-white rounded-2xl shadow-lg border border-black/[0.08] p-6 md:p-8 mb-6">
-            <div className="flex flex-col md:flex-row gap-6">
-              {/* Avatar */}
-              <div className="w-20 h-20 rounded-2xl border-4 border-white shadow-md bg-gradient-to-br from-terra to-terra-dark flex items-center justify-center font-serif text-3xl font-bold text-white flex-shrink-0 -mt-16 md:mt-0 self-start">
-                {photos[0]?.publicUrl ? (
-                  <img src={photos[0].publicUrl} alt="" className="w-full h-full rounded-xl object-cover" />
-                ) : getInitials(host.fullName)}
-              </div>
-
-              <div className="flex-1">
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                  <div>
-                    <h1 className="font-serif text-2xl md:text-3xl font-bold text-ink">{host.fullName}</h1>
-                    <p className="text-ink-muted text-sm mt-1">{host.flagEmoji} {host.cityName}{host.neighborhood ? ` · ${host.neighborhood}` : ''}</p>
-                    {host.headline && <p className="text-ink-mid text-base mt-2">{host.headline}</p>}
+          {/* Hero content */}
+          <div className="relative max-w-5xl mx-auto px-5 md:px-11 pt-16 pb-10 flex flex-col md:flex-row items-end md:items-end gap-6" style={{ minHeight: '420px' }}>
+            {/* Profile photo */}
+            <div className="flex-shrink-0 -mb-14 md:-mb-16 z-10">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden border-4 border-white shadow-xl" style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
+                {heroPhoto ? (
+                  <img src={heroPhoto} alt={host.fullName} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center font-serif text-4xl font-bold text-white" style={{ background: `linear-gradient(135deg, #E8621A, #F5A623)` }}>
+                    {getInitials(host.fullName)}
                   </div>
-
-                  {/* CTA */}
-                  <div className="flex-shrink-0 flex flex-col gap-2">
-                    {sessionUser ? (
-                      <>
-                        <Link
-                          href={`/conversations/new?hostId=${host.userId}`}
-                          className="flex items-center gap-2 bg-terra text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-terra-dark transition-colors shadow-[0_2px_12px_rgba(197,90,40,0.28)]"
-                        >
-                          <MessageCircle size={16} />
-                          Message {host.fullName?.split(' ')[0]}
-                        </Link>
-                        {host.hourlyRateCents && (
-                          <BookSessionButton
-                            hostUserId={host.userId}
-                            hostName={host.fullName?.split(' ')[0] ?? 'Host'}
-                            sessionRateCents={host.hourlyRateCents}
-                          />
-                        )}
-                      </>
-                    ) : (
-                      <Link href="/auth/login" className="flex items-center gap-2 bg-terra text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-terra-dark transition-colors">
-                        <MessageCircle size={16} /> Connect — subscribe from €6
-                      </Link>
-                    )}
-                    {host.hourlyRateCents && sessionUser && (
-                      <p className="text-center text-xs text-ink-muted">{formatCents(host.hourlyRateCents)}/hr</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Stats row */}
-                <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-black/[0.07]">
-                  {host.avgRating && (
-                    <div className="flex items-center gap-1.5 text-sm">
-                      <Star size={14} className="fill-amber-400 stroke-amber-400" />
-                      <span className="font-semibold">{formatRating(host.avgRating)}</span>
-                      <span className="text-ink-muted">({host.reviewCount} reviews)</span>
-                    </div>
-                  )}
-                  {host.responseRate && (
-                    <div className="flex items-center gap-1.5 text-sm text-ink-mid">
-                      <Clock size={14} />
-                      <span>{host.responseRate}% response rate</span>
-                    </div>
-                  )}
-                  {host.isPremium && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[11px] font-semibold">
-                      ✓ Verified host
-                    </span>
-                  )}
-                </div>
+                )}
               </div>
             </div>
+
+            {/* Name & headline overlay */}
+            <div className="flex-1 pb-2">
+              <h1 className="font-serif text-3xl md:text-4xl font-bold text-white mb-1" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.4)' }}>
+                {host.fullName}
+              </h1>
+              <div className="flex items-center gap-2 text-white/70 text-sm mb-2">
+                <MapPin size={14} />
+                <span>{host.flagEmoji} {host.cityName}{host.neighborhood ? ` · ${host.neighborhood}` : ''}</span>
+              </div>
+              {host.headline && (
+                <p className="text-white/85 text-base md:text-lg font-medium max-w-xl" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>
+                  {host.headline}
+                </p>
+              )}
+            </div>
+
+            {/* Price badge */}
+            {host.hourlyRateCents && (
+              <div className="flex-shrink-0 text-right pb-2">
+                <div className="inline-flex items-baseline gap-1 px-4 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.20)' }}>
+                  <span className="text-2xl font-bold text-white">{formatCents(host.hourlyRateCents)}</span>
+                  <span className="text-white/60 text-sm">/hr</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ═══════ MAIN CONTENT ═══════ */}
+        <div className="max-w-5xl mx-auto px-5 md:px-11 pt-20 md:pt-24 pb-20">
+
+          {/* Stats bar */}
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            {host.avgRating && (
+              <div className="flex items-center gap-1.5 px-4 py-2 rounded-full" style={{ background: '#FFF8E1', border: '1px solid rgba(245,166,35,0.25)' }}>
+                <Star size={15} className="fill-amber-400 stroke-amber-400" />
+                <span className="font-bold text-sm" style={{ color: TEAL_DARK }}>{formatRating(host.avgRating)}</span>
+                <span className="text-xs" style={{ color: 'rgba(8,78,78,0.5)' }}>({host.reviewCount} reviews)</span>
+              </div>
+            )}
+            {host.responseRate && (
+              <div className="flex items-center gap-1.5 px-4 py-2 rounded-full" style={{ background: '#E0F2F2', border: '1px solid rgba(12,123,123,0.15)' }}>
+                <Clock size={14} style={{ color: TEAL }} />
+                <span className="text-sm font-semibold" style={{ color: TEAL_DARK }}>{host.responseRate}% response</span>
+              </div>
+            )}
+            {(host.idVerificationStatus === 'verified' || host.isPremium) && (
+              <div className="flex items-center gap-1.5 px-4 py-2 rounded-full" style={{ background: '#FEF9E7', border: '1px solid rgba(212,175,55,0.30)' }}>
+                <Shield size={14} style={{ color: '#B8860B' }} />
+                <span className="text-sm font-semibold" style={{ color: '#8B6914' }}>ID Verified</span>
+              </div>
+            )}
+            {host.languages && (
+              <div className="flex items-center gap-1.5 px-4 py-2 rounded-full" style={{ background: '#E0F2F2', border: '1px solid rgba(12,123,123,0.15)' }}>
+                <Globe size={14} style={{ color: TEAL }} />
+                <span className="text-sm font-semibold" style={{ color: TEAL_DARK }}>{host.languages.map((l: string) => l.toUpperCase()).join(' · ')}</span>
+              </div>
+            )}
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Left — bio + languages */}
-            <div className="md:col-span-2 space-y-5">
-              <div className="bg-white rounded-2xl border border-black/[0.08] p-6">
-                <h2 className="font-serif text-lg font-semibold mb-3">About {host.fullName?.split(' ')[0]}</h2>
-                <p className="text-ink-soft text-sm leading-relaxed whitespace-pre-wrap">{host.bio}</p>
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* ── LEFT COLUMN (2/3) ── */}
+            <div className="md:col-span-2 space-y-8">
+              {/* Intro Video */}
+              {host.introVideoUrl && !host.introVideoUrl.startsWith('mock://') && (
+                <div className="bg-white rounded-2xl border border-black/[0.06] overflow-hidden" style={{ boxShadow: '0 2px 12px rgba(8,78,78,0.06)' }}>
+                  <video
+                    src={host.introVideoUrl}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="w-full max-h-[400px] object-cover"
+                    style={{ background: '#000' }}
+                  />
+                  <div className="px-5 py-3">
+                    <p className="text-[13px] font-semibold" style={{ color: TEAL_DARK }}>📹 {firstName}&apos;s intro</p>
+                  </div>
+                </div>
+              )}
+
+              {/* About */}
+              <div className="bg-white rounded-2xl border border-black/[0.06] p-7" style={{ boxShadow: '0 2px 12px rgba(8,78,78,0.06)' }}>
+                <h2 className="font-serif text-xl font-bold mb-4" style={{ color: TEAL_DARK }}>About {firstName}</h2>
+                <p className="text-[15px] leading-relaxed whitespace-pre-wrap" style={{ color: 'rgba(8,78,78,0.7)' }}>{host.bio}</p>
               </div>
 
-              {/* Photos grid */}
-              {photos.length > 1 && (
-                <div className="bg-white rounded-2xl border border-black/[0.08] p-6">
-                  <h2 className="font-serif text-lg font-semibold mb-3">Photos</h2>
-                  <div className="grid grid-cols-3 gap-2">
-                    {photos.slice(1, 7).map((p) => p.publicUrl && (
-                      <img key={p.id} src={p.publicUrl} alt="" className="w-full aspect-square object-cover rounded-xl" />
+              {/* What I can show you — derived from categories */}
+              {host.categories?.length > 0 && (
+                <div className="bg-white rounded-2xl border border-black/[0.06] p-7" style={{ boxShadow: '0 2px 12px rgba(8,78,78,0.06)' }}>
+                  <h2 className="font-serif text-xl font-bold mb-5" style={{ color: TEAL_DARK }}>What {firstName} can show you</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {host.categories.map((cat: string) => {
+                      const meta = CATEGORY_META[cat] ?? { icon: Compass, label: cat.replace('-', ' '), description: 'Local experiences' }
+                      const Icon = meta.icon
+                      return (
+                        <div key={cat} className="flex items-start gap-3 p-4 rounded-xl" style={{ background: '#F0FAFA', border: '1px solid rgba(12,123,123,0.10)' }}>
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(12,123,123,0.12)' }}>
+                            <Icon size={20} style={{ color: TEAL }} />
+                          </div>
+                          <div>
+                            <div className="text-sm font-bold capitalize" style={{ color: TEAL_DARK }}>{meta.label}</div>
+                            <div className="text-xs mt-0.5" style={{ color: 'rgba(8,78,78,0.5)' }}>{meta.description}</div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Quick facts — all from host registration data */}
+              <div className="bg-white rounded-2xl border border-black/[0.06] p-7" style={{ boxShadow: '0 2px 12px rgba(8,78,78,0.06)' }}>
+                <h2 className="font-serif text-xl font-bold mb-5" style={{ color: TEAL_DARK }}>Quick facts</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Location */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#FFF8E1' }}>
+                      <MapPin size={18} style={{ color: '#D97706' }} />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'rgba(8,78,78,0.4)' }}>Based in</div>
+                      <div className="text-sm font-bold" style={{ color: TEAL_DARK }}>{host.flagEmoji} {host.cityName}{host.neighborhood ? `, ${host.neighborhood}` : ''}</div>
+                    </div>
+                  </div>
+
+                  {/* Languages */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#E0F2F2' }}>
+                      <Globe size={18} style={{ color: TEAL }} />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'rgba(8,78,78,0.4)' }}>Speaks</div>
+                      <div className="text-sm font-bold" style={{ color: TEAL_DARK }}>
+                        {host.languages.map((l: string) => LANG_NAMES[l] ?? l.toUpperCase()).join(', ')}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Host type */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#F0FAFA' }}>
+                      <Users size={18} style={{ color: TEAL }} />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'rgba(8,78,78,0.4)' }}>Host type</div>
+                      <div className="text-sm font-bold" style={{ color: TEAL_DARK }}>{hostTypeLabel(host.hostType)}</div>
+                    </div>
+                  </div>
+
+                  {/* Member since */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#FFF0E8' }}>
+                      <Calendar size={18} style={{ color: '#E8621A' }} />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'rgba(8,78,78,0.4)' }}>Member since</div>
+                      <div className="text-sm font-bold" style={{ color: TEAL_DARK }}>
+                        {new Date(host.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Response rate */}
+                  {host.responseRate && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#E8F5E9' }}>
+                        <Clock size={18} style={{ color: '#2E7D32' }} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'rgba(8,78,78,0.4)' }}>Response rate</div>
+                        <div className="text-sm font-bold" style={{ color: TEAL_DARK }}>{host.responseRate}%</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Hourly rate */}
+                  {host.hourlyRateCents && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#FFF8E1' }}>
+                        <span className="text-base font-bold" style={{ color: '#D97706' }}>€</span>
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'rgba(8,78,78,0.4)' }}>Session rate</div>
+                        <div className="text-sm font-bold" style={{ color: TEAL_DARK }}>{formatCents(host.hourlyRateCents)} per hour</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Photo gallery — shown only when host uploads real photos (production) */}
+              {photos.length > 0 && (
+                <div className="bg-white rounded-2xl border border-black/[0.06] p-7" style={{ boxShadow: '0 2px 12px rgba(8,78,78,0.06)' }}>
+                  <h2 className="font-serif text-xl font-bold mb-4" style={{ color: TEAL_DARK }}>Photos</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {photos.slice(0, 6).map((p) => p.publicUrl && (
+                      <div key={p.id} className="rounded-xl overflow-hidden" style={{ boxShadow: '0 2px 8px rgba(8,78,78,0.08)' }}>
+                        <img src={p.publicUrl} alt="" className="w-full aspect-[4/3] object-cover" />
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -174,16 +348,23 @@ export default async function HostProfilePage({ params }: Props) {
 
               {/* Reviews */}
               {recentReviews.length > 0 && (
-                <div className="bg-white rounded-2xl border border-black/[0.08] p-6">
-                  <h2 className="font-serif text-lg font-semibold mb-4">Reviews</h2>
-                  <div className="space-y-4">
+                <div className="bg-white rounded-2xl border border-black/[0.06] p-7" style={{ boxShadow: '0 2px 12px rgba(8,78,78,0.06)' }}>
+                  <h2 className="font-serif text-xl font-bold mb-5" style={{ color: TEAL_DARK }}>What travelers say</h2>
+                  <div className="space-y-5">
                     {recentReviews.map((r) => (
-                      <div key={r.id} className="border-b border-black/[0.06] pb-4 last:border-0 last:pb-0">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <div className="flex">{Array.from({length:r.rating}).map((_,i)=><Star key={i} size={12} className="fill-amber-400 stroke-amber-400"/>)}</div>
-                          <span className="text-sm font-medium text-ink">{r.reviewerName ?? 'Traveler'}</span>
+                      <div key={r.id} className="pb-5 last:pb-0" style={{ borderBottom: '1px solid rgba(8,78,78,0.06)' }}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: `linear-gradient(135deg, ${TEAL}, ${TEAL_DARK})` }}>
+                              {(r.reviewerName ?? 'T')[0].toUpperCase()}
+                            </div>
+                            <span className="text-sm font-semibold" style={{ color: TEAL_DARK }}>{r.reviewerName ?? 'Traveler'}</span>
+                          </div>
+                          <div className="flex gap-0.5">
+                            {Array.from({ length: r.rating }).map((_, i) => <Star key={i} size={13} className="fill-amber-400 stroke-amber-400" />)}
+                          </div>
                         </div>
-                        {r.body && <p className="text-sm text-ink-soft leading-relaxed">{r.body}</p>}
+                        {r.body && <p className="text-sm leading-relaxed" style={{ color: 'rgba(8,78,78,0.65)' }}>{r.body}</p>}
                       </div>
                     ))}
                   </div>
@@ -191,27 +372,89 @@ export default async function HostProfilePage({ params }: Props) {
               )}
             </div>
 
-            {/* Right — details sidebar */}
-            <div className="space-y-4">
-              <div className="bg-white rounded-2xl border border-black/[0.08] p-5">
-                <h3 className="text-xs font-semibold text-terra uppercase tracking-widest mb-3">Languages</h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {host.languages.map((l: string) => (
-                    <span key={l} className="px-3 py-1 rounded-full bg-sand text-xs font-medium text-ink-mid">{l.toUpperCase()}</span>
-                  ))}
+            {/* ── RIGHT COLUMN (1/3) — Sticky sidebar ── */}
+            <div className="space-y-5">
+              {/* Action card */}
+              <div className="bg-white rounded-2xl border border-black/[0.06] p-6 sticky top-[90px]" style={{ boxShadow: '0 4px 20px rgba(8,78,78,0.08)' }}>
+                {host.hourlyRateCents && (
+                  <div className="flex items-baseline gap-1 mb-4">
+                    <span className="text-2xl font-bold" style={{ color: TEAL_DARK }}>{formatCents(host.hourlyRateCents)}</span>
+                    <span className="text-sm" style={{ color: 'rgba(8,78,78,0.45)' }}>per hour</span>
+                  </div>
+                )}
+                <div className="flex flex-col gap-2.5 mb-5">
+                  {sessionUser ? (
+                    <>
+                      <Link
+                        href={`/conversations/new?hostId=${host.userId}`}
+                        className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-semibold text-sm text-white transition-all hover:-translate-y-0.5"
+                        style={{ background: `linear-gradient(135deg, ${TEAL}, ${TEAL_DARK})`, boxShadow: `0 4px 16px rgba(12,123,123,0.35)` }}
+                      >
+                        <MessageCircle size={16} />
+                        Message {firstName}
+                      </Link>
+                      {host.hourlyRateCents && (
+                        <BookSessionButton
+                          hostUserId={host.userId}
+                          hostName={firstName}
+                          sessionRateCents={host.hourlyRateCents}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href={`/auth/login?redirect=/hosts/${params.id}`}
+                        className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-semibold text-sm text-white transition-all hover:-translate-y-0.5"
+                        style={{ background: `linear-gradient(135deg, ${TEAL}, ${TEAL_DARK})`, boxShadow: `0 4px 16px rgba(12,123,123,0.35)` }}
+                      >
+                        <MessageCircle size={16} />
+                        Message {firstName}
+                      </Link>
+                      <Link
+                        href={`/auth/login?redirect=/hosts/${params.id}`}
+                        className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5"
+                        style={{ background: 'linear-gradient(135deg, #E8621A, #F07830)', boxShadow: '0 4px 16px rgba(232,98,26,0.35)' }}
+                      >
+                        Book a session
+                        <ChevronRight size={15} />
+                      </Link>
+                      <p className="text-center text-xs" style={{ color: 'rgba(8,78,78,0.4)' }}>
+                        Log in to message or book — subscribe from €6
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                {/* Quick info */}
+                <div className="pt-4" style={{ borderTop: '1px solid rgba(8,78,78,0.08)' }}>
+                  <div className="flex items-center gap-2 text-sm mb-2" style={{ color: 'rgba(8,78,78,0.55)' }}>
+                    <Shield size={13} />
+                    <span>Safety verified meeting spots</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm" style={{ color: 'rgba(8,78,78,0.55)' }}>
+                    <Clock size={13} />
+                    <span>Usually responds within 2 hours</span>
+                  </div>
                 </div>
               </div>
-              <div className="bg-white rounded-2xl border border-black/[0.08] p-5">
-                <h3 className="text-xs font-semibold text-terra uppercase tracking-widest mb-3">Interests</h3>
-                <div className="flex flex-wrap gap-1.5">
+
+              {/* Interests */}
+              <div className="bg-white rounded-2xl border border-black/[0.06] p-6" style={{ boxShadow: '0 2px 12px rgba(8,78,78,0.06)' }}>
+                <h3 className="text-[11px] font-bold tracking-[0.12em] uppercase mb-3" style={{ color: TEAL }}>Interests</h3>
+                <div className="flex flex-wrap gap-2">
                   {host.categories.map((c: string) => (
-                    <span key={c} className="px-3 py-1 rounded-full bg-terra-pale text-xs font-medium text-terra">{c.replace('-',' ')}</span>
+                    <span key={c} className="px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: '#E0F2F2', color: TEAL_DARK, border: '1px solid rgba(12,123,123,0.12)' }}>
+                      {c.replace('-', ' ')}
+                    </span>
                   ))}
                 </div>
               </div>
-              <div className="bg-white rounded-2xl border border-black/[0.08] p-5">
-                <h3 className="text-xs font-semibold text-terra uppercase tracking-widest mb-3">Host type</h3>
-                <p className="text-sm text-ink-mid capitalize">{host.hostType === 'any' ? 'Open to all travelers' : host.hostType}</p>
+
+              {/* Host type */}
+              <div className="bg-white rounded-2xl border border-black/[0.06] p-6" style={{ boxShadow: '0 2px 12px rgba(8,78,78,0.06)' }}>
+                <h3 className="text-[11px] font-bold tracking-[0.12em] uppercase mb-3" style={{ color: TEAL }}>Host type</h3>
+                <p className="text-sm font-medium capitalize" style={{ color: TEAL_DARK }}>{host.hostType === 'any' ? 'Open to all travelers' : host.hostType}</p>
               </div>
             </div>
           </div>

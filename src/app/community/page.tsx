@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 const POSTS = [
   { author: 'Amira K.', city: '🇩🇪 Berlin', initials: 'AK', time: '2 days ago', title: 'Tips for first-time hosts: what I learned from my first 50 travelers', likes: 34, replies: 12 },
@@ -35,8 +35,8 @@ export default function CommunityPage() {
         </div>
 
         {/* Community notice */}
-        <div className="py-5 px-5 md:px-11 text-center border-b" style={{ backgroundColor: '#F7FAF8', borderColor: 'rgba(15,61,34,0.10)' }}>
-          <p className="text-sm" style={{ color: '#4A7A5C' }}>
+        <div className="py-5 px-5 md:px-11 text-center border-b" style={{ backgroundColor: '#F7FAF8', borderColor: 'rgba(8,78,78,0.10)' }}>
+          <p className="text-sm" style={{ color: '#4A8E8E' }}>
             🔒 Full community access is available to <strong style={{ color: GREEN }}>verified Offmap hosts only</strong>.
             <Link href="/become-a-host" className="ml-2 font-semibold underline" style={{ color: '#E8621A' }}>Become a host →</Link>
           </p>
@@ -52,7 +52,7 @@ export default function CommunityPage() {
               </div>
               <div className="space-y-4">
                 {POSTS.map(p => (
-                  <div key={p.title} className="p-5 rounded-2xl cursor-pointer hover:-translate-y-0.5 transition-all" style={{ border: '1px solid rgba(15,61,34,0.10)', backgroundColor: '#F7FAF8' }}>
+                  <div key={p.title} className="p-5 rounded-2xl cursor-pointer hover:-translate-y-0.5 transition-all" style={{ border: '1px solid rgba(8,78,78,0.10)', backgroundColor: '#F7FAF8' }}>
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white" style={{ backgroundColor: GREEN }}>
                         {p.initials}
@@ -84,7 +84,7 @@ export default function CommunityPage() {
                 </Link>
               </div>
 
-              <div className="p-6 rounded-2xl" style={{ border: '1px solid rgba(15,61,34,0.10)', backgroundColor: '#F7FAF8' }}>
+              <div className="p-6 rounded-2xl" style={{ border: '1px solid rgba(8,78,78,0.10)', backgroundColor: '#F7FAF8' }}>
                 <h3 className="font-bold text-base mb-4" style={{ color: GREEN }}>Community channels</h3>
                 {[
                   { icon: '🏙️', label: 'City channels', count: '8 cities' },
@@ -94,7 +94,7 @@ export default function CommunityPage() {
                   { icon: '🏛️', label: 'History & Culture', count: '221 members' },
                 ].map(c => (
                   <div key={c.label} className="flex items-center justify-between py-2.5 border-b last:border-0 cursor-pointer"
-                    style={{ borderColor: 'rgba(15,61,34,0.08)' }}>
+                    style={{ borderColor: 'rgba(8,78,78,0.08)' }}>
                     <span className="text-sm" style={{ color: GREEN }}>{c.icon} {c.label}</span>
                     <span className="text-xs" style={{ color: '#6EA880' }}>{c.count}</span>
                   </div>
@@ -103,7 +103,7 @@ export default function CommunityPage() {
 
               <div className="p-5 rounded-2xl text-sm" style={{ backgroundColor: '#FFF9F5', border: '1px solid rgba(232,98,26,0.15)' }}>
                 <p className="font-semibold mb-1" style={{ color: '#E8621A' }}>Community guidelines</p>
-                <p style={{ color: '#4A7A5C' }}>Be respectful, share generously, no spam. Read the full <Link href="/host-guidelines" className="underline">Host Guidelines</Link>.</p>
+                <p style={{ color: '#4A8E8E' }}>Be respectful, share generously, no spam. Read the full <Link href="/host-guidelines" className="underline">Host Guidelines</Link>.</p>
               </div>
             </div>
           </div>

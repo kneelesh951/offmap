@@ -2,26 +2,23 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 const COLS = [
   {
     title: 'EXPLORE',
     links: [
-      ['Browse Hosts',  '/search'],
-      ['Experiences',   '/experiences'],
-      ['Gift Cards',    '/gift-cards'],
-      ['Pricing',       '/pricing'],
+      ['Browse Hosts',   '/search'],
+      ['How It Works',   '/how-it-works'],
+      ['Pricing',        '/pricing'],
+      ['FAQ',            '/faq'],
     ],
   },
   {
     title: 'HOSTS',
     links: [
       ['Become a Host',    '/become-a-host'],
-      ['Guidelines',       '/host-guidelines'],
-      ['Dashboard',        '/host-dashboard'],
-      ['FAQ',              '/faq'],
-      ['Community',        '/community'],
+      ['Host Guidelines',  '/host-guidelines'],
     ],
   },
   {
@@ -37,20 +34,11 @@ const COLS = [
   },
 ]
 
-const CITIES = [
-  { flag: '🇩🇪', name: 'Berlin' },
-  { flag: '🇩🇪', name: 'Hamburg' },
-  { flag: '🇩🇪', name: 'Cologne' },
-  { flag: '🇵🇹', name: 'Lisbon' },
-  { flag: '🇳🇱', name: 'Amsterdam' },
-  { flag: '🇪🇸', name: 'Barcelona' },
-]
-
 const SOCIAL = [
-  { label: '𝕏',  href: '#' },
-  { label: '◎',  href: '#' },
-  { label: 'in', href: '#' },
-  { label: '♪',  href: '#' },
+  { label: '𝕏',  tooltip: 'Coming soon' },
+  { label: '◎',  tooltip: 'Coming soon' },
+  { label: 'in', tooltip: 'Coming soon' },
+  { label: '♪',  tooltip: 'Coming soon' },
 ]
 
 export function Footer() {
@@ -63,7 +51,7 @@ export function Footer() {
   }, [])
 
   return (
-    <footer style={{ background: '#132d1c' }}>
+    <footer style={{ background: '#042D2D' }}>
       {/* ── Main grid ── */}
       <div className="max-w-7xl mx-auto px-6 md:px-14 pt-14 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12"
@@ -94,14 +82,14 @@ export function Footer() {
               Go where the map ends. Real locals. Real cities. No tour buses, no scripts.
             </p>
 
-            {/* Social icons */}
+            {/* Social icons (coming soon) */}
             <div className="flex gap-2.5">
               {SOCIAL.map(s => (
-                <a key={s.label} href={s.href}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all hover:bg-white/15"
-                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.11)', color: 'rgba(255,255,255,0.55)' }}>
+                <span key={s.label} title={s.tooltip}
+                  className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold cursor-default"
+                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.25)' }}>
                   {s.label}
-                </a>
+                </span>
               ))}
             </div>
           </div>
@@ -225,21 +213,6 @@ export function Footer() {
             © {new Date().getFullYear()} Offmap GmbH · Registered in Frankfurt, Germany · All rights reserved
           </p>
 
-          {/* City pills */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {CITIES.map(c => (
-              <span key={c.name}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.60)' }}>
-                {c.flag} {c.name}
-              </span>
-            ))}
-            <span
-              className="inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-medium"
-              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.60)' }}>
-              +7 more
-            </span>
-          </div>
         </div>
       </div>
     </footer>

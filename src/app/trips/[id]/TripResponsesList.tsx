@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-const GREEN = '#0F3D22'
+const GREEN = '#084E4E'
 
 const CATEGORY_LABELS: Record<string, string> = {
   'food-drink': 'Food & Drink', 'art-culture': 'Art & Culture', 'nature': 'Nature',
@@ -97,7 +97,7 @@ export function TripResponsesList({ responses, tripId, hasSubscription }: Props)
 
           return (
             <div key={resp.id} className="bg-white rounded-2xl overflow-hidden"
-              style={{ border: '1px solid rgba(15,61,34,0.10)', position: 'relative' }}>
+              style={{ border: '1px solid rgba(8,78,78,0.10)', position: 'relative' }}>
 
               {/* Blur overlay for non-subscribers */}
               {isBlurred && (
@@ -131,9 +131,9 @@ export function TripResponsesList({ responses, tripId, hasSubscription }: Props)
                         </span>
                       )}
                     </div>
-                    <p className="text-sm mt-0.5" style={{ color: '#2D6B3F' }}>{resp.hostHeadline}</p>
+                    <p className="text-sm mt-0.5" style={{ color: '#2A8080' }}>{resp.hostHeadline}</p>
                     {resp.hostNeighborhood && (
-                      <p className="text-xs mt-0.5" style={{ color: '#4A7A5C' }}>📍 {resp.hostNeighborhood}</p>
+                      <p className="text-xs mt-0.5" style={{ color: '#4A8E8E' }}>📍 {resp.hostNeighborhood}</p>
                     )}
                   </div>
                 </div>
@@ -180,7 +180,7 @@ export function TripResponsesList({ responses, tripId, hasSubscription }: Props)
                     </button>
                     <Link href={`/hosts/${resp.hostId}`}
                       className="px-5 py-3 rounded-xl text-sm font-semibold flex items-center"
-                      style={{ border: `1.5px solid rgba(15,61,34,0.15)`, color: GREEN, textDecoration: 'none' }}>
+                      style={{ border: `1.5px solid rgba(8,78,78,0.15)`, color: GREEN, textDecoration: 'none' }}>
                       View profile
                     </Link>
                   </div>
