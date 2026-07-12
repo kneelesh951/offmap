@@ -61,6 +61,19 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
   const [sending, setSending] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  // Inline styles can't use CSS media queries, so detect a phone-sized
+  // viewport in JS. On mobile we hide the decorative left "benefits" panel and
+  // let the chat take the full width. Starts false (matches server render) and
+  // updates after mount to avoid a hydration mismatch.
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
   const { markSeen } = useRealtimeMessages(conversationId, (msg) => {
     setMsgs((prev) => {
       if (prev.some(m => m.id === (msg as any).id)) return prev
@@ -102,8 +115,8 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
   return (
     <div style={{ display: 'flex', minHeight: 'calc(100vh - 66px)', marginTop: '66px', backgroundColor: '#EDE6DA' }}>
 
-      {/* ══ LEFT: Benefits panel ══════════════════════════════ */}
-      <div style={{ width: '45%', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      {/* ══ LEFT: Benefits panel (hidden on mobile — chat goes full-width) ══ */}
+      <div style={{ width: '45%', position: 'relative', overflow: 'hidden', display: isMobile ? 'none' : 'flex', flexDirection: 'column' }}>
 
         {/* Base gradient */}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(170deg, #0A2E1B 0%, #0C3520 35%, #122B40 100%)' }} />
@@ -172,7 +185,7 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
         {/* Chat header — rich dark green */}
-        <div style={{ background: 'linear-gradient(135deg, #0B2E1A 0%, #14432A 50%, #0E3A24 100%)', padding: '18px 28px', display: 'flex', alignItems: 'center', gap: '16px', borderBottom: '3px solid #E8621A' }}>
+        <div style={{ background: 'linear-gradient(135deg, #0B2E1A 0%, #14432A 50%, #0E3A24 100%)', padding: isMobile ? '14px 16px' : '18px 28px', display: 'flex', alignItems: 'center', gap: '16px', borderBottom: '3px solid #E8621A' }}>
           <div style={{ position: 'relative' }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-fraunces), Georgia, serif', fontSize: '19px', fontWeight: 700, color: '#fff', background: 'linear-gradient(135deg,#E8621A,#D4540F)', boxShadow: '0 4px 14px rgba(232,98,26,0.45)', border: '2.5px solid rgba(255,255,255,0.2)' }}>
               {otherUserName[0]}
@@ -189,7 +202,7 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
         </div>
 
         {/* Messages area — subtle pattern background */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '30px 28px', display: 'flex', flexDirection: 'column', gap: '6px', background: 'linear-gradient(180deg, #F5F1EB 0%, #EDE8E0 50%, #E8E3DA 100%)' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '20px 14px' : '30px 28px', display: 'flex', flexDirection: 'column', gap: '6px', background: 'linear-gradient(180deg, #F5F1EB 0%, #EDE8E0 50%, #E8E3DA 100%)' }}>
 
           {/* Safety banner — pinned at top */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '14px 18px', borderRadius: '12px', background: 'linear-gradient(135deg, #FEF3C7, #FDE68A)', border: '1px solid #F59E0B', marginBottom: '16px' }}>
@@ -233,7 +246,7 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', flexDirection: isMe ? 'row-reverse' : 'row' }}>
                   <div
                     style={{
-                      maxWidth: '65%',
+                      maxWidth: isMobile ? '82%' : '65%',
                       padding: '12px 18px',
                       fontSize: '14.5px',
                       lineHeight: 1.7,
@@ -256,7 +269,7 @@ export function ChatWindow({ conversationId, currentUserId, otherUserName, initi
         </div>
 
         {/* Input bar — elevated */}
-        <div style={{ backgroundColor: '#fff', borderTop: '1px solid rgba(8,78,78,0.08)', padding: '18px 24px', boxShadow: '0 -6px 24px rgba(0,0,0,0.04)' }}>
+        <div style={{ backgroundColor: '#fff', borderTop: '1px solid rgba(8,78,78,0.08)', padding: isMobile ? '14px 14px' : '18px 24px', boxShadow: '0 -6px 24px rgba(0,0,0,0.04)' }}>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
             <div style={{ flex: 1, borderRadius: '16px', border: '2px solid rgba(8,78,78,0.10)', backgroundColor: '#F8F5F0', overflow: 'hidden', transition: 'border-color 0.2s, box-shadow 0.2s' }}>
               <textarea
