@@ -1,19 +1,12 @@
-import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { en } from '@/content/en'
 
 const GREEN = '#084E4E'
 
-const TEAM = [
-  { name: 'Neelesh', role: 'Founder & CEO', city: 'Frankfurt', bio: 'Visionary entrepreneur and the driving force behind Offmap. Passionate about authentic travel experiences and connecting people across cultures, Neelesh built Offmap to reimagine how travelers discover and experience cities — through the eyes of the people who live there.' },
-]
-
-const VALUES = [
-  { icon: '🤝', title: 'Authentic connection', body: 'We believe the best travel experiences happen between real people — not through packaged tours or algorithm-curated content.' },
-  { icon: '🔒', title: 'Safety first', body: 'Every host is ID-verified. Every traveler is reviewed. We maintain strict community standards and a zero-tolerance policy for harassment.' },
-  { icon: '🌍', title: 'Local economy', body: 'We take zero commission from host earnings. Our flat subscription model means locals keep 100% of what they negotiate.' },
-  { icon: '🇪🇺', title: 'Privacy by design', body: 'Built from day one for GDPR compliance. Your data is stored in the EU, never sold, and you can request full deletion at any time.' },
-]
+// All the text for this page now comes from one central file (src/content/en.ts).
+// This page only describes layout & styling — no hardcoded copy.
+const t = en.about
 
 export default function AboutPage() {
   return (
@@ -24,12 +17,12 @@ export default function AboutPage() {
         <div className="pt-[68px]">
           <div className="py-20 px-5 md:px-11 text-white" style={{ backgroundColor: GREEN }}>
             <div className="max-w-3xl mx-auto text-center">
-              <p className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.55)' }}>About Offmap</p>
+              <p className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.55)' }}>{t.hero.eyebrow}</p>
               <h1 className="font-serif text-5xl font-bold mb-6" style={{ letterSpacing: '-1.5px', lineHeight: 1.05 }}>
-                We believe every city has<br />a story worth sharing.
+                {t.hero.titleLine1}<br />{t.hero.titleLine2}
               </h1>
               <p className="text-lg leading-relaxed max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.70)' }}>
-                Offmap connects curious travelers with verified locals across Europe — not tour guides, not influencers, but real people who know and love their city.
+                {t.hero.subtitle}
               </p>
             </div>
           </div>
@@ -38,13 +31,12 @@ export default function AboutPage() {
         {/* Story */}
         <div className="py-20 px-5 md:px-11 bg-white">
           <div className="max-w-3xl mx-auto">
-            <p className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: '#E8621A' }}>Our Story</p>
-            <h2 className="font-serif text-4xl font-bold mb-8" style={{ color: GREEN, letterSpacing: '-1px' }}>Started with a bold idea. Now live across 8 European cities.</h2>
+            <p className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: '#E8621A' }}>{t.story.eyebrow}</p>
+            <h2 className="font-serif text-4xl font-bold mb-8" style={{ color: GREEN, letterSpacing: '-1px' }}>{t.story.title}</h2>
             <div className="space-y-5 text-base leading-relaxed" style={{ color: '#3D8055' }}>
-              <p>In 2023, Neelesh had a frustration shared by millions of travelers: tourists were paying €80 for scripted group bus tours while locals — people with real stories, deep knowledge, and genuine passion for their cities — had no platform to share it.</p>
-              <p>He built the first version of Offmap and launched it quietly with 12 hosts, and watched something remarkable happen: travelers were writing reviews saying it was the best experience of their entire trip. Not the best tour. The best part of their trip.</p>
-              <p>Today Offmap operates in 8 cities across Europe with over 1,300 verified hosts. Every host sets their own rate. Every traveler subscribes once and connects with as many locals as they like. The platform takes no commission on host earnings — ever.</p>
-              <p>We are registered as Offmap GmbH in Frankfurt, Germany, and operate under German and EU law. Our servers and data are hosted entirely within the European Union, in compliance with GDPR.</p>
+              {t.story.paragraphs.map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
             </div>
           </div>
         </div>
@@ -52,10 +44,10 @@ export default function AboutPage() {
         {/* Values */}
         <div className="py-20 px-5 md:px-11" style={{ backgroundColor: '#F7FAF8' }}>
           <div className="max-w-5xl mx-auto">
-            <p className="text-sm font-semibold uppercase tracking-widest mb-4 text-center" style={{ color: '#E8621A' }}>What we stand for</p>
-            <h2 className="font-serif text-4xl font-bold mb-12 text-center" style={{ color: GREEN, letterSpacing: '-1px' }}>Our values</h2>
+            <p className="text-sm font-semibold uppercase tracking-widest mb-4 text-center" style={{ color: '#E8621A' }}>{t.values.eyebrow}</p>
+            <h2 className="font-serif text-4xl font-bold mb-12 text-center" style={{ color: GREEN, letterSpacing: '-1px' }}>{t.values.title}</h2>
             <div className="grid md:grid-cols-2 gap-6">
-              {VALUES.map(v => (
+              {t.values.items.map(v => (
                 <div key={v.title} className="bg-white rounded-2xl p-8 border" style={{ borderColor: 'rgba(8,78,78,0.10)' }}>
                   <div className="text-3xl mb-4">{v.icon}</div>
                   <h3 className="font-serif text-xl font-bold mb-3" style={{ color: GREEN }}>{v.title}</h3>
@@ -69,10 +61,10 @@ export default function AboutPage() {
         {/* Team */}
         <div className="py-20 px-5 md:px-11 bg-white">
           <div className="max-w-5xl mx-auto">
-            <p className="text-sm font-semibold uppercase tracking-widest mb-4 text-center" style={{ color: '#E8621A' }}>The team</p>
-            <h2 className="font-serif text-4xl font-bold mb-12 text-center" style={{ color: GREEN, letterSpacing: '-1px' }}>People behind Offmap</h2>
+            <p className="text-sm font-semibold uppercase tracking-widest mb-4 text-center" style={{ color: '#E8621A' }}>{t.team.eyebrow}</p>
+            <h2 className="font-serif text-4xl font-bold mb-12 text-center" style={{ color: GREEN, letterSpacing: '-1px' }}>{t.team.title}</h2>
             <div className="grid md:grid-cols-2 gap-6">
-              {TEAM.map(m => (
+              {t.team.members.map(m => (
                 <div key={m.name} className="flex gap-5 p-6 rounded-2xl border" style={{ borderColor: 'rgba(8,78,78,0.10)' }}>
                   <div className="w-14 h-14 rounded-2xl flex items-center justify-center font-serif text-xl font-bold text-white flex-shrink-0"
                     style={{ backgroundColor: GREEN }}>
@@ -92,18 +84,9 @@ export default function AboutPage() {
         {/* Company info */}
         <div className="py-16 px-5 md:px-11" style={{ backgroundColor: GREEN }}>
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-serif text-3xl font-bold text-white mb-8" style={{ letterSpacing: '-0.5px' }}>Company information</h2>
+            <h2 className="font-serif text-3xl font-bold text-white mb-8" style={{ letterSpacing: '-0.5px' }}>{t.company.title}</h2>
             <div className="grid sm:grid-cols-2 gap-4 text-left">
-              {[
-                ['Legal name', 'Offmap GmbH'],
-                ['Registered office', 'Taunusanlage 8, 60329 Frankfurt am Main, Germany'],
-                ['Registration court', 'Amtsgericht Frankfurt am Main'],
-                ['Registration number', 'HRB 124783'],
-                ['VAT ID', 'DE 312 456 789'],
-                ['Founder & CEO', 'Neelesh'],
-                ['Founded', '2023'],
-                ['Contact', 'hello@offmap.com'],
-              ].map(([label, value]) => (
+              {t.company.fields.map(([label, value]) => (
                 <div key={label} className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
                   <div className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.45)' }}>{label}</div>
                   <div className="text-sm font-medium text-white">{value}</div>
