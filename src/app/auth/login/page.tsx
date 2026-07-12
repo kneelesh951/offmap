@@ -1,6 +1,7 @@
 'use client'
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { usePlatformStats, formatHostCount } from '@/hooks/usePlatformStats'
 import Link from 'next/link'
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react'
 
@@ -23,6 +24,7 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const stats = usePlatformStats()
 
   const redirectParam = searchParams.get('redirect') ?? ''
   const asParam = searchParams.get('as') ?? ''
@@ -133,7 +135,7 @@ function LoginForm() {
         </div>
 
         <div className="relative z-10 flex gap-8">
-          {[['1,300+', 'Verified hosts'], ['8', 'Cities'], ['4.97', 'Avg rating']].map(([v, l]) => (
+          {[[formatHostCount(stats.hostCount), 'Verified hosts'], [String(stats.cityCount), 'Cities'], ['4.97', 'Avg rating']].map(([v, l]) => (
             <div key={l}>
               <div className="font-serif text-2xl font-bold text-white">{v}</div>
               <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.40)' }}>{l}</div>

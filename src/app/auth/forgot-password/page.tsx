@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react'
+import { usePlatformStats, formatHostCount } from '@/hooks/usePlatformStats'
 
 const GREEN = '#084E4E'
 const ORANGE = '#E8621A'
@@ -12,6 +13,7 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
+  const stats = usePlatformStats()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -57,7 +59,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         <div className="relative z-10 flex gap-8">
-          {[['1,300+', 'Verified hosts'], ['8', 'Cities'], ['4.97', 'Avg rating']].map(([v, l]) => (
+          {[[formatHostCount(stats.hostCount), 'Verified hosts'], [String(stats.cityCount), 'Cities'], ['4.97', 'Avg rating']].map(([v, l]) => (
             <div key={l}>
               <div className="font-serif text-2xl font-bold text-white">{v}</div>
               <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.40)' }}>{l}</div>

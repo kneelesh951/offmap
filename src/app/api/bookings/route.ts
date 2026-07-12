@@ -106,6 +106,13 @@ export async function POST(req: Request) {
         noShowReportedBy: null,
       })
 
+      // Send booking request email to host
+      const { mockEmail } = await import('@/lib/mock/email')
+      const hostUser = mockDb.getUserById(data.hostUserId)
+      if (hostUser) {
+        mockEmail.sendBookingRequested(hostUser.email, hostUser.fullName, user.fullName, fees.travelerTotal)
+      }
+
       return NextResponse.json({ success: true, data: { booking } }, { status: 201 })
     }
 
@@ -160,6 +167,21 @@ export async function POST(req: Request) {
       .single()
 
     if (error) throw new Error(error.message)
+
+    // Send booking request email to host
+    const { sendBookingRequestedEmail } = await import('@/lib/email')
+    const { data: hostUser } = await admin.from('users').select('email, full_name').eq('id', data.hostUserId).maybeSingle()
+    if (hostUser?.email && booking) {
+      sendBookingRequestedEmail({
+        to: hostUser.email,
+        hostName: hostUser.full_name ?? 'Host',
+        travelerName: (await admin.from('users').select('full_name').eq('id', authUser.id).maybeSingle()).data?.full_name ?? 'Traveler',
+        sessionDate: null,
+        amountCents: fees.travelerTotal,
+        hostPayoutCents: fees.hostPayout,
+        bookingId: booking.id,
+      }).catch(console.error)
+    }
 
     return NextResponse.json({ success: true, data: { booking } }, { status: 201 })
 

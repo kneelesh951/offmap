@@ -20,6 +20,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Send deletion confirmation email BEFORE deleting (email still exists)
+    const { mockEmail } = await import('@/lib/mock/email')
+    const fullUser = mockDb.getUserById(user.id)
+    if (fullUser) {
+      mockEmail.sendAccountDeletion(fullUser.email, fullUser.fullName)
+    }
+
     const deleted = mockDb.deleteUserData(user.id)
     if (!deleted) {
       return NextResponse.json(
@@ -57,6 +64,13 @@ export async function POST(request: NextRequest) {
   }
 
   const userId = authUser.id
+
+  // Send deletion confirmation email BEFORE deleting (email still exists)
+  const { sendAccountDeletionEmail } = await import('@/lib/email')
+  const [userToDelete] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+  if (userToDelete?.email && !userToDelete.email.includes('@anonymized.local')) {
+    sendAccountDeletionEmail(userToDelete.email, userToDelete.fullName ?? 'there').catch(console.error)
+  }
 
   // Log the deletion request BEFORE deleting (GDPR audit)
   await db.insert(auditLogs).values({

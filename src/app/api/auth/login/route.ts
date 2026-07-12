@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { loginSchema } from '@/lib/validators'
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { email, password } = body
-
-  if (!email || !password) {
-    return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Email and password are required.' } }, { status: 422 })
+  const body = await request.json().catch(() => null)
+  const parsed = loginSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: parsed.error.errors[0]?.message ?? 'Email and password are required.',
+        },
+      },
+      { status: 422 }
+    )
   }
+  const { email, password } = parsed.data
 
   // ── Mock mode ────────────────────────────────────────────────────────────
   if (process.env.MOCK_MODE === 'true') {

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { GiftCardWaitlist } from '@/components/marketing/GiftCardWaitlist'
 
 const GREEN = '#084E4E'
 
@@ -90,18 +91,7 @@ export default function GiftCardsPage() {
           <div className="max-w-lg mx-auto text-center">
             <h2 className="font-serif text-3xl font-bold mb-3" style={{ letterSpacing: '-0.5px' }}>Get notified at launch</h2>
             <p className="mb-8 text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>No spam. One email when gift cards go live.</p>
-            <div className="flex gap-2">
-              <input type="email" placeholder="your@email.com"
-                className="flex-1 px-4 py-3 rounded-full text-sm focus:outline-none"
-                style={{ backgroundColor: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.25)', color: '#fff' }} />
-              <button className="px-6 py-3 rounded-full font-bold text-sm text-white flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg,#E8621A,#F07830)' }}>
-                Notify me
-              </button>
-            </div>
-            <p className="text-xs mt-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
-              By submitting your email you agree to our <Link href="/privacy" className="underline">Privacy Policy</Link>. Unsubscribe at any time.
-            </p>
+            <GiftCardWaitlist />
           </div>
         </div>
       </main>

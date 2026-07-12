@@ -1,6 +1,7 @@
 import { streamText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
+import { NextResponse } from 'next/server'
 
 export const maxDuration = 30
 
@@ -30,6 +31,19 @@ Rules:
 - Use the getStats tool to answer questions about the platform size`
 
 export async function POST(req: Request) {
+  if (process.env.MOCK_MODE === 'true') {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'AI_DISABLED',
+          message: 'Alma is disabled in mock mode. Set ANTHROPIC_API_KEY in your .env and restart the dev server to enable her.',
+        },
+      },
+      { status: 503 }
+    )
+  }
+
   const { messages } = await req.json()
 
   // Build the base URL from the request

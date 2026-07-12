@@ -93,6 +93,14 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     convo.lastMessageAt = new Date().toISOString()
     mockDb.conversations.set(params.id, convo)
 
+    // Email the other party about the new message
+    const { mockEmail } = await import('@/lib/mock/email')
+    const recipientId = convo.travelerId === user.id ? convo.hostId : convo.travelerId
+    const recipient = mockDb.getUserById(recipientId)
+    if (recipient) {
+      mockEmail.sendNewMessage(recipient.email, recipient.fullName, user.fullName, parsed.data.content)
+    }
+
     return NextResponse.json({ success: true, data: { ...msg, senderName: user.fullName } }, { status: 201 })
   }
 
@@ -107,5 +115,22 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   if (!convo) return NextResponse.json({ success: false, error: { code: 'NOT_FOUND', message: 'Not found' } }, { status: 404 })
   const [msg] = await db.insert(messages).values({ conversationId: params.id, senderId: user.id, content: parsed.data.content }).returning()
   await db.update(conversations).set({ lastMessageAt: new Date() }).where(eq(conversations.id, params.id))
+
+  // Email the other party about the new message
+  const { users } = await import('@/lib/db/schema')
+  const recipientId = convo.travelerId === user.id ? convo.hostId : convo.travelerId
+  const [recipient] = await db.select().from(users).where(eq(users.id, recipientId)).limit(1)
+  const [sender] = await db.select().from(users).where(eq(users.id, user.id)).limit(1)
+  if (recipient?.email) {
+    const { sendNewMessageEmail } = await import('@/lib/email')
+    sendNewMessageEmail({
+      to: recipient.email,
+      recipientName: recipient.fullName ?? 'there',
+      senderName: sender?.fullName ?? 'Someone',
+      messagePreview: parsed.data.content,
+      conversationId: params.id,
+    }).catch(console.error)
+  }
+
   return NextResponse.json({ success: true, data: msg }, { status: 201 })
 }

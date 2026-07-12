@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { CityAutocomplete, type CityOption } from '@/components/ui/CityAutocomplete'
+import { usePlatformStats, formatHostCount } from '@/hooks/usePlatformStats'
 
 const INTERESTS = [
   { value: 'food-drink',  label: 'Food & Drink' },
@@ -13,13 +14,6 @@ const INTERESTS = [
 ]
 
 const LANGUAGES = ['English', 'German', 'Spanish', 'French', 'Italian', 'Portuguese', 'Dutch']
-
-const STATS = [
-  { value: '1,300+', label: 'Verified hosts' },
-  { value: '8',      label: 'Cities live' },
-  { value: '4.9★',   label: 'Avg rating' },
-  { value: '€6',     label: 'From / day' },
-]
 
 const today = new Date().toISOString().split('T')[0]
 
@@ -37,6 +31,13 @@ export function HeroSearch() {
   const router = useRouter()
   const [tab, setTab] = useState<'find' | 'trip'>('find')
   const [cities, setCities] = useState<CityOption[]>([])
+  const stats = usePlatformStats()
+  const STATS = [
+    { value: formatHostCount(stats.hostCount), label: 'Verified hosts' },
+    { value: String(stats.cityCount),          label: 'Cities live' },
+    { value: '4.9★',                           label: 'Avg rating' },
+    { value: '€6',                             label: 'From / day' },
+  ]
 
   useEffect(() => {
     fetch('/api/cities')

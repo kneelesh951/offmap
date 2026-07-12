@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { registerSchema, type RegisterInput } from '@/lib/validators'
+import { usePlatformStats, formatHostCount } from '@/hooks/usePlatformStats'
 import { Eye, EyeOff, CheckCircle2, ArrowRight, Star } from 'lucide-react'
 
 const IS_MOCK = process.env.NEXT_PUBLIC_MOCK_MODE === 'true'
@@ -32,6 +33,7 @@ export default function BecomeAHostPage() {
   const [serverError, setServerError] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [success, setSuccess] = useState(false)
+  const stats = usePlatformStats()
 
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } =
     useForm<RegisterInput>({ resolver: zodResolver(registerSchema), defaultValues: { role: 'host' } })
@@ -117,7 +119,7 @@ export default function BecomeAHostPage() {
 
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 44 }}>
-              {[{ val: '4.97★', label: 'Avg rating' }, { val: '1,300+', label: 'Active hosts' }, { val: '€25–45', label: 'Per hour' }].map(s => (
+              {[{ val: '4.97★', label: 'Avg rating' }, { val: formatHostCount(stats.hostCount), label: 'Active hosts' }, { val: '€25–45', label: 'Per hour' }].map(s => (
                 <div key={s.label} style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 16, padding: '16px 12px', textAlign: 'center' }}>
                   <div style={{ fontFamily: 'Georgia, serif', fontSize: 18, fontWeight: 700, color: '#F5A623', marginBottom: 4 }}>{s.val}</div>
                   <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.40)' }}>{s.label}</div>

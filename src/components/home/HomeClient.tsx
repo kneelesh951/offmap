@@ -1040,25 +1040,53 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
           CITIES
       ════════════════════════════════════════ */}
       <div id="cities" className="max-w-7xl mx-auto px-5 md:px-11 py-14" style={{ borderBottom:`1px solid rgba(10,143,143,0.08)` }}>
-        <div className="mb-6">
-          <div className="overline text-terra mb-1">Available now</div>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold" style={{ color:GREEN_DARK, letterSpacing:'-0.03em' }}>Live <em className="italic text-gradient-terra">cities</em></h2>
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <div className="overline text-terra mb-1">Available now</div>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold" style={{ color:GREEN_DARK, letterSpacing:'-0.03em' }}>Live <em className="italic text-gradient-terra">cities</em></h2>
+          </div>
+          {heroCities.length > 0 && (
+            <Link href="/cities" className="hidden sm:inline-flex items-center gap-1.5 text-[13px] font-bold whitespace-nowrap hover:gap-2.5 transition-all" style={{ color:TERRA }}>
+              See all {heroCities.length} cities →
+            </Link>
+          )}
         </div>
         <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-          {heroCities.map(c => (
-            <Link key={c.id} href={`/search?cityId=${c.id}`}
-              className="flex-shrink-0 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl transition-all hover:scale-105"
-              style={{ minWidth:'120px', background:'#E0F2F2', boxShadow:'0 2px 8px rgba(12,123,123,0.10)', color:GREEN_DARK }}>
-              <span className="text-2xl">{c.flagEmoji}</span>
+          {[...heroCities]
+            .sort((a, b) => (b.hostCount ?? 0) - (a.hostCount ?? 0))
+            .slice(0, 12)
+            .map(c => (
+              <Link key={c.id} href={`/search?cityId=${c.id}`}
+                className="flex-shrink-0 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl transition-all hover:scale-105"
+                style={{ minWidth:'120px', background:'#E0F2F2', boxShadow:'0 2px 8px rgba(12,123,123,0.10)', color:GREEN_DARK }}>
+                <span className="text-2xl">{c.flagEmoji}</span>
+                <div>
+                  <div className="text-[13px] font-bold" style={{ color:GREEN_DARK }}>{c.name}</div>
+                  {c.hostCount > 0 && (
+                    <div className="text-[10px] font-semibold" style={{ color:'rgba(8,78,78,0.45)' }}>{c.hostCount} hosts</div>
+                  )}
+                </div>
+              </Link>
+            ))}
+          {heroCities.length > 12 && (
+            <Link href="/cities"
+              className="flex-shrink-0 flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl transition-all hover:scale-105"
+              style={{ minWidth:'120px', background:TERRA, color:'#fff', boxShadow:'0 4px 14px rgba(232,98,26,0.32)' }}>
               <div>
-                <div className="text-[13px] font-bold" style={{ color:GREEN_DARK }}>{c.name}</div>
-                {c.hostCount > 0 && (
-                  <div className="text-[10px] font-semibold" style={{ color:'rgba(8,78,78,0.45)' }}>{c.hostCount} hosts</div>
-                )}
+                <div className="text-[13px] font-bold">+{heroCities.length - 12} more</div>
+                <div className="text-[10px] font-semibold opacity-80">View all →</div>
               </div>
             </Link>
-          ))}
+          )}
         </div>
+        {/* Mobile-only "see all" link (the inline header version is hidden < sm) */}
+        {heroCities.length > 0 && (
+          <div className="sm:hidden mt-4">
+            <Link href="/cities" className="inline-flex items-center gap-1.5 text-[13px] font-bold" style={{ color:TERRA }}>
+              See all {heroCities.length} cities →
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* ════════════════════════════════════════

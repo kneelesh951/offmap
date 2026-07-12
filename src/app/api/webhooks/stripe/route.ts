@@ -15,7 +15,8 @@ import { headers } from 'next/headers'
 import { db } from '@/lib/db'
 import { subscriptions, users } from '@/lib/db/schema'
 import { stripe, verifyWebhookSignature } from '@/lib/stripe'
-import { sendSubscriptionConfirmationEmail } from '@/lib/email'
+import { sendSubscriptionConfirmationEmail, sendPaymentFailedEmail, sendSubscriptionCancelledEmail } from '@/lib/email'
+import { logRevenueEvent } from '@/lib/revenue/log'
 import { eq } from 'drizzle-orm'
 import { format } from 'date-fns'
 import type Stripe from 'stripe'
@@ -91,6 +92,21 @@ export async function POST(request: NextRequest) {
             },
           })
 
+        // Log revenue event — first charge of a new subscription
+        const amountCents = sub.items.data[0]?.price.unit_amount ?? 0
+        if (amountCents > 0) {
+          await logRevenueEvent({
+            type: 'subscription_charge',
+            userId,
+            subscriptionId: null, // our internal sub UUID — filled in via metadata below if we have it
+            stripeEventId: event.id,
+            amountCents,
+            currency: sub.currency.toUpperCase(),
+            occurredAt: new Date(event.created * 1000),
+            metadata: { plan, stripeSubscriptionId, source: 'checkout.session.completed' },
+          })
+        }
+
         // Send confirmation email
         const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
         if (user?.email) {
@@ -102,6 +118,34 @@ export async function POST(request: NextRequest) {
             expiresAt,
           })
         }
+
+        break
+      }
+
+      // ─── Renewal payment succeeded ─────────────────────────────────────────
+      // Fires for every recurring charge after the first. The first charge is
+      // captured by checkout.session.completed; this handles month-2, month-3, etc.
+      case 'invoice.payment_succeeded': {
+        const invoice = event.data.object as Stripe.Invoice
+        const stripeSubscriptionId = invoice.subscription as string | null
+        if (!stripeSubscriptionId) break
+        // Skip the very first invoice — already logged by checkout.session.completed
+        if (invoice.billing_reason === 'subscription_create') break
+
+        const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId)
+        const userId = sub.metadata?.userId
+        const plan = sub.metadata?.plan
+        if (!userId) break
+
+        await logRevenueEvent({
+          type: 'subscription_charge',
+          userId,
+          stripeEventId: event.id,
+          amountCents: invoice.amount_paid,
+          currency: invoice.currency.toUpperCase(),
+          occurredAt: new Date(event.created * 1000),
+          metadata: { plan, stripeSubscriptionId, billingReason: invoice.billing_reason, source: 'invoice.payment_succeeded' },
+        })
 
         break
       }
@@ -140,6 +184,20 @@ export async function POST(request: NextRequest) {
           })
           .where(eq(subscriptions.stripeSubscriptionId, sub.id))
 
+        // Send cancellation email
+        const userId = sub.metadata?.userId
+        if (userId) {
+          const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+          if (user?.email) {
+            const accessUntil = format(new Date(sub.current_period_end * 1000), 'MMMM d, yyyy')
+            sendSubscriptionCancelledEmail({
+              to: user.email,
+              name: user.fullName ?? 'there',
+              accessUntil,
+            }).catch(console.error)
+          }
+        }
+
         break
       }
 
@@ -154,7 +212,18 @@ export async function POST(request: NextRequest) {
           .set({ status: 'past_due', updatedAt: new Date() })
           .where(eq(subscriptions.stripeSubscriptionId, stripeSubscriptionId))
 
-        // TODO Phase 1: send payment failed email with update payment method link
+        // Send payment failed email
+        const [subRecord] = await db.select().from(subscriptions).where(eq(subscriptions.stripeSubscriptionId, stripeSubscriptionId)).limit(1)
+        if (subRecord) {
+          const [failedUser] = await db.select().from(users).where(eq(users.id, subRecord.userId)).limit(1)
+          if (failedUser?.email) {
+            sendPaymentFailedEmail({
+              to: failedUser.email,
+              name: failedUser.fullName ?? 'there',
+              plan: (subRecord.plan ?? 'your').charAt(0).toUpperCase() + (subRecord.plan ?? 'your').slice(1),
+            }).catch(console.error)
+          }
+        }
         break
       }
 

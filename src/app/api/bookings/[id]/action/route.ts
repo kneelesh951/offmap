@@ -68,6 +68,15 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         if (!isHost) return NextResponse.json({ success: false, error: { code: 'FORBIDDEN', message: 'Only host can accept' } }, { status: 403 })
         if (booking.status !== 'pending') return NextResponse.json({ success: false, error: { code: 'CONFLICT', message: `Cannot accept a booking in status: ${booking.status}` } }, { status: 409 })
         const updated = mockDb.updateBooking(bookingId, { status: 'accepted' })
+
+        // Email traveler: booking confirmed
+        const { mockEmail } = await import('@/lib/mock/email')
+        const traveler = mockDb.getUserById(booking.travelerId)
+        const host = mockDb.getUserById(booking.hostId)
+        if (traveler && host) {
+          mockEmail.sendBookingConfirmed(traveler.email, traveler.fullName, host.fullName, booking.travelerTotalCents)
+        }
+
         return NextResponse.json({ success: true, data: { booking: updated } })
       }
 
@@ -82,8 +91,17 @@ export async function POST(req: Request, { params }: { params: { id: string } })
           cancellationReason: reason ?? 'Host declined',
           cancellationType: 'host',
           refundPercent: 100,
-          refundAmountCents: booking.travelerTotalCents, // full refund on decline
+          refundAmountCents: booking.travelerTotalCents,
         })
+
+        // Email traveler: booking declined
+        const { mockEmail } = await import('@/lib/mock/email')
+        const traveler = mockDb.getUserById(booking.travelerId)
+        const host = mockDb.getUserById(booking.hostId)
+        if (traveler && host) {
+          mockEmail.sendBookingDeclined(traveler.email, traveler.fullName, host.fullName, booking.travelerTotalCents)
+        }
+
         return NextResponse.json({ success: true, data: { booking: updated } })
       }
 
@@ -116,6 +134,14 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         // Apply host strikes if host cancelled
         if (actor === 'host' && result.strikesApplied > 0) {
           mockDb.applyStrikesToHost(user.id, result.strikesApplied, result.payoutFreezedays)
+        }
+
+        // Email the other party: booking cancelled
+        const { mockEmail } = await import('@/lib/mock/email')
+        const otherUserId = isTraveler ? booking.hostId : booking.travelerId
+        const otherUser = mockDb.getUserById(otherUserId)
+        if (otherUser) {
+          mockEmail.sendBookingCancelled(otherUser.email, otherUser.fullName, user.fullName, result.refundAmountCents)
         }
 
         return NextResponse.json({
@@ -205,6 +231,22 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     if (action === 'accept') {
       if (!isHost) return NextResponse.json({ success: false, error: { code: 'FORBIDDEN', message: 'Only host can accept' } }, { status: 403 })
       await admin.from('bookings').update({ status: 'accepted' }).eq('id', bookingId)
+
+      // Email traveler: booking confirmed
+      const { sendBookingConfirmedEmail } = await import('@/lib/email')
+      const { data: traveler } = await admin.from('users').select('email, full_name').eq('id', booking.traveler_id).maybeSingle()
+      const { data: host } = await admin.from('users').select('full_name').eq('id', booking.host_id).maybeSingle()
+      if (traveler?.email) {
+        sendBookingConfirmedEmail({
+          to: traveler.email,
+          travelerName: traveler.full_name ?? 'Traveler',
+          hostName: host?.full_name ?? 'Host',
+          sessionDate: booking.session_date,
+          totalCents: booking.traveler_total_cents,
+          bookingId,
+        }).catch(console.error)
+      }
+
       return NextResponse.json({ success: true, data: { status: 'accepted' } })
     }
 
@@ -218,6 +260,20 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         refund_percent: 100,
         refund_amount_cents: booking.traveler_total_cents,
       }).eq('id', bookingId)
+
+      // Email traveler: booking declined
+      const { sendBookingDeclinedEmail } = await import('@/lib/email')
+      const { data: traveler } = await admin.from('users').select('email, full_name').eq('id', booking.traveler_id).maybeSingle()
+      const { data: hostUser } = await admin.from('users').select('full_name').eq('id', booking.host_id).maybeSingle()
+      if (traveler?.email) {
+        sendBookingDeclinedEmail({
+          to: traveler.email,
+          travelerName: traveler.full_name ?? 'Traveler',
+          hostName: hostUser?.full_name ?? 'Host',
+          refundCents: booking.traveler_total_cents,
+        }).catch(console.error)
+      }
+
       return NextResponse.json({ success: true, data: { status: 'declined' } })
     }
 
@@ -251,6 +307,25 @@ export async function POST(req: Request, { params }: { params: { id: string } })
           cancellation_count: (booking.cancellation_count ?? 0) + 1,
           ...(freezeUntil ? { payout_frozen_until: freezeUntil } : {}),
         }).eq('user_id', authUser.id)
+      }
+
+      // Email the other party: booking cancelled
+      const { sendBookingCancelledEmail } = await import('@/lib/email')
+      const otherPartyId = isTraveler ? booking.host_id : booking.traveler_id
+      const { data: otherParty } = await admin.from('users').select('email, full_name').eq('id', otherPartyId).maybeSingle()
+      const { data: cancellingUser } = await admin.from('users').select('full_name').eq('id', authUser.id).maybeSingle()
+      if (otherParty?.email) {
+        sendBookingCancelledEmail({
+          to: otherParty.email,
+          recipientName: otherParty.full_name ?? 'there',
+          cancelledByName: cancellingUser?.full_name ?? 'User',
+          cancelledByRole: isTraveler ? 'traveler' : 'host',
+          sessionDate: booking.session_date,
+          refundCents: result.refundAmountCents,
+          refundPercent: result.refundPercent,
+          platformCreditCents: result.platformCreditCents,
+          reason: reason ?? result.reason,
+        }).catch(console.error)
       }
 
       return NextResponse.json({

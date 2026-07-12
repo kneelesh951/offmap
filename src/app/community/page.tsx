@@ -34,10 +34,10 @@ export default function CommunityPage() {
           </div>
         </div>
 
-        {/* Community notice */}
-        <div className="py-5 px-5 md:px-11 text-center border-b" style={{ backgroundColor: '#F7FAF8', borderColor: 'rgba(8,78,78,0.10)' }}>
+        {/* Preview notice */}
+        <div className="py-5 px-5 md:px-11 text-center border-b" style={{ backgroundColor: '#FFF9F5', borderColor: 'rgba(232,98,26,0.20)' }}>
           <p className="text-sm" style={{ color: '#4A8E8E' }}>
-            🔒 Full community access is available to <strong style={{ color: GREEN }}>verified Offmap hosts only</strong>.
+            🚧 <strong style={{ color: '#E8621A' }}>Preview — community forum launches in 2027.</strong> The posts below are sample content showing what hosts will share once we open the forum.
             <Link href="/become-a-host" className="ml-2 font-semibold underline" style={{ color: '#E8621A' }}>Become a host →</Link>
           </p>
         </div>

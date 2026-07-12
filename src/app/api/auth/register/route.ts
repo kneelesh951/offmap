@@ -1,18 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { registerSchema } from '@/lib/validators'
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { email, password, fullName, role = 'traveler', gdprConsent } = body
-
-  if (!email || !password || !fullName) {
-    return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Name, email and password are required.' } }, { status: 422 })
+  const body = await request.json().catch(() => null)
+  // Default role to 'traveler' if omitted (legacy clients)
+  const withDefaults = body && typeof body === 'object' ? { role: 'traveler', ...body } : body
+  const parsed = registerSchema.safeParse(withDefaults)
+  if (!parsed.success) {
+    const firstIssue = parsed.error.errors[0]
+    const code = firstIssue?.path?.[0] === 'gdprConsent' ? 'GDPR_REQUIRED' : 'VALIDATION_ERROR'
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code,
+          message: firstIssue?.message ?? 'Please check your details and try again.',
+        },
+      },
+      { status: 422 }
+    )
   }
-  if (!gdprConsent) {
-    return NextResponse.json({ success: false, error: { code: 'GDPR_REQUIRED', message: 'You must accept the Privacy Policy to continue.' } }, { status: 422 })
-  }
-  if (password.length < 8) {
-    return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Password must be at least 8 characters.' } }, { status: 422 })
-  }
+  const { email, password, fullName, role } = parsed.data
 
   // ── Mock mode ────────────────────────────────────────────────────────────
   if (process.env.MOCK_MODE === 'true') {

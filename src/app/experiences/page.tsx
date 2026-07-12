@@ -39,6 +39,14 @@ export default function ExperiencesPage() {
           </div>
         </div>
 
+        {/* Preview notice */}
+        <div className="py-5 px-5 md:px-11 text-center border-b" style={{ backgroundColor: '#FFF9F5', borderColor: 'rgba(232,98,26,0.20)' }}>
+          <p className="text-sm" style={{ color: '#4A8E8E' }}>
+            🚧 <strong style={{ color: '#E8621A' }}>Preview — bookable experiences launch in 2027.</strong> The cards below are sample experiences. For now, message any host directly from{' '}
+            <Link href="/search" className="font-semibold underline" style={{ color: '#E8621A' }}>Search →</Link>
+          </p>
+        </div>
+
         {/* Category pills */}
         <div className="px-5 md:px-11 py-6 bg-white border-b" style={{ borderColor: 'rgba(8,78,78,0.10)' }}>
           <div className="max-w-6xl mx-auto flex gap-2 overflow-x-auto">
