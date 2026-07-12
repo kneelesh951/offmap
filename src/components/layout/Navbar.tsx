@@ -32,7 +32,6 @@ export function Navbar({ user }: NavbarProps) {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const pathname = usePathname()
-  const supabase = createSupabaseBrowserClient()
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 50)
@@ -54,7 +53,9 @@ export function Navbar({ user }: NavbarProps) {
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
     if (process.env.NEXT_PUBLIC_MOCK_MODE !== 'true') {
-      await supabase.auth.signOut()
+      // Create the Supabase client only when actually signing out in production.
+      // Doing this at render time crashes the static build when env vars are absent.
+      await createSupabaseBrowserClient().auth.signOut()
     }
     router.push('/')
     router.refresh()
