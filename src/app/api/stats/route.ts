@@ -6,6 +6,10 @@ export interface PlatformStats {
   topCityFlags: string[]
 }
 
+// Data endpoint — must run per-request, never prerendered at build time
+// (the build sandbox has no DB connection).
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   if (process.env.MOCK_MODE === 'true') {
     const { mockDb } = await import('@/lib/mock/db')
