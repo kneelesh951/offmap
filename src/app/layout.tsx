@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, Fraunces, JetBrains_Mono } from 'next/font/google'
 import { MockBanner } from '@/components/ui/MockBanner'
-import { AlmaButton } from '@/components/ai/AlmaButton'
+import { AlmaButtonLazy } from '@/components/ai/AlmaButtonLazy'
 import './globals.css'
 
 const geistSans = Inter({ variable: '--font-geist-sans', subsets: ['latin'] })
@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased bg-cream text-ink`}>
         {children}
         <MockBanner />
-        <AlmaButton />
+        <AlmaButtonLazy />
       </body>
     </html>
   )
