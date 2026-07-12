@@ -653,6 +653,51 @@ export const auditLogs = pgTable(
   })
 )
 
+// Append-only ledger of every money movement. Source of truth for all revenue
+// dashboards. Never UPDATE, never DELETE — financial records retained 10 years
+// per GDPR (financial data is the carved-out exception to the erasure right).
+// See docs/ADMIN_DASHBOARD_PLAN.md for usage + SQL snippets.
+export const revenueEventTypeEnum = pgEnum('revenue_event_type', [
+  'subscription_charge',
+  'subscription_refund',
+  'booking_charge',
+  'booking_refund',
+  'platform_fee',
+  'host_payout',
+  'stripe_fee',
+])
+
+export const revenueEvents = pgTable(
+  'revenue_events',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    type: revenueEventTypeEnum('type').notNull(),
+    userId: uuid('user_id').references(() => users.id),
+    hostId: uuid('host_id').references(() => users.id),
+    cityId: uuid('city_id').references(() => cities.id),
+    countryCode: text('country_code'),
+    bookingId: uuid('booking_id').references(() => bookings.id),
+    subscriptionId: uuid('subscription_id').references(() => subscriptions.id),
+    // Stripe event ID — UNIQUE for idempotency. A webhook retry with the same
+    // event ID must be a no-op.
+    stripeEventId: text('stripe_event_id'),
+    // Signed integer cents. Positive = platform inflow, negative = outflow.
+    amountCents: integer('amount_cents').notNull(),
+    currency: text('currency').notNull().default('EUR'),
+    // Stripe's event timestamp, NOT row insert time — use this for time-series.
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
+    metadata: jsonb('metadata'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => ({
+    occurredIdx: index('revenue_events_occurred_idx').on(t.occurredAt),
+    typeOccurredIdx: index('revenue_events_type_occurred_idx').on(t.type, t.occurredAt),
+    cityOccurredIdx: index('revenue_events_city_occurred_idx').on(t.cityId, t.occurredAt),
+    hostOccurredIdx: index('revenue_events_host_occurred_idx').on(t.hostId, t.occurredAt),
+    stripeEventIdx: uniqueIndex('revenue_events_stripe_event_idx').on(t.stripeEventId),
+  })
+)
+
 // ─── RELATIONS ────────────────────────────────────────────────────────────────
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -728,6 +773,8 @@ export type Wishlist = typeof wishlists.$inferSelect
 export type Notification = typeof notifications.$inferSelect
 export type NewNotification = typeof notifications.$inferInsert
 export type AuditLog = typeof auditLogs.$inferSelect
+export type RevenueEvent = typeof revenueEvents.$inferSelect
+export type NewRevenueEvent = typeof revenueEvents.$inferInsert
 export type TripRequest = typeof tripRequests.$inferSelect
 export type NewTripRequest = typeof tripRequests.$inferInsert
 export type TripHostResponse = typeof tripHostResponses.$inferSelect

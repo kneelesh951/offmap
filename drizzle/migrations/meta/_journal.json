@@ -15,6 +15,13 @@
       "when": 1780945797748,
       "tag": "0001_remarkable_shiva",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782425815819,
+      "tag": "0002_outstanding_hydra",
+      "breakpoints": true
     }
   ]
 }
