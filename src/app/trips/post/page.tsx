@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
@@ -151,7 +151,7 @@ function CityAutocomplete({ value, onChange, cities }: { value: string; onChange
   )
 }
 
-export default function PostTripPage() {
+function PostTripForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [step, setStep] = useState(1)
@@ -631,5 +631,13 @@ export default function PostTripPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function PostTripPage() {
+  return (
+    <Suspense fallback={null}>
+      <PostTripForm />
+    </Suspense>
   )
 }
