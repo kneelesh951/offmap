@@ -63,3 +63,18 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # ─── Security scans ────────────────────────────────────────────────────
+      # Fail on high/critical CVEs in dependencies.
+      # `npm audit` is built-in; Snyk runs only if SNYK_TOKEN is configured
+      # as a GitHub Actions secret (add via repo Settings → Secrets).
+      - name: npm audit
+        run: npm audit --audit-level=high
+
+      - name: Snyk OSS scan
+        if: ${{ secrets.SNYK_TOKEN != '' }}
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
