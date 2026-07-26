@@ -21,6 +21,7 @@
     "@supabase/supabase-js": "^2.106.2",
     "@upstash/ratelimit": "^2.0.1",
     "@upstash/redis": "^1.31.5",
+    "@vercel/analytics": "^2.0.1",
     "ai": "^6.0.197",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

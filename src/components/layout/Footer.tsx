@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { OPEN_PREFERENCES_EVENT } from '@/lib/consent'
 
 const GREEN = '#084E4E'
 
@@ -213,6 +214,13 @@ export function Footer() {
             © {new Date().getFullYear()} Offmap GmbH · Registered in Frankfurt, Germany · All rights reserved
           </p>
 
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent(OPEN_PREFERENCES_EVENT))}
+            className="text-[13px] transition-colors hover:text-white"
+            style={{ color: 'rgba(255,255,255,0.38)' }}
+          >
+            Cookie settings
+          </button>
         </div>
       </div>
     </footer>
