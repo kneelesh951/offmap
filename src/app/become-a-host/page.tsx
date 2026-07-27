@@ -83,8 +83,8 @@ export default function BecomeAHostPage() {
       {/* ── Header ────────────────────────────────────────────── */}
       <header style={{ position: 'sticky', top: 0, zIndex: 30, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 44px', background: 'rgba(8,78,78,0.96)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <span style={{ fontFamily: 'Georgia, serif', fontWeight: 800, color: 'white', fontSize: 21, letterSpacing: '-0.04em' }}>Off</span>
-          <span style={{ fontFamily: 'Georgia, serif', fontWeight: 800, fontSize: 21, letterSpacing: '-0.04em', background: 'linear-gradient(135deg,#E8621A,#F5A623)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>map</span>
+          <span style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 800, color: 'white', fontSize: 21, letterSpacing: '-0.04em' }}>Off</span>
+          <span style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 800, fontSize: 21, letterSpacing: '-0.04em', background: 'linear-gradient(135deg,#E8621A,#F5A623)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>map</span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.50)' }}>Already a host?</span>
@@ -92,11 +92,11 @@ export default function BecomeAHostPage() {
         </div>
       </header>
 
-      {/* ── Two columns: green left | form right ──────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 'calc(100vh - 66px)' }}>
+      {/* ── Two columns on desktop, stacked single column on mobile ──── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2" style={{ minHeight: 'calc(100vh - 66px)' }}>
 
         {/* LEFT: dark green marketing panel */}
-        <div style={{ background: 'linear-gradient(160deg,#0C3520 0%,#084E4E 50%,#133526 100%)', overflowY: 'auto', position: 'relative' }}>
+        <div style={{ background: 'linear-gradient(160deg,#0C3520 0%,#084E4E 50%,#133526 100%)', overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
           <div style={{ position: 'absolute', top: 0, right: 0, width: 400, height: 400, background: 'radial-gradient(circle,rgba(232,98,26,0.15) 0%,transparent 70%)', transform: 'translate(30%,-30%)', pointerEvents: 'none' }} />
 
           <div style={{ position: 'relative', padding: '52px 48px', maxWidth: 580, margin: '0 auto' }}>
@@ -108,7 +108,7 @@ export default function BecomeAHostPage() {
             </div>
 
             {/* Headline */}
-            <h1 style={{ fontFamily: 'Georgia, serif', fontWeight: 800, color: 'white', fontSize: 46, letterSpacing: '-0.04em', lineHeight: 1.04, marginBottom: 20 }}>
+            <h1 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 800, color: 'white', fontSize: 46, letterSpacing: '-0.04em', lineHeight: 1.04, marginBottom: 20 }}>
               Get paid to show<br />travelers{' '}
               <em style={{ fontStyle: 'italic', background: 'linear-gradient(135deg,#E8621A,#F5A623)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>your city.</em>
             </h1>
@@ -121,7 +121,7 @@ export default function BecomeAHostPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 44 }}>
               {[{ val: '4.97★', label: 'Avg rating' }, { val: formatHostCount(stats.hostCount), label: 'Active hosts' }, { val: '€25–45', label: 'Per hour' }].map(s => (
                 <div key={s.label} style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 16, padding: '16px 12px', textAlign: 'center' }}>
-                  <div style={{ fontFamily: 'Georgia, serif', fontSize: 18, fontWeight: 700, color: '#F5A623', marginBottom: 4 }}>{s.val}</div>
+                  <div style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: 18, fontWeight: 700, color: '#F5A623', marginBottom: 4 }}>{s.val}</div>
                   <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.40)' }}>{s.label}</div>
                 </div>
               ))}
@@ -129,7 +129,7 @@ export default function BecomeAHostPage() {
 
             {/* How it works */}
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#E8621A', marginBottom: 8 }}>How it works</div>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 20, fontWeight: 700, color: 'white', marginBottom: 20, letterSpacing: '-0.02em' }}>Three steps to your first booking.</h2>
+            <h2 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: 20, fontWeight: 700, color: 'white', marginBottom: 20, letterSpacing: '-0.02em' }}>Three steps to your first booking.</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 44 }}>
               {HOW_IT_WORKS.map(step => (
                 <div key={step.title} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '16px' }}>
@@ -148,7 +148,7 @@ export default function BecomeAHostPage() {
             {/* Earnings */}
             <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 20, padding: '24px', marginBottom: 44 }}>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#E8621A', marginBottom: 4 }}>Earnings potential</div>
-              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 4 }}>What you could earn</h3>
+              <h3 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 4 }}>What you could earn</h3>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.32)', marginBottom: 20 }}>Based on €20–€45/hr</p>
               {EARNINGS.map(row => (
                 <div key={row.hours} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
@@ -163,14 +163,14 @@ export default function BecomeAHostPage() {
 
             {/* Testimonials */}
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#E8621A', marginBottom: 8 }}>From our hosts</div>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 20, fontWeight: 700, color: 'white', marginBottom: 20, letterSpacing: '-0.02em' }}>Real people. Real earnings.</h2>
+            <h2 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: 20, fontWeight: 700, color: 'white', marginBottom: 20, letterSpacing: '-0.02em' }}>Real people. Real earnings.</h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {HOST_REVIEWS.map(h => (
                 <div key={h.name} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 18, padding: '20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <div style={{ display: 'flex', gap: 2 }}>
                     {Array.from({ length: h.rating }).map((_, i) => <Star key={i} size={10} style={{ fill: '#F5A623', color: '#F5A623' }} />)}
                   </div>
-                  <p style={{ fontFamily: 'Georgia, serif', fontSize: 13, lineHeight: 1.6, fontStyle: 'italic', color: 'rgba(255,255,255,0.78)', flex: 1, margin: 0 }}>&ldquo;{h.quote}&rdquo;</p>
+                  <p style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: 13, lineHeight: 1.6, fontStyle: 'italic', color: 'rgba(255,255,255,0.78)', flex: 1, margin: 0 }}>&ldquo;{h.quote}&rdquo;</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 32, height: 32, borderRadius: 10, background: 'linear-gradient(135deg,#E8621A,#F07830)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'white', flexShrink: 0 }}>{h.initials}</div>
                     <div>
@@ -214,7 +214,7 @@ export default function BecomeAHostPage() {
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 16px', borderRadius: 999, fontSize: 10, fontWeight: 700, background: 'linear-gradient(135deg, #FEF0E8, #FDE0CC)', color: '#D4540F', border: '1.5px solid rgba(232,98,26,0.30)', letterSpacing: '0.10em', textTransform: 'uppercase', marginBottom: 14, boxShadow: '0 2px 8px rgba(232,98,26,0.15)' }}>
                   Join as a host
                 </div>
-                <h2 style={{ fontFamily: 'Georgia, serif', fontWeight: 800, color: GREEN, fontSize: 28, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 8 }}>
+                <h2 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 800, color: GREEN, fontSize: 28, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 8 }}>
                   Create your host account
                 </h2>
                 <p style={{ fontSize: 13, color: '#6B7280' }}>
@@ -326,7 +326,7 @@ export default function BecomeAHostPage() {
               <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1.5px solid rgba(8,78,78,0.10)', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
                 {[['€0', 'To join'], ['0%', 'Commission'], ['24h', 'Review']].map(([val, label]) => (
                   <div key={label} style={{ borderRadius: 14, padding: '12px 8px', textAlign: 'center', background: 'linear-gradient(160deg, #EDF5F0, #E0EDE5)', border: '1.5px solid rgba(8,78,78,0.12)', boxShadow: '0 2px 8px rgba(8,78,78,0.06), inset 0 1px 0 rgba(255,255,255,0.70)' }}>
-                    <div style={{ fontFamily: 'Georgia, serif', fontSize: 18, fontWeight: 700, background: 'linear-gradient(135deg,#E8621A,#F5A623)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: 2 }}>{val}</div>
+                    <div style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: 18, fontWeight: 700, background: 'linear-gradient(135deg,#E8621A,#F5A623)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: 2 }}>{val}</div>
                     <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4A8E8E' }}>{label}</div>
                   </div>
                 ))}

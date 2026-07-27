@@ -24,7 +24,10 @@ module.exports = {
       },
       fontFamily: {
         sans:  ['var(--font-geist-sans)', 'sans-serif'],
-        serif: ['var(--font-fraunces)', 'serif'],
+        // Headings use Sora (geometric display). Kept under the `serif` key so the
+        // 180+ existing `font-serif` headings pick it up without per-file edits.
+        serif: ['var(--font-display)', 'var(--font-fraunces)', 'Georgia', 'serif'],
+        display: ['var(--font-display)', 'var(--font-fraunces)', 'sans-serif'],
         mono:  ['var(--font-geist-mono)', 'monospace'],
       },
       borderRadius: {

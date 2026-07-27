@@ -579,8 +579,8 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
             </p>
 
             {/* ── Search widget ── */}
-            <div className="rounded-2xl mb-6 fade-up fade-up-delay-3 overflow-hidden"
-              style={{ background:'linear-gradient(145deg,rgba(250,245,233,0.98) 0%,rgba(255,252,247,0.98) 100%)', boxShadow:'0 20px 60px rgba(0,0,0,0.30)', border:'1px solid rgba(255,255,255,0.60)' }}>
+            <div className="rounded-2xl mb-6 fade-up fade-up-delay-3 overflow-hidden hero-card"
+              style={{ background:'linear-gradient(145deg,rgba(250,245,233,0.98) 0%,rgba(255,252,247,0.98) 100%)' }}>
 
               {/* Tab bar — underline style */}
               <div className="flex" style={{ borderBottom:'2px solid rgba(10,143,143,0.10)' }}>
@@ -611,27 +611,27 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
               {tab === 'find' && (
                 <div className="p-3 flex flex-col gap-2">
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="rounded-lg px-3.5 py-2.5 transition-all"
-                      style={{ border:'2px solid rgba(10,143,143,0.35)', background:'#fff', boxShadow:'0 1px 4px rgba(6,95,95,0.08)' }}>
+                    <div className="rounded-lg px-3.5 py-2.5 hero-field"
+                      >
                       <div style={{ fontSize:'10px', fontWeight:900, letterSpacing:'0.12em', color:TERRA, textTransform:'uppercase', marginBottom:'5px' }}>City</div>
                       <CityAutocomplete cities={heroCities} value={findCity} onChange={setFindCity} />
                     </div>
-                    <div className="rounded-lg px-3.5 py-2.5 transition-all"
-                      style={{ border:'2px solid rgba(10,143,143,0.35)', background:'#fff', boxShadow:'0 1px 4px rgba(6,95,95,0.08)' }}>
+                    <div className="rounded-lg px-3.5 py-2.5 hero-field"
+                      >
                       <div style={{ fontSize:'10px', fontWeight:900, letterSpacing:'0.12em', color:TERRA, textTransform:'uppercase', marginBottom:'5px' }}>When</div>
                       <input type="date" value={findWhen} min={today} onChange={e=>setFindWhen(e.target.value)}
                         style={{...sel, colorScheme:'light', color:findWhen?TEAL_DARK:'#5A9E9E'}} />
                     </div>
-                    <div className="rounded-lg px-3.5 py-2.5 transition-all"
-                      style={{ border:'2px solid rgba(10,143,143,0.35)', background:'#fff', boxShadow:'0 1px 4px rgba(6,95,95,0.08)' }}>
+                    <div className="rounded-lg px-3.5 py-2.5 hero-field"
+                      >
                       <div style={{ fontSize:'10px', fontWeight:900, letterSpacing:'0.12em', color:TERRA, textTransform:'uppercase', marginBottom:'5px' }}>Interest</div>
                       <select value={findInt} onChange={e=>setFindInt(e.target.value)} style={{...sel, color: findInt ? TEAL_DARK : '#5A9E9E'}}>
                         <option value="">Food, Art, Nightlife…</option>
                         {INTERESTS.map(i => <option key={i.value} value={i.value}>{i.label}</option>)}
                       </select>
                     </div>
-                    <div className="rounded-lg px-3.5 py-2.5 transition-all"
-                      style={{ border:'2px solid rgba(10,143,143,0.35)', background:'#fff', boxShadow:'0 1px 4px rgba(6,95,95,0.08)' }}>
+                    <div className="rounded-lg px-3.5 py-2.5 hero-field"
+                      >
                       <div style={{ fontSize:'10px', fontWeight:900, letterSpacing:'0.12em', color:TERRA, textTransform:'uppercase', marginBottom:'5px' }}>Language</div>
                       <select value={findLang} onChange={e=>setFindLang(e.target.value)} style={{...sel, color: findLang ? TEAL_DARK : '#5A9E9E'}}>
                         <option value="">English, German…</option>
@@ -651,26 +651,26 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
               {tab === 'trip' && (
                 <div className="p-3 flex flex-col gap-2">
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="rounded-lg px-3.5 py-2.5 transition-all"
-                      style={{ border:'2px solid rgba(10,143,143,0.35)', background:'#fff', boxShadow:'0 1px 4px rgba(6,95,95,0.08)' }}>
+                    <div className="rounded-lg px-3.5 py-2.5 hero-field"
+                      >
                       <div style={{ fontSize:'10px', fontWeight:900, letterSpacing:'0.12em', color:TERRA, textTransform:'uppercase', marginBottom:'5px' }}>Destination</div>
                       <CityAutocomplete cities={heroCities} value={tripCity} onChange={setTripCity} />
                     </div>
-                    <div className="rounded-lg px-3.5 py-2.5 transition-all"
-                      style={{ border:'2px solid rgba(10,143,143,0.35)', background:'#fff', boxShadow:'0 1px 4px rgba(6,95,95,0.08)' }}>
+                    <div className="rounded-lg px-3.5 py-2.5 hero-field"
+                      >
                       <div style={{ fontSize:'10px', fontWeight:900, letterSpacing:'0.12em', color:TERRA, textTransform:'uppercase', marginBottom:'5px' }}>Arrival</div>
                       <input type="date" value={tripArr} min={today} onChange={e=>setTripArr(e.target.value)}
                         style={{...sel, colorScheme:'light', color:tripArr?TEAL_DARK:'#5A9E9E'}} />
                     </div>
-                    <div className="rounded-lg px-3.5 py-2.5 transition-all"
-                      style={{ border:'2px solid rgba(10,143,143,0.35)', background:'#fff', boxShadow:'0 1px 4px rgba(6,95,95,0.08)' }}>
+                    <div className="rounded-lg px-3.5 py-2.5 hero-field"
+                      >
                       <div style={{ fontSize:'10px', fontWeight:900, letterSpacing:'0.12em', color:TERRA, textTransform:'uppercase', marginBottom:'5px' }}>Departure</div>
                       <input type="date" value={tripDep} min={tripArr||today} onChange={e=>setTripDep(e.target.value)}
                         style={{...sel, colorScheme:'light', color:tripDep?TEAL_DARK:'#5A9E9E'}} />
                     </div>
                   </div>
-                  <div className="rounded-lg px-3.5 py-2.5"
-                    style={{ border:'2px solid rgba(10,143,143,0.35)', background:'#fff', boxShadow:'0 1px 4px rgba(6,95,95,0.08)' }}>
+                  <div className="rounded-lg px-3.5 py-2.5 hero-field"
+                    >
                     <div style={{ fontSize:'9px', fontWeight:900, letterSpacing:'0.13em', color:TERRA, textTransform:'uppercase', marginBottom:'8px' }}>Host type</div>
                     <div className="flex flex-wrap gap-1.5">
                       {HOST_TYPES.map(h => (
