@@ -121,6 +121,9 @@ export const users = pgTable(
     marketingConsent: boolean('marketing_consent').default(false).notNull(),
     dataDeleteRequestedAt: timestamp('data_delete_requested_at', { withTimezone: true }),
 
+    // Credit pack balance (alternative to subscription for one-time visitors)
+    creditsBalance: integer('credits_balance').default(0),
+
     lastActiveAt: timestamp('last_active_at', { withTimezone: true }),
     ...timestamps,
   },
@@ -665,6 +668,7 @@ export const revenueEventTypeEnum = pgEnum('revenue_event_type', [
   'platform_fee',
   'host_payout',
   'stripe_fee',
+  'credit_pack_purchase',
 ])
 
 export const revenueEvents = pgTable(

@@ -57,3 +57,26 @@ export function mockCompleteCheckout(token: string): { success: boolean; convers
 export function mockGetPortalUrl(userId: string): string {
   return `/dashboard/subscription?mock=true`
 }
+
+const CREDIT_PACK_AMOUNTS: Record<string, number> = {
+  '10': 10,
+  '25': 30,
+}
+
+export function mockCreateCreditCheckout(userId: string, pack: '10' | '25'): string {
+  const token = nanoid(16)
+  mockDb.sessions.set(`credits:${token}`, `${userId}:${pack}`)
+  return `/api/mock/checkout?credits=${token}`
+}
+
+export function mockCompleteCreditCheckout(token: string): { success: boolean; newBalance?: number } {
+  const val = mockDb.sessions.get(`credits:${token}`)
+  if (!val) return { success: false }
+  mockDb.sessions.delete(`credits:${token}`)
+  const [userId, pack] = val.split(':')
+  const amount = CREDIT_PACK_AMOUNTS[pack]
+  if (!amount) return { success: false }
+  const newBalance = mockDb.addCredits(userId, amount)
+  console.log(`[MOCK STRIPE] ✅ Credits added: ${amount} credits for user ${userId} — new balance: ${newBalance}`)
+  return { success: true, newBalance }
+}

@@ -3,27 +3,36 @@ import { createConversationSchema } from '@/lib/validators'
 
 export async function POST(request: NextRequest) {
   const body = await request.json()
-  const parsed = createConversationSchema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Invalid request' } }, { status: 422 })
 
   if (process.env.MOCK_MODE === 'true') {
+    // Auth before validation — prevents schema info leaking to unauthenticated callers
     const { mockGetUser } = await import('@/lib/mock/auth')
     const { mockDb } = await import('@/lib/mock/db')
     const token = request.cookies.get('offmap_mock_session')?.value
     const user = mockGetUser(token)
     if (!user) return NextResponse.json({ success: false, error: { code: 'AUTH_REQUIRED', message: 'Login required' } }, { status: 401 })
 
-    // Subscription gate
+    const parsed = createConversationSchema.safeParse(body)
+    if (!parsed.success) return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Invalid request' } }, { status: 422 })
+
+    // Access gate — subscription OR credits (2 credits per new host unlock)
     const activeSub = mockDb.getActiveSubscription(user.id)
-    if (!activeSub) return NextResponse.json({ success: false, error: { code: 'SUBSCRIPTION_REQUIRED', message: 'Subscribe from €6/day to connect with hosts.' } }, { status: 403 })
+    const creditsBalance = mockDb.getCreditsBalance(user.id)
+    const usingCredits = !activeSub && creditsBalance >= 2
+    if (!activeSub && !usingCredits) {
+      return NextResponse.json({ success: false, error: { code: 'SUBSCRIPTION_REQUIRED', message: 'Subscribe from €6/day or use 2 credits to connect with hosts.' } }, { status: 403 })
+    }
 
     // Check host exists
     const hostProfile = mockDb.getHostProfileByUserId(parsed.data.hostId)
     if (!hostProfile) return NextResponse.json({ success: false, error: { code: 'NOT_FOUND', message: 'Host not found' } }, { status: 404 })
 
-    // Check for existing conversation
+    // Check for existing conversation (no credit charge for re-opening)
     const existing = Array.from(mockDb.conversations.values()).find(c => c.travelerId === user.id && c.hostId === parsed.data.hostId)
     if (existing) return NextResponse.json({ success: true, data: { conversationId: existing.id } })
+
+    // Deduct 2 credits if not using subscription
+    if (usingCredits) mockDb.deductCredits(user.id, 2)
 
     // Create conversation
     const { nanoid } = await import('nanoid')
@@ -31,7 +40,7 @@ export async function POST(request: NextRequest) {
       id: `conv-${nanoid(8)}`,
       travelerId: user.id,
       hostId: parsed.data.hostId,
-      subscriptionId: activeSub.id,
+      subscriptionId: activeSub?.id ?? null,
       unlockedAt: new Date().toISOString(),
       lastMessageAt: null as string | null,
     }
@@ -59,20 +68,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, data: { conversationId: conv.id } }, { status: 201 })
   }
 
-  // Real mode
+  // Real mode — auth before validation
   const { createSupabaseServerClient } = await import('@/lib/supabase/server')
+  const supabase = createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ success: false, error: { code: 'AUTH_REQUIRED', message: 'Login required' } }, { status: 401 })
+
+  const parsed = createConversationSchema.safeParse(body)
+  if (!parsed.success) return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Invalid request' } }, { status: 422 })
+
   const { db } = await import('@/lib/db')
   const { conversations, subscriptions, users, hostProfiles, messages } = await import('@/lib/db/schema')
   const { sendHostMessageNotification } = await import('@/lib/email')
   const { and, eq, gte } = await import('drizzle-orm')
 
-  const supabase = createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ success: false, error: { code: 'AUTH_REQUIRED', message: 'Login required' } }, { status: 401 })
-
   const now = new Date()
+  const { sql } = await import('drizzle-orm')
   const [activeSub] = await db.select().from(subscriptions).where(and(eq(subscriptions.userId, user.id), eq(subscriptions.status, 'active'), gte(subscriptions.currentPeriodEnd, now))).limit(1)
-  if (!activeSub) return NextResponse.json({ success: false, error: { code: 'SUBSCRIPTION_REQUIRED', message: 'Subscribe from €6/day to connect with hosts.' } }, { status: 403 })
+  const [userRow] = await db.select({ creditsBalance: users.creditsBalance }).from(users).where(eq(users.id, user.id)).limit(1)
+  const creditsBalance = userRow?.creditsBalance ?? 0
+  const usingCredits = !activeSub && creditsBalance >= 2
+  if (!activeSub && !usingCredits) {
+    return NextResponse.json({ success: false, error: { code: 'SUBSCRIPTION_REQUIRED', message: 'Subscribe from €6/day or use 2 credits to connect with hosts.' } }, { status: 403 })
+  }
 
   const [host] = await db.select({ id: hostProfiles.id, userId: hostProfiles.userId }).from(hostProfiles).where(and(eq(hostProfiles.userId, parsed.data.hostId), eq(hostProfiles.isActive, true))).limit(1)
   if (!host) return NextResponse.json({ success: false, error: { code: 'NOT_FOUND', message: 'Host not found' } }, { status: 404 })
@@ -80,7 +98,12 @@ export async function POST(request: NextRequest) {
   const [existing] = await db.select().from(conversations).where(and(eq(conversations.travelerId, user.id), eq(conversations.hostId, host.userId))).limit(1)
   if (existing) return NextResponse.json({ success: true, data: { conversationId: existing.id } })
 
-  const [newConv] = await db.insert(conversations).values({ travelerId: user.id, hostId: host.userId, subscriptionId: activeSub.id }).returning()
+  // Deduct 2 credits if not using subscription
+  if (usingCredits) {
+    await db.update(users).set({ creditsBalance: sql`credits_balance - 2`, updatedAt: new Date() }).where(eq(users.id, user.id))
+  }
+
+  const [newConv] = await db.insert(conversations).values({ travelerId: user.id, hostId: host.userId, subscriptionId: activeSub?.id ?? null }).returning()
 
   // Auto-send host's trip response as first message if tripRequestId provided
   const tripRequestId = (body as any).tripRequestId

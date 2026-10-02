@@ -115,7 +115,7 @@ export default async function WelcomePage() {
             <h1 className="font-serif text-4xl md:text-6xl text-white mb-5 fade-up fade-up-delay-1"
               style={{ letterSpacing: '-0.03em', lineHeight: 1.05 }}>
               Welcome,{' '}
-              <span className="italic text-gradient-sunrise">{userName}.</span>
+              <span className="text-gradient-sunrise">{userName}.</span>
             </h1>
             <p className="text-[15px] mb-8 mx-auto fade-up fade-up-delay-2"
               style={{ color: 'rgba(255,255,255,0.65)', maxWidth: 480, lineHeight: 1.65 }}>

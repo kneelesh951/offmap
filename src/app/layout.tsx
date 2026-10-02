@@ -8,7 +8,7 @@ import './globals.css'
 
 const geistSans = Inter({ variable: '--font-geist-sans', subsets: ['latin'] })
 const geistMono = JetBrains_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
-const fraunces = Fraunces({ variable: '--font-fraunces', subsets: ['latin'], style: ['normal', 'italic'] })
+const fraunces = Fraunces({ variable: '--font-fraunces', subsets: ['latin'], style: ['normal'] })
 // Sora — clean geometric display font for headings.
 const sora = Sora({ variable: '--font-display', subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] })
 

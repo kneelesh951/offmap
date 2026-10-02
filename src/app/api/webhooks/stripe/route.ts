@@ -20,6 +20,7 @@ import { logRevenueEvent } from '@/lib/revenue/log'
 import { eq } from 'drizzle-orm'
 import { format } from 'date-fns'
 import type Stripe from 'stripe'
+import { cacheDel, subscriptionCacheKey } from '@/lib/cache'
 
 // Stripe requires the raw body for signature verification — Next.js App Router reads body as text by default
 export const dynamic = 'force-dynamic'
@@ -52,6 +53,34 @@ export async function POST(request: NextRequest) {
       // ─── New subscription created via Checkout ─────────────────────────────
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
+
+        // ── Credit pack purchase (one-time payment) ──────────────────────────
+        if (session.mode === 'payment' && session.metadata?.type === 'credits') {
+          const userId = session.metadata?.userId
+          const credits = parseInt(session.metadata?.credits ?? '0', 10)
+          const amountCents = parseInt(session.metadata?.amountCents ?? '0', 10)
+          if (!userId || !credits) {
+            console.error('[Stripe webhook] Missing metadata on credit session:', session.id)
+            break
+          }
+          const { sql } = await import('drizzle-orm')
+          await db.update(users).set({
+            creditsBalance: sql`COALESCE(credits_balance, 0) + ${credits}`,
+            updatedAt: new Date(),
+          }).where(eq(users.id, userId))
+          await logRevenueEvent({
+            type: 'credit_pack_purchase',
+            userId,
+            stripeEventId: event.id,
+            amountCents,
+            currency: (session.currency ?? 'eur').toUpperCase(),
+            occurredAt: new Date(event.created * 1000),
+            metadata: { credits, source: 'checkout.session.completed' },
+          })
+          console.log(`[Stripe webhook] ✅ Added ${credits} credits to user ${userId}`)
+          break
+        }
+
         if (session.mode !== 'subscription') break
 
         const userId = session.metadata?.userId
@@ -107,6 +136,9 @@ export async function POST(request: NextRequest) {
           })
         }
 
+        // Invalidate subscription cache so the new subscription is visible immediately
+        cacheDel(subscriptionCacheKey(userId)).catch(() => {})
+
         // Send confirmation email
         const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
         if (user?.email) {
@@ -159,7 +191,7 @@ export async function POST(request: NextRequest) {
         await db
           .update(subscriptions)
           .set({
-            status: sub.status as any,
+            status: sub.status as never,
             currentPeriodStart: new Date(sub.current_period_start * 1000),
             currentPeriodEnd: new Date(sub.current_period_end * 1000),
             cancelAtPeriodEnd: sub.cancel_at_period_end,
@@ -168,6 +200,7 @@ export async function POST(request: NextRequest) {
           })
           .where(eq(subscriptions.stripeSubscriptionId, sub.id))
 
+        cacheDel(subscriptionCacheKey(userId)).catch(() => {})
         break
       }
 
@@ -184,8 +217,11 @@ export async function POST(request: NextRequest) {
           })
           .where(eq(subscriptions.stripeSubscriptionId, sub.id))
 
-        // Send cancellation email
+        // Invalidate subscription cache
         const userId = sub.metadata?.userId
+        if (userId) cacheDel(subscriptionCacheKey(userId)).catch(() => {})
+
+        // Send cancellation email
         if (userId) {
           const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
           if (user?.email) {
@@ -214,6 +250,7 @@ export async function POST(request: NextRequest) {
 
         // Send payment failed email
         const [subRecord] = await db.select().from(subscriptions).where(eq(subscriptions.stripeSubscriptionId, stripeSubscriptionId)).limit(1)
+        if (subRecord) cacheDel(subscriptionCacheKey(subRecord.userId)).catch(() => {})
         if (subRecord) {
           const [failedUser] = await db.select().from(users).where(eq(users.id, subRecord.userId)).limit(1)
           if (failedUser?.email) {

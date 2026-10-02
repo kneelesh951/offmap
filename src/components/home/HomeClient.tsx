@@ -2,10 +2,11 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { SessionUser } from '@/types'
+import type { SessionUser, HostSearchResult } from '@/types'
 import type { FeaturedReview } from '@/app/api/reviews/featured/route'
 import type { PlatformStats } from '@/app/api/stats/route'
 import { CityAutocomplete, type CityOption } from '@/components/ui/CityAutocomplete'
+import { HostCard } from '@/components/hosts/HostCard'
 
 
 const TEAL = '#0C7B7B'
@@ -118,12 +119,13 @@ const CATEGORIES = [
   { value: 'wellness',    label: 'Wellness & Spa',   icon: '🧘', bg: 'linear-gradient(135deg,#4C3D8A,#6B5CB8)', shadow: '0 8px 24px rgba(76,61,138,0.40)' },
 ]
 
-const HOSTS = [
-  { name: 'Amira Khalil',  city: 'Berlin',    flag: '🇩🇪', langs: 'EN · DE · AR · FR · TR', tags: ['Street Food','Art Scene','Nightlife'], rate: '€25/hr', rating: '4.98', reviews: 143, photo: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=400&fit=crop&crop=face&q=80', id: 'city-berlin' },
-  { name: 'Marco Vasquez', city: 'Lisbon',    flag: '🇵🇹', langs: 'EN · PT · ES',             tags: ['History','Food','Architecture'],       rate: '€30/hr', rating: '4.96', reviews: 98,  photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=400&fit=crop&crop=face&q=80', id: 'city-lisbon' },
-  { name: 'Yuki Tanaka',   city: 'Amsterdam', flag: '🇳🇱', langs: 'EN · NL · JP',             tags: ['Cycling','Markets','Art'],            rate: '€22/hr', rating: '5.0',  reviews: 211, photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=400&fit=crop&crop=face&q=80', id: 'city-amsterdam' },
-  { name: 'Jan Bremer',    city: 'Hamburg',    flag: '🇩🇪', langs: 'EN · DE · DA',             tags: ['Nightlife','History','Food & Drink'],  rate: '€28/hr', rating: '4.93', reviews: 41,  photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop&crop=face&q=80', id: 'city-hamburg' },
-  { name: 'Sofia Reyes',   city: 'Barcelona', flag: '🇪🇸', langs: 'EN · ES · CA · IT',         tags: ['Tapas','Architecture','Nightlife'],    rate: '€28/hr', rating: '4.97', reviews: 76,  photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=400&fit=crop&crop=face&q=80', id: 'city-barcelona' },
+const FALLBACK_HOSTS: HostSearchResult[] = [
+  { id: 'host-1', userId: 'user-host-demo', cityId: 'city-berlin',    cityName: 'Berlin',    cityCountry: 'Germany',     flagEmoji: '🇩🇪', headline: 'Berlin street food expert & nightlife guide',                  bio: '', languages: ['en','de','ar','fr','tr'], categories: ['food-drink','art-culture','nightlife'],          hostType: 'female', hourlyRateCents: 2500, neighborhood: 'Neukölln',    avgRating: '4.98', reviewCount: 143, responseRate: '98',  isPremium: true,  isFeatured: true,  idVerificationStatus: 'verified', primaryPhotoUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&h=800&fit=crop&crop=top&q=80', fullName: 'Amira Khalil',  avatarUrl: null },
+  { id: 'host-3', userId: 'user-host-3',    cityId: 'city-lisbon',    cityName: 'Lisbon',    cityCountry: 'Portugal',    flagEmoji: '🇵🇹', headline: 'Alfama local — Fado, food and hidden viewpoints',              bio: '', languages: ['en','pt','es'],             categories: ['food-drink','history','art-culture'],            hostType: 'male',   hourlyRateCents: 3000, neighborhood: 'Alfama',      avgRating: '4.96', reviewCount: 98,  responseRate: '95',  isPremium: true,  isFeatured: true,  idVerificationStatus: 'verified', primaryPhotoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=800&fit=crop&crop=top&q=80', fullName: 'Marco Vasquez', avatarUrl: null },
+  { id: 'host-4', userId: 'user-host-4',    cityId: 'city-amsterdam', cityName: 'Amsterdam', cityCountry: 'Netherlands', flagEmoji: '🇳🇱', headline: 'I cycle 40km/day — Amsterdam by wheel',                        bio: '', languages: ['en','nl','jp'],             categories: ['nature','art-culture','food-drink'],             hostType: 'female', hourlyRateCents: 2200, neighborhood: 'Jordaan',      avgRating: '5.0',  reviewCount: 211, responseRate: '100', isPremium: true,  isFeatured: true,  idVerificationStatus: 'verified', primaryPhotoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop&crop=top&q=80', fullName: 'Yuki Tanaka',   avatarUrl: null },
+  { id: 'host-5', userId: 'user-host-5',    cityId: 'city-barcelona', cityName: 'Barcelona', cityCountry: 'Spain',       flagEmoji: '🇪🇸', headline: 'Barcelona local for 28 years — the real city',                  bio: '', languages: ['en','es','ca','it'],         categories: ['food-drink','history','art-culture'],            hostType: 'female', hourlyRateCents: 2800, neighborhood: 'Gràcia',       avgRating: '4.97', reviewCount: 76,  responseRate: '92',  isPremium: false, isFeatured: false, idVerificationStatus: 'verified', primaryPhotoUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=800&fit=crop&crop=top&q=80', fullName: 'Sofia Reyes',   avatarUrl: null },
+  { id: 'host-2', userId: 'user-host-2',    cityId: 'city-berlin',    cityName: 'Berlin',    cityCountry: 'Germany',     flagEmoji: '🇩🇪', headline: 'Photographer & urban explorer in Berlin-Mitte',                bio: '', languages: ['en','de','ru'],             categories: ['art-culture','history','nature'],                hostType: 'male',   hourlyRateCents: 3000, neighborhood: 'Mitte',        avgRating: '4.85', reviewCount: 67,  responseRate: '94',  isPremium: false, isFeatured: true,  idVerificationStatus: 'verified', primaryPhotoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop&crop=top&q=80', fullName: 'Lars Bauer',    avatarUrl: null },
+  { id: 'host-7', userId: 'user-host-7',    cityId: 'city-hamburg',   cityName: 'Hamburg',   cityCountry: 'Germany',     flagEmoji: '🇩🇪', headline: 'Hamburg harbour local — fish markets, Reeperbahn & the real port city', bio: '', languages: ['en','de','da'], categories: ['nightlife','history','food-drink'],              hostType: 'male',   hourlyRateCents: 2800, neighborhood: 'Altona',       avgRating: '4.93', reviewCount: 41,  responseRate: '91',  isPremium: false, isFeatured: true,  idVerificationStatus: 'verified', primaryPhotoUrl: 'https://images.unsplash.com/photo-1560250097-0dc05329d0ea?w=600&h=800&fit=crop&crop=top&q=80', fullName: 'Jan Bremer',    avatarUrl: null },
 ]
 
 const HOW_STEPS = [
@@ -203,23 +205,6 @@ const CARD_GRADIENTS = [
   { grad: 'linear-gradient(135deg,#7C3AED,#5B21B6)', bg: 'linear-gradient(135deg,#1A0540 0%,#4A1A8A 50%,#7C3AED 100%)' },
   { grad: 'linear-gradient(135deg,#0E7490,#155E75)', bg: 'linear-gradient(135deg,#001A20 0%,#0A4A5A 50%,#0E7490 100%)' },
 ]
-
-function mapToCard(h: any, i: number) {
-  const fb = MOCK_HOST_PHOTOS[h.id]
-  const rate = h.hourlyRateCents ? `€${Math.round(h.hourlyRateCents / 100)}/hr` : '€—/hr'
-  return {
-    name: h.fullName ?? 'Host',
-    city: h.cityName ?? '',
-    flag: h.flagEmoji ?? '🌍',
-    langs: (h.languages ?? []).map((l: string) => l.toUpperCase()).join(' · '),
-    tags: (h.categories ?? []).map((c: string) => CATEGORY_LABELS[c] ?? c).slice(0, 3),
-    rate,
-    rating: String(h.avgRating ?? '—'),
-    reviews: h.reviewCount ?? 0,
-    photo: h.primaryPhotoUrl ?? fb?.url ?? FALLBACK_PHOTO,
-    id: h.id,
-  }
-}
 
 function mapToCarousel(h: any) {
   const fb = MOCK_HOST_PHOTOS[h.id]
@@ -428,9 +413,9 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
   const carouselHosts = (featuredHosts && featuredHosts.length > 0)
     ? featuredHosts.map(mapToCarousel)
     : CAROUSEL_HOSTS.map(mapToCarousel)
-  const displayHosts = (featuredHosts && featuredHosts.length > 0)
-    ? featuredHosts.slice(0, 8).map(mapToCard)
-    : HOSTS
+  const displayHosts: HostSearchResult[] = (featuredHosts && featuredHosts.length > 0)
+    ? featuredHosts.slice(0, 8) as HostSearchResult[]
+    : FALLBACK_HOSTS
   const router = useRouter()
 
   // Search widget
@@ -445,9 +430,6 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
   const [tripDep,  setTripDep]      = useState('')
   const [tripInt,  setTripInt]      = useState('')
   const [hostType, setHostType]     = useState('any')
-
-  // Featured hosts carousel
-  const [hostSlide, setHostSlide]   = useState(0)
 
   // How it works
   const [howStep, setHowStep]       = useState(0)
@@ -553,7 +535,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
             <h1 className="font-serif font-bold text-white mb-5 fade-up fade-up-delay-1"
               style={{ fontSize:'clamp(42px,5vw,72px)', letterSpacing:'-0.045em', lineHeight:1.02 }}>
               Travel like<br />
-              a <em className="italic text-gradient-sunrise" style={{ fontVariationSettings:'"SOFT" 100', filter:'drop-shadow(0 0 32px rgba(245,166,35,0.55))' }}>local,</em><br />
+              a <span className="text-gradient-sunrise" style={{ fontVariationSettings:'"SOFT" 100', filter:'drop-shadow(0 0 32px rgba(245,166,35,0.55))' }}>local,</span><br />
               <span style={{ color:'rgba(255,255,255,0.45)', fontWeight:300, letterSpacing:'-0.02em' }}>not a tourist.</span>
             </h1>
 
@@ -816,7 +798,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
               <div className="overline text-terra mb-2">New feature</div>
               <h2 className="font-serif text-4xl md:text-5xl font-bold" style={{ color:GREEN_DARK, letterSpacing:'-0.03em', lineHeight:1.08 }}>
                 Post your trip.<br />
-                Let hosts <em className="italic text-gradient-terra">find you.</em>
+                Let hosts <span className="text-gradient-terra">find you.</span>
               </h2>
               <p className="mt-3 max-w-lg text-[15px] leading-relaxed" style={{ color:'#2E7A7A' }}>
                 Don't want to search? Tell us where you're going and what you want to experience — verified locals in that city will reach out to you directly.
@@ -880,7 +862,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
         <div className="flex items-end justify-between mb-8">
           <div>
             <div className="overline text-terra mb-1">Explore by interest</div>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold" style={{ color:GREEN_DARK, letterSpacing:'-0.03em' }}>What's your <em className="italic text-gradient-terra">vibe?</em></h2>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold" style={{ color:GREEN_DARK, letterSpacing:'-0.03em' }}>What's your <span className="text-gradient-terra">vibe?</span></h2>
           </div>
           <Link href="/search" className="text-[13px] font-bold hover:gap-2 transition-all flex items-center gap-1" style={{ color:TERRA }}>See all →</Link>
         </div>
@@ -905,73 +887,15 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
         <div className="flex items-end justify-between mb-8">
           <div>
             <div className="overline text-terra mb-1">Top rated</div>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold" style={{ color:GREEN_DARK, letterSpacing:'-0.03em' }}>Featured <em className="italic text-gradient-terra">hosts</em></h2>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold" style={{ color:GREEN_DARK, letterSpacing:'-0.03em' }}>Featured <span className="text-gradient-terra">hosts</span></h2>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2">
-              <button
-                onClick={() => setHostSlide(s => Math.max(0, s - 1))}
-                disabled={hostSlide === 0}
-                style={{ width:'36px', height:'36px', borderRadius:'50%', border:'1.5px solid rgba(10,143,143,0.18)', background:'#fff', cursor: hostSlide === 0 ? 'default' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(0,0,0,0.06)', opacity: hostSlide === 0 ? 0.4 : 1, transition:'all 0.2s' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={TEAL_DARK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
-              </button>
-              <button
-                onClick={() => setHostSlide(s => Math.min(Math.max(0, displayHosts.length - 5), s + 1))}
-                disabled={hostSlide >= displayHosts.length - 5}
-                style={{ width:'36px', height:'36px', borderRadius:'50%', border:'1.5px solid rgba(10,143,143,0.18)', background:'#fff', cursor: hostSlide >= displayHosts.length - 5 ? 'default' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(0,0,0,0.06)', opacity: hostSlide >= displayHosts.length - 5 ? 0.4 : 1, transition:'all 0.2s' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={TEAL_DARK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
-              </button>
-            </div>
-            <Link href="/search" className="text-[13px] font-bold flex items-center gap-1 hover:gap-2 transition-all" style={{ color:TERRA }}>Browse all →</Link>
-          </div>
+          <Link href="/search" className="text-[13px] font-bold flex items-center gap-1 hover:gap-2 transition-all" style={{ color:TERRA }}>Browse all →</Link>
         </div>
-        {/* Carousel */}
-        <div style={{ overflow:'hidden', margin:'0 -6px', padding:'0 6px' }}>
-          <div style={{
-            display:'grid',
-            gridAutoFlow:'column',
-            gridAutoColumns:'calc(20% - 10px)',
-            gap:'12px',
-            transition:'transform 0.45s ease',
-            transform:`translateX(calc(-${hostSlide} * (20% - 10px + 12px)))`,
-          }}>
-            {displayHosts.map(h => (
-              <Link key={h.name} href={`/search?cityId=${h.id}`} className="card card-hover overflow-hidden group" style={{ minWidth: 0 }}>
-                {/* Cover photo */}
-                <div style={{ height:'130px', position:'relative', overflow:'hidden' }}>
-                  <img
-                    src={h.photo}
-                    alt={h.name}
-                    style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center 20%', transition:'transform 0.5s ease' }}
-                    className="group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0" style={{ background:'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 60%)' }} />
-                  <div className="absolute bottom-0 left-0 m-2 px-2 py-0.5 rounded-full text-[9px] font-bold text-white" style={{ background:'rgba(0,0,0,0.50)', backdropFilter:'blur(4px)' }}>{h.flag} {h.city}</div>
-                </div>
-                <div style={{ padding:'10px 12px 12px' }}>
-                  <div className="font-serif text-[14px] font-bold mb-0.5 truncate" style={{ color:TEAL_DARK }}>{h.name}</div>
-                  <div className="text-[10px] font-semibold mb-1.5 truncate" style={{ color:'#5A9E9E' }}>{h.langs}</div>
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {h.tags.slice(0, 2).map((t: string) => <span key={t} className="text-[9px] font-semibold px-2 py-0.5 rounded-full" style={{ background:'rgba(8,78,78,0.08)', color:TEAL_DARK }}>{t}</span>)}
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="text-[11px] font-bold" style={{ color:TERRA }}>{h.rate}</div>
-                    <div className="text-[10px] font-bold" style={{ color:YELLOW }}>★ {h.rating}</div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+          {displayHosts.map(h => (
+            <HostCard key={h.id} host={h} compact />
+          ))}
         </div>
-        {/* Dots */}
-        {displayHosts.length > 5 && (
-          <div style={{ display:'flex', justifyContent:'center', gap:'6px', marginTop:'14px' }}>
-            {Array.from({ length: Math.max(1, displayHosts.length - 4) }).map((_, i) => (
-              <button key={i} onClick={() => setHostSlide(i)}
-                style={{ width: hostSlide === i ? '20px' : '6px', height:'6px', borderRadius:'99px', border:'none', cursor:'pointer', background: hostSlide === i ? TEAL : 'rgba(8,78,78,0.15)', transition:'all 0.3s' }} />
-            ))}
-          </div>
-        )}
       </div>
       </div>{/* end featured hosts bg wrapper */}
 
@@ -989,7 +913,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
         <div className="relative max-w-7xl mx-auto px-5 md:px-11 py-16">
           <div className="overline mb-2" style={{ color:'rgba(255,255,255,0.45)' }}>Simple process</div>
           <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-10" style={{ letterSpacing:'-0.03em' }}>
-            How Offmap <em className="italic text-gradient-sunrise" style={{ fontVariationSettings:'"SOFT" 100' }}>works</em>
+            How Offmap <span className="text-gradient-sunrise" style={{ fontVariationSettings:'"SOFT" 100' }}>works</span>
           </h2>
           <div className="grid md:grid-cols-2 gap-10 items-start">
             {/* Steps */}
@@ -1039,55 +963,104 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
       {/* ════════════════════════════════════════
           CITIES
       ════════════════════════════════════════ */}
-      <div id="cities" className="max-w-7xl mx-auto px-5 md:px-11 py-14" style={{ borderBottom:`1px solid rgba(10,143,143,0.08)` }}>
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <div className="overline text-terra mb-1">Available now</div>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold" style={{ color:GREEN_DARK, letterSpacing:'-0.03em' }}>Live <em className="italic text-gradient-terra">cities</em></h2>
-          </div>
-          {heroCities.length > 0 && (
-            <Link href="/cities" className="hidden sm:inline-flex items-center gap-1.5 text-[13px] font-bold whitespace-nowrap hover:gap-2.5 transition-all" style={{ color:TERRA }}>
-              See all {heroCities.length} cities →
-            </Link>
-          )}
-        </div>
-        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-          {[...heroCities]
-            .sort((a, b) => (b.hostCount ?? 0) - (a.hostCount ?? 0))
-            .slice(0, 12)
-            .map(c => (
-              <Link key={c.id} href={`/search?cityId=${c.id}`}
-                className="flex-shrink-0 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl transition-all hover:scale-105"
-                style={{ minWidth:'120px', background:'#E0F2F2', boxShadow:'0 2px 8px rgba(12,123,123,0.10)', color:GREEN_DARK }}>
-                <span className="text-2xl">{c.flagEmoji}</span>
-                <div>
-                  <div className="text-[13px] font-bold" style={{ color:GREEN_DARK }}>{c.name}</div>
-                  {c.hostCount > 0 && (
-                    <div className="text-[10px] font-semibold" style={{ color:'rgba(8,78,78,0.45)' }}>{c.hostCount} hosts</div>
-                  )}
-                </div>
-              </Link>
-            ))}
-          {heroCities.length > 12 && (
-            <Link href="/cities"
-              className="flex-shrink-0 flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl transition-all hover:scale-105"
-              style={{ minWidth:'120px', background:TERRA, color:'#fff', boxShadow:'0 4px 14px rgba(232,98,26,0.32)' }}>
+      {/* ════════════════════════════════════════
+          CITIES
+      ════════════════════════════════════════ */}
+      {(() => {
+        const CARD_STYLES = [
+          { bg:'linear-gradient(150deg,#EBF7F7,#C6E4E4)', border:'rgba(10,116,116,0.28)', borderHov:'rgba(10,116,116,0.60)', shadow:'rgba(10,116,116,0.09)', shadowHov:'rgba(10,116,116,0.22)', explore:'#0A7474' },
+          { bg:'linear-gradient(150deg,#FDF7EE,#F1E4C8)', border:'rgba(158,116,48,0.28)', borderHov:'rgba(158,116,48,0.60)', shadow:'rgba(158,116,48,0.09)', shadowHov:'rgba(158,116,48,0.22)', explore:'#9E7430' },
+          { bg:'linear-gradient(150deg,#EFF5ED,#D2E8CA)', border:'rgba(50,106,56,0.28)', borderHov:'rgba(50,106,56,0.60)', shadow:'rgba(50,106,56,0.09)', shadowHov:'rgba(50,106,56,0.22)', explore:'#326A38' },
+          { bg:'linear-gradient(150deg,#EDF2F8,#CADAED)', border:'rgba(48,86,152,0.28)', borderHov:'rgba(48,86,152,0.60)', shadow:'rgba(48,86,152,0.09)', shadowHov:'rgba(48,86,152,0.22)', explore:'#305698' },
+          { bg:'linear-gradient(150deg,#F8EFED,#EDD8D2)', border:'rgba(154,66,50,0.28)', borderHov:'rgba(154,66,50,0.60)', shadow:'rgba(154,66,50,0.09)', shadowHov:'rgba(154,66,50,0.22)', explore:'#9A4232' },
+        ]
+        const sorted = [...heroCities].sort((a, b) => (b.hostCount ?? 0) - (a.hostCount ?? 0)).slice(0, 12)
+
+        return (
+          <div id="cities" className="max-w-7xl mx-auto px-5 md:px-11 py-14" style={{ borderBottom:`1px solid rgba(10,143,143,0.08)` }}>
+            <div className="mb-7 flex items-end justify-between gap-4">
               <div>
-                <div className="text-[13px] font-bold">+{heroCities.length - 12} more</div>
-                <div className="text-[10px] font-semibold opacity-80">View all →</div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background:TERRA }} />
+                    <span className="relative inline-flex rounded-full h-2 w-2" style={{ background:TERRA }} />
+                  </span>
+                  <span className="overline text-terra">Available now</span>
+                </div>
+                <h2 className="font-serif text-3xl md:text-4xl font-bold" style={{ color:GREEN_DARK, letterSpacing:'-0.03em' }}>Live <span className="text-gradient-terra">cities</span></h2>
               </div>
-            </Link>
-          )}
-        </div>
-        {/* Mobile-only "see all" link (the inline header version is hidden < sm) */}
-        {heroCities.length > 0 && (
-          <div className="sm:hidden mt-4">
-            <Link href="/cities" className="inline-flex items-center gap-1.5 text-[13px] font-bold" style={{ color:TERRA }}>
-              See all {heroCities.length} cities →
-            </Link>
+              {heroCities.length > 0 && (
+                <Link href="/cities" className="hidden sm:inline-flex items-center gap-1.5 text-[13px] font-bold whitespace-nowrap hover:gap-2.5 transition-all" style={{ color:TERRA }}>
+                  See all {heroCities.length} cities →
+                </Link>
+              )}
+            </div>
+
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+              {sorted.map((c, i) => {
+                const s = CARD_STYLES[i % CARD_STYLES.length]
+                const defBox = `0 2px 14px ${s.shadow}, inset 0 1px 0 rgba(255,255,255,0.82), inset 0 -1px 0 rgba(0,0,0,0.03)`
+                const hovBox = `0 10px 30px ${s.shadowHov}, inset 0 1px 0 rgba(255,255,255,0.82)`
+                return (
+                  <Link
+                    key={c.id}
+                    href={`/search?cityId=${c.id}`}
+                    className="group flex-shrink-0 flex flex-col gap-2 px-4 pt-3.5 pb-3 rounded-[16px]"
+                    style={{
+                      minWidth: '144px',
+                      background: s.bg,
+                      border: `2px solid ${s.border}`,
+                      boxShadow: defBox,
+                      transition: 'transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease, border-color 0.22s ease',
+                    }}
+                    onMouseEnter={e => {
+                      const el = e.currentTarget as HTMLElement
+                      el.style.borderColor = s.borderHov
+                      el.style.boxShadow   = hovBox
+                      el.style.transform   = 'translateY(-5px)'
+                    }}
+                    onMouseLeave={e => {
+                      const el = e.currentTarget as HTMLElement
+                      el.style.borderColor = s.border
+                      el.style.boxShadow   = defBox
+                      el.style.transform   = 'translateY(0)'
+                    }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span style={{ fontSize:'26px', lineHeight:1 }}>{c.flagEmoji}</span>
+                      <div>
+                        <div className="text-[13px] font-bold leading-tight" style={{ color:GREEN_DARK }}>{c.name}</div>
+                        {c.hostCount > 0 && (
+                          <div className="text-[10.5px] font-semibold mt-0.5" style={{ color:'rgba(8,78,78,0.50)' }}>{c.hostCount} hosts</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-200" style={{ color:s.explore }}>
+                      Explore <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+                    </div>
+                  </Link>
+                )
+              })}
+              {heroCities.length > 12 && (
+                <Link href="/cities"
+                  className="flex-shrink-0 flex items-center justify-center flex-col gap-0.5 px-4 py-3.5 rounded-[16px] transition-all hover:-translate-y-1"
+                  style={{ minWidth:'96px', background:TERRA, color:'#fff', boxShadow:'0 4px 16px rgba(232,98,26,0.28)', border:'2px solid rgba(255,255,255,0.22)' }}>
+                  <div className="text-[13px] font-bold">+{heroCities.length - 12}</div>
+                  <div className="text-[10px] font-semibold opacity-80">more →</div>
+                </Link>
+              )}
+            </div>
+
+            {heroCities.length > 0 && (
+              <div className="sm:hidden mt-4">
+                <Link href="/cities" className="inline-flex items-center gap-1.5 text-[13px] font-bold" style={{ color:TERRA }}>
+                  See all {heroCities.length} cities →
+                </Link>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        )
+      })()}
 
       {/* ════════════════════════════════════════
           PRICING CTA
@@ -1162,7 +1135,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
             <div>
               <div className="overline mb-1" style={{ color:'#7BAEAE' }}>Social proof</div>
               <h2 className="font-serif text-4xl font-bold" style={{ color:GREEN_DARK, letterSpacing:'-0.03em' }}>
-                What <em className="italic" style={{ color:TERRA }}>travelers</em> say
+                What <span style={{ color:TERRA }}>travelers</span> say
               </h2>
             </div>
             <div className="hidden md:flex items-center gap-3">
@@ -1185,7 +1158,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
               {featuredReviews.map((r, i) => (
                 <div key={`${r.id}-${i}`} className="rounded-2xl p-5 flex flex-col gap-4" style={{ background:'#fff', border:`1px solid rgba(10,143,143,0.08)`, boxShadow:'0 4px 16px rgba(0,0,0,0.05)' }}>
                   <div style={{ color:YELLOW, fontSize:'13px', letterSpacing:'1px' }}>{'★'.repeat(r.rating)}</div>
-                  <p className="font-serif text-[13.5px] leading-relaxed flex-1 italic" style={{ color:'#1A4A4A' }}>"{r.body}"</p>
+                  <p className="font-serif text-[13.5px] leading-relaxed flex-1" style={{ color:'#1A4A4A' }}>"{r.body}"</p>
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center font-serif font-bold text-white text-xs flex-shrink-0" style={{ background:r.reviewerGradient }}>{r.reviewerInitials}</div>
                     <div>
@@ -1217,7 +1190,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
             <div className="overline text-terra mb-2">For locals</div>
             <h2 className="font-serif text-4xl md:text-5xl font-bold mb-5" style={{ color:GREEN_DARK, letterSpacing:'-0.03em', lineHeight:1.05 }}>
               Share your city.<br />Earn on your<br />
-              <em className="italic text-gradient-terra">own terms.</em>
+              <span className="text-gradient-terra">own terms.</span>
             </h2>
             <p className="text-[15px] leading-relaxed mb-7" style={{ color:'#2E7A7A' }}>
               List your profile for free. Set your own rate, your own schedule, your own experience. Travelers pay you directly — we never take a commission from your earnings.

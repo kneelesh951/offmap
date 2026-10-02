@@ -110,7 +110,7 @@ export default function BecomeAHostPage() {
             {/* Headline */}
             <h1 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 800, color: 'white', fontSize: 46, letterSpacing: '-0.04em', lineHeight: 1.04, marginBottom: 20 }}>
               Get paid to show<br />travelers{' '}
-              <em style={{ fontStyle: 'italic', background: 'linear-gradient(135deg,#E8621A,#F5A623)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>your city.</em>
+              <span style={{ background: 'linear-gradient(135deg,#E8621A,#F5A623)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>your city.</span>
             </h1>
             <p style={{ fontSize: 15, lineHeight: 1.7, color: 'rgba(255,255,255,0.58)', marginBottom: 40, maxWidth: 420 }}>
               You already know the best hidden bars, the real food spots, the history nobody teaches.
@@ -170,7 +170,7 @@ export default function BecomeAHostPage() {
                   <div style={{ display: 'flex', gap: 2 }}>
                     {Array.from({ length: h.rating }).map((_, i) => <Star key={i} size={10} style={{ fill: '#F5A623', color: '#F5A623' }} />)}
                   </div>
-                  <p style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: 13, lineHeight: 1.6, fontStyle: 'italic', color: 'rgba(255,255,255,0.78)', flex: 1, margin: 0 }}>&ldquo;{h.quote}&rdquo;</p>
+                  <p style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.78)', flex: 1, margin: 0 }}>&ldquo;{h.quote}&rdquo;</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 32, height: 32, borderRadius: 10, background: 'linear-gradient(135deg,#E8621A,#F07830)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'white', flexShrink: 0 }}>{h.initials}</div>
                     <div>

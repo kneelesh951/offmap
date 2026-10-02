@@ -92,7 +92,8 @@ export default async function HostDashboard() {
   const pendingBookings = recentBookings.filter((b: any) => b.status === 'pending')
 
   const ACTION_CARDS = [
-    { icon: '✏️', href: '/host-dashboard/profile/create', title: 'Edit your profile', desc: 'Update your bio, rate, languages and availability', cardBg: 'linear-gradient(135deg,#0C3520,#1E6B40)' },
+    { icon: '✏️', href: '/host-dashboard/profile/create', title: 'Edit your profile', desc: 'Update your bio, rate, languages and more', cardBg: 'linear-gradient(135deg,#0C3520,#1E6B40)' },
+    { icon: '📅', href: '/host-dashboard/availability', title: 'Set your availability', desc: 'Weekly schedule, session limits, blocked dates', cardBg: 'linear-gradient(135deg,#1B4332,#2D6A4F)' },
     { icon: '💬', href: '/conversations', title: 'Traveler messages', desc: 'Respond quickly to keep your response rate high', cardBg: 'linear-gradient(135deg,#134E4A,#0D9488)', badge: convCount > 0 ? `${convCount}` : null },
     { icon: '👁️', href: `/hosts/${sessionUser.id}`, title: 'View public profile', desc: 'See exactly what travelers see when they find you', cardBg: 'linear-gradient(135deg,#1E3A5F,#2D6A9F)' },
     { icon: '📋', href: '/host-guidelines', title: 'Host guidelines', desc: 'Community standards and safety requirements', cardBg: 'linear-gradient(135deg,#3D4A1A,#6B7C2A)' },
@@ -279,11 +280,11 @@ export default async function HostDashboard() {
                   bg: 'linear-gradient(135deg, #FFEDD5, #FDBA74)', border: '#FB923C', shadow: 'rgba(249,115,22,0.15)', accent: '#9A3412' },
               ].map(s => (
                 <Link key={s.label} href={s.href}
-                  className="rounded-2xl p-4 text-center transition-all hover:-translate-y-1 group"
-                  style={{ background: s.bg, border: `1.5px solid ${s.border}`, boxShadow: `0 4px 20px ${s.shadow}, inset 0 1px 0 rgba(255,255,255,0.60)` }}>
-                  <div className="text-xl mb-1">{s.icon}</div>
+                  className="rounded-2xl p-4 text-center transition-all hover:-translate-y-1 hover:scale-[1.02] group"
+                  style={{ background: s.bg, border: `3px solid ${s.border}`, boxShadow: `0 6px 20px ${s.border}60` }}>
+                  <div className="text-2xl mb-2">{s.icon}</div>
                   <div className="font-serif text-3xl font-bold" style={{ color: s.accent, letterSpacing: '-0.03em' }}>{s.value}</div>
-                  <div className="text-[9px] font-bold uppercase tracking-widest mt-1" style={{ color: `${s.accent}99` }}>{s.label}</div>
+                  <div className="text-[9px] font-bold uppercase tracking-widest mt-1.5" style={{ color: s.accent, opacity: 0.60 }}>{s.label}</div>
                 </Link>
               ))}
             </div>

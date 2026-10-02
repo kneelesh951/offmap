@@ -538,7 +538,7 @@ export async function sendBookingCancelledEmail({
       ${refundLine}
       ${creditLine}
     </div>
-    <a href="${APP_URL}/dashboard" style="${STYLES.cta}">
+    <a href="${APP_URL}/${cancelledByRole === 'traveler' ? 'host-dashboard' : 'dashboard'}" style="${STYLES.cta}">
       View details →
     </a>
   `

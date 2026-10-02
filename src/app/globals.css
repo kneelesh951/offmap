@@ -165,7 +165,7 @@
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;
   }
-  @keyframes shimmer {
+@keyframes shimmer {
     0%   { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
@@ -193,6 +193,17 @@
   /* ── Scrollbar hide ──────────────────────────────────── */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+  /* ── Booking success toast ───────────────────────────── */
+  @keyframes slide-down-toast {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes drain {
+    from { width: 100%; }
+    to   { width: 0%; }
+  }
 
   /* ── Nav link focus reset ────────────────────────────── */
   header nav a:focus,

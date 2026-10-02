@@ -11,9 +11,11 @@ const PLATFORM_COMMISSION_PERCENT = 15
 
 const createSchema = z.object({
   hostUserId:        z.string().min(1),
+  sessionDate:       z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/, 'sessionDate must be ISO datetime YYYY-MM-DDTHH:MM'),
   sessionRateCents:  z.number().int().min(500),
   durationHours:     z.number().int().min(1).max(8).default(1),
   noteFromTraveler:  z.string().max(300).optional(),
+  meetingPoint:      z.string().max(200).optional(),
   conversationId:    z.string().optional(),
 })
 
@@ -77,15 +79,103 @@ export async function POST(req: Request) {
         )
       }
 
+      // ── Slot validation ────────────────────────────────────────────────────
+      const host = Array.from(mockDb.hostProfiles.values()).find(h => h.userId === data.hostUserId)
+      if (!host) {
+        return NextResponse.json(
+          { success: false, error: { code: 'NOT_FOUND', message: 'Host not found' } },
+          { status: 404 }
+        )
+      }
+
+      const sessionStart = new Date(data.sessionDate)
+      if (isNaN(sessionStart.getTime())) {
+        return NextResponse.json(
+          { success: false, error: { code: 'VALIDATION_ERROR', message: 'Invalid sessionDate' } },
+          { status: 422 }
+        )
+      }
+
+      if (host.availability) {
+        const dateStr = data.sessionDate.slice(0, 10) // YYYY-MM-DD
+        const av = host.availability
+        const dayOfWeek = sessionStart.getDay()
+        const window = av.windows.find((w: { dayOfWeek: number }) => w.dayOfWeek === dayOfWeek)
+
+        if (!window || av.blockedDates.includes(dateStr)) {
+          return NextResponse.json(
+            { success: false, error: { code: 'SLOT_UNAVAILABLE', message: 'Host is not available on this date' } },
+            { status: 409 }
+          )
+        }
+
+        const noticeCutoff = new Date(Date.now() + av.minNoticeHours * 60 * 60 * 1000)
+        if (sessionStart <= noticeCutoff) {
+          return NextResponse.json(
+            { success: false, error: { code: 'SLOT_UNAVAILABLE', message: `Host requires at least ${av.minNoticeHours}h notice` } },
+            { status: 409 }
+          )
+        }
+
+        if (data.durationHours > av.maxSessionHours) {
+          return NextResponse.json(
+            { success: false, error: { code: 'VALIDATION_ERROR', message: `Maximum session length is ${av.maxSessionHours}h` } },
+            { status: 422 }
+          )
+        }
+
+        // Overlap check — reject if any pending/accepted booking overlaps this window
+        const sessionEnd = new Date(sessionStart.getTime() + data.durationHours * 60 * 60 * 1000)
+        const existing = Array.from(mockDb.bookings.values()).filter(b =>
+          b.hostId === data.hostUserId &&
+          ['pending', 'accepted'].includes(b.status) &&
+          b.sessionDate
+        )
+
+        const overlap = existing.some(b => {
+          const bStart = new Date(b.sessionDate!)
+          const bEnd = new Date(bStart.getTime() + b.durationHours * 60 * 60 * 1000)
+          return !(sessionEnd <= bStart || sessionStart >= bEnd)
+        })
+
+        if (overlap) {
+          return NextResponse.json(
+            { success: false, error: { code: 'SLOT_UNAVAILABLE', message: 'This time slot is already taken' } },
+            { status: 409 }
+          )
+        }
+      }
+
+      // ── Dynamic response deadline ─────────────────────────────────────────
+      const now = Date.now()
+      const msUntilSession = sessionStart.getTime() - now
+      const hrsUntilSession = msUntilSession / (60 * 60 * 1000)
+
+      let responseWindowHrs: number
+      if (hrsUntilSession > 72) responseWindowHrs = 24
+      else if (hrsUntilSession > 24) responseWindowHrs = 8
+      else if (hrsUntilSession > 12) responseWindowHrs = 4
+      else {
+        return NextResponse.json(
+          { success: false, error: { code: 'SLOT_UNAVAILABLE', message: 'Cannot book less than 12 hours before session time' } },
+          { status: 409 }
+        )
+      }
+
+      const hostMustRespondBy = new Date(now + responseWindowHrs * 60 * 60 * 1000).toISOString()
+      const mockPaymentIntentId = `mock_pi_${Date.now()}`
+
       const fees = calcFees(data.sessionRateCents, data.durationHours)
 
       const booking = mockDb.createBooking({
         travelerId: user.id,
         hostId: data.hostUserId,
         conversationId: data.conversationId ?? null,
-        sessionDate: null,
+        sessionDate: sessionStart.toISOString(),
         durationHours: data.durationHours,
         noteFromTraveler: data.noteFromTraveler ?? null,
+        meetingPoint: data.meetingPoint ?? null,
+        interests: null,
         sessionRateCents: data.sessionRateCents,
         serviceFeePercent: SERVICE_FEE_PERCENT,
         platformCommissionPercent: PLATFORM_COMMISSION_PERCENT,
@@ -93,6 +183,9 @@ export async function POST(req: Request) {
         hostPayoutCents: fees.hostPayout,
         platformFeeCents: fees.platformFee,
         status: 'pending',
+        paymentStatus: 'authorized',
+        mockPaymentIntentId,
+        hostMustRespondBy,
         cancellationType: null,
         cancellationReason: null,
         cancelledBy: null,
@@ -104,6 +197,11 @@ export async function POST(req: Request) {
         originalSessionDate: null,
         noShowReportedAt: null,
         noShowReportedBy: null,
+        acceptedAt: null,
+        declinedAt: null,
+        completedAt: null,
+        travelerAcknowledgedAt: new Date().toISOString(),
+        hostAcknowledgedAt: null,
       })
 
       // Send booking request email to host

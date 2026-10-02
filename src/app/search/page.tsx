@@ -203,7 +203,7 @@ function SearchPage() {
             <h1 className="font-serif text-4xl md:text-6xl text-white mb-3 fade-up fade-up-delay-1"
               style={{ letterSpacing: '-0.03em', lineHeight: 1.03 }}>
               Find your{' '}
-              <span className="italic text-gradient-sunrise"
+              <span className="text-gradient-sunrise"
                 style={{ fontVariationSettings: '"SOFT" 100', filter: 'drop-shadow(0 0 20px rgba(245,166,35,0.40))' }}>
                 local guide.
               </span>

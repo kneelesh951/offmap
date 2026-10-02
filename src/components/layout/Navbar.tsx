@@ -33,7 +33,13 @@ export function Navbar({ user }: NavbarProps) {
   const router = useRouter()
   const pathname = usePathname()
 
+  // Pages whose hero is dark — navbar starts transparent and fades in on scroll
+  const isHeroPage = pathname === '/' || pathname === '/search'
+  const isTransparent = isHeroPage && !scrolled
+
   useEffect(() => {
+    // Initialise correctly if page is already scrolled on mount (e.g. browser back)
+    setScrolled(window.scrollY > 50)
     const handler = () => setScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handler, { passive: true })
     return () => window.removeEventListener('scroll', handler)
@@ -166,11 +172,13 @@ export function Navbar({ user }: NavbarProps) {
       <header
         className="fixed top-0 left-0 right-0 z-30 h-[66px] flex items-center justify-between px-5 md:px-10 transition-all duration-500"
         style={{
-          background: 'linear-gradient(180deg, #0C7B7B 0%, #063B3B 50%, #042D2D 100%)',
-          borderBottom: '1px solid rgba(12,123,123,0.25)',
+          background: 'rgba(4,45,45,0.96)',
+          backdropFilter: 'blur(20px) saturate(1.8)',
+          WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
           boxShadow: scrolled
-            ? '0 8px 40px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 30px 60px rgba(12,123,123,0.06)'
-            : '0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 30px 60px rgba(12,123,123,0.04)',
+            ? '0 8px 40px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.12)'
+            : '0 4px 24px rgba(0,0,0,0.25)',
         }}
       >
         {/* Logo */}

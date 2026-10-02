@@ -25,10 +25,15 @@ export const createHostProfileSchema = z.object({
   neighborhood: z.string().max(100).optional(),
 })
 export const updateHostProfileSchema = createHostProfileSchema.partial()
+// Coerce a single string value into a one-element array so URL params like
+// ?categories=food-drink (single) and ?languages=en&languages=de (multi) both pass validation.
+const arrayParam = (schema: z.ZodArray<z.ZodString>) =>
+  z.preprocess(v => (typeof v === 'string' ? [v] : v), schema.optional())
+
 export const searchHostsSchema = z.object({
   cityId: z.string().min(1).optional(),
-  categories: z.array(z.string()).optional(),
-  languages: z.array(z.string()).optional(),
+  categories: arrayParam(z.array(z.string())),
+  languages:  arrayParam(z.array(z.string())),
   hostType: z.enum(['any','male','female','couple','family','group']).optional(),
   minRateCents: z.coerce.number().int().min(0).optional(),
   maxRateCents: z.coerce.number().int().min(0).optional(),

@@ -44,7 +44,7 @@ export default async function PricingPage() {
             <p className="overline text-terra mb-4 fade-up">Pricing</p>
             <h1 className="font-serif text-4xl md:text-6xl text-white mb-4 fade-up fade-up-delay-1" style={{ letterSpacing: '-0.03em', lineHeight: 1.05 }}>
               Simple,{' '}
-              <span className="italic text-gradient-sunrise">
+              <span className="text-gradient-sunrise">
                 honest pricing.
               </span>
             </h1>

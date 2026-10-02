@@ -7,14 +7,14 @@ import { X, AlertTriangle, CheckCircle, XCircle, Shield } from 'lucide-react'
 const GREEN  = '#084E4E'
 const ORANGE = '#E8621A'
 
-const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
-  pending:   { bg: 'rgba(184,92,42,0.12)',   text: '#B85C2A', label: 'Awaiting confirmation' },
-  accepted:  { bg: 'rgba(45,106,79,0.12)',   text: '#2D6A4F', label: 'Confirmed'              },
-  declined:  { bg: 'rgba(220,38,38,0.10)',   text: '#DC2626', label: 'Declined'               },
-  completed: { bg: 'rgba(59,108,183,0.12)',  text: '#3B6CB7', label: 'Completed'              },
-  cancelled: { bg: 'rgba(107,114,128,0.12)', text: '#6B7280', label: 'Cancelled'              },
-  disputed:  { bg: 'rgba(220,38,38,0.10)',   text: '#DC2626', label: 'Disputed — under review'},
-  refunded:  { bg: 'rgba(59,108,183,0.12)',  text: '#3B6CB7', label: 'Refunded'               },
+const STATUS_STYLE: Record<string, { bg: string; text: string; label: string; border: string }> = {
+  pending:   { bg: 'linear-gradient(135deg,#FEF3C7,#FDE68A)', text: '#92400E', label: 'Awaiting confirmation', border: '#F59E0B' },
+  accepted:  { bg: 'linear-gradient(135deg,#D1FAE5,#A7F3D0)', text: '#065F46', label: 'Confirmed',               border: '#34D399' },
+  declined:  { bg: 'linear-gradient(135deg,#FEE2E2,#FECACA)', text: '#991B1B', label: 'Declined',                border: '#F87171' },
+  completed: { bg: 'linear-gradient(135deg,#DBEAFE,#BFDBFE)', text: '#1E3A8A', label: 'Completed',               border: '#60A5FA' },
+  cancelled: { bg: 'linear-gradient(135deg,#F1F5F9,#E2E8F0)', text: '#475569', label: 'Cancelled',               border: '#94A3B8' },
+  disputed:  { bg: 'linear-gradient(135deg,#FEE2E2,#FECACA)', text: '#991B1B', label: 'Disputed — under review', border: '#F87171' },
+  refunded:  { bg: 'linear-gradient(135deg,#EDE9FE,#DDD6FE)', text: '#4C1D95', label: 'Refunded',                border: '#A78BFA' },
 }
 
 interface Booking {
@@ -51,12 +51,14 @@ function AcceptModal({
 }: {
   booking: Booking; onClose: () => void; onAccept: () => void
 }) {
-  const [checks, setChecks] = useState([false, false, false])
+  const [checks, setChecks] = useState([false, false, false, false, false])
   const allChecked = checks.every(Boolean)
   const labels = [
-    'I will do a verification call with the traveler before meeting',
+    'I confirm I am 18 years of age or older',
+    'I will conduct a video or phone call with the traveler before meeting in person',
     'I will meet in a public location first',
-    'I understand I am responsible for my own safety and insurance',
+    'I understand I am solely responsible for my own safety and liability insurance — Offmap provides no coverage',
+    'I understand Offmap does not mediate disputes arising from in-person conduct',
   ]
 
   return (
@@ -305,15 +307,15 @@ export function BookingCard({ booking, role }: Props) {
               {booking.durationHours}h · {role === 'traveler' ? `You pay ${fmt(booking.travelerTotalCents)}` : `You earn ${fmt(booking.hostPayoutCents)}`}
             </div>
           </div>
-          <span className="text-[11px] font-bold px-3 py-1 rounded-full flex-shrink-0"
-            style={{ background: s.bg, color: s.text, border: `1.5px solid ${s.text}30` }}>
+          <span className="text-[11px] font-bold px-3.5 py-1.5 rounded-full flex-shrink-0"
+            style={{ background: s.bg, color: s.text, border: `2px solid ${s.border}`, boxShadow: `0 2px 8px ${s.border}40` }}>
             {s.label}
           </span>
         </div>
 
         {/* Note */}
         {booking.noteFromTraveler && (
-          <div className="mx-5 mb-3 px-4 py-2.5 rounded-xl text-[12px] italic text-gray-500"
+          <div className="mx-5 mb-3 px-4 py-2.5 rounded-xl text-[12px] text-gray-500"
             style={{ background: 'rgba(8,78,78,0.04)', border: '1px solid rgba(8,78,78,0.08)' }}>
             "{booking.noteFromTraveler}"
           </div>
@@ -347,13 +349,13 @@ export function BookingCard({ booking, role }: Props) {
             {role === 'host' && booking.status === 'pending' && (
               <>
                 <button onClick={() => setShowAccept(true)} disabled={acting}
-                  className="px-5 py-2 rounded-full text-white text-[13px] font-bold disabled:opacity-60 transition-all hover:-translate-y-0.5"
-                  style={{ background: `linear-gradient(135deg,#2D6A4F,#0a5e5e)`, boxShadow: '0 2px 12px rgba(45,106,79,0.35)' }}>
-                  {acting ? '…' : '✓ Accept'}
+                  className="px-5 py-2.5 rounded-full text-white text-[13px] font-bold disabled:opacity-60 transition-all hover:-translate-y-0.5 active:scale-95"
+                  style={{ background: 'linear-gradient(135deg,#065F46,#0D9488)', boxShadow: '0 4px 14px rgba(13,148,136,0.45)', border: '2px solid #0D9488' }}>
+                  {acting ? '…' : '✓ Accept booking'}
                 </button>
                 <button onClick={() => act('decline')} disabled={acting}
-                  className="px-5 py-2 rounded-full text-[13px] font-bold disabled:opacity-60 border"
-                  style={{ borderColor: 'rgba(220,38,38,0.30)', color: '#DC2626' }}>
+                  className="px-5 py-2.5 rounded-full text-[13px] font-bold disabled:opacity-60 transition-all hover:-translate-y-0.5 active:scale-95"
+                  style={{ background: 'linear-gradient(135deg,#FEE2E2,#FECACA)', color: '#991B1B', border: '2px solid #F87171', boxShadow: '0 4px 14px rgba(248,113,113,0.30)' }}>
                   {acting ? '…' : '✗ Decline'}
                 </button>
               </>
@@ -363,8 +365,8 @@ export function BookingCard({ booking, role }: Props) {
             {role === 'traveler' && booking.status === 'accepted' && booking.conversationId && (
               <Link
                 href={`/conversations/${booking.conversationId}`}
-                className="px-5 py-2 rounded-full text-[13px] font-semibold border transition-colors hover:bg-green-50 inline-flex items-center gap-1.5"
-                style={{ borderColor: 'rgba(8,78,78,0.25)', color: GREEN }}>
+                className="px-5 py-2.5 rounded-full text-[13px] font-bold inline-flex items-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-95"
+                style={{ background: 'linear-gradient(135deg,#D1FAE5,#A7F3D0)', color: '#065F46', border: '2px solid #34D399', boxShadow: '0 4px 14px rgba(52,211,153,0.30)' }}>
                 💬 Message host
               </Link>
             )}
@@ -378,8 +380,8 @@ export function BookingCard({ booking, role }: Props) {
                 if (now >= sessionEnd && now <= twoHoursAfter) {
                   return (
                     <button onClick={() => act('report_no_show')} disabled={acting}
-                      className="px-5 py-2 rounded-full text-[13px] font-bold border disabled:opacity-60"
-                      style={{ borderColor: 'rgba(220,38,38,0.30)', color: '#DC2626' }}>
+                      className="px-5 py-2.5 rounded-full text-[13px] font-bold disabled:opacity-60 transition-all hover:-translate-y-0.5 active:scale-95"
+                      style={{ background: 'linear-gradient(135deg,#FEE2E2,#FECACA)', color: '#991B1B', border: '2px solid #F87171', boxShadow: '0 4px 14px rgba(248,113,113,0.30)' }}>
                       🚩 Report no-show
                     </button>
                   )
@@ -395,8 +397,8 @@ export function BookingCard({ booking, role }: Props) {
                 if (!sessionInFuture) return null
                 return (
                   <button onClick={() => setShowCancel(true)}
-                    className="px-5 py-2 rounded-full text-[13px] font-semibold border transition-colors hover:bg-red-50"
-                    style={{ borderColor: 'rgba(220,38,38,0.25)', color: '#DC2626' }}>
+                    className="px-5 py-2.5 rounded-full text-[13px] font-bold transition-all hover:-translate-y-0.5 active:scale-95"
+                    style={{ background: 'linear-gradient(135deg,#FEE2E2,#FECACA)', color: '#991B1B', border: '2px solid #F87171', boxShadow: '0 4px 14px rgba(248,113,113,0.25)' }}>
                     Cancel booking
                   </button>
                 )

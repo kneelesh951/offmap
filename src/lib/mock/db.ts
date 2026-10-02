@@ -24,6 +24,7 @@ export interface MockUser {
   interests: string[]
   travelStyle: string | null
   profileCompleteness: number
+  creditsBalance: number
   createdAt: string
 }
 
@@ -36,6 +37,20 @@ export interface MockCity {
   isActive: boolean
   hostCount: number
   timezone: string
+}
+
+export interface HostAvailabilityWindow {
+  dayOfWeek: number   // 0=Sun 1=Mon 2=Tue 3=Wed 4=Thu 5=Fri 6=Sat
+  startTime: string   // "14:00"
+  endTime: string     // "20:00"
+}
+
+export interface HostAvailability {
+  windows: HostAvailabilityWindow[]
+  minNoticeHours: number     // min hours ahead traveler can book (default 24)
+  maxSessionHours: number    // max duration per session (default 4)
+  maxSessionsPerDay: number  // prevents double-booking (default 1)
+  blockedDates: string[]     // ["2026-10-26"] — holidays/travel
 }
 
 export interface MockHostProfile {
@@ -66,6 +81,7 @@ export interface MockHostProfile {
   cancellationCount: number
   noShowCount: number
   payoutFrozenUntil: string | null
+  availability?: HostAvailability | null
   createdAt: string
 }
 
@@ -142,9 +158,11 @@ export interface MockBooking {
   travelerId: string
   hostId: string
   conversationId: string | null
-  sessionDate: string | null
+  sessionDate: string | null       // ISO datetime — includes start time
   durationHours: number
   noteFromTraveler: string | null
+  meetingPoint: string | null
+  interests: string | null
   sessionRateCents: number
   serviceFeePercent: number
   platformCommissionPercent: number
@@ -152,6 +170,11 @@ export interface MockBooking {
   hostPayoutCents: number
   platformFeeCents: number
   status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled' | 'disputed' | 'refunded'
+  // Payment simulation (replaces Stripe in mock mode)
+  paymentStatus: 'authorized' | 'captured' | 'released' | 'refunded'
+  mockPaymentIntentId: string | null
+  // Response deadline
+  hostMustRespondBy: string | null // ISO datetime — auto-decline after this
   // Cancellation fields
   cancellationType: string | null
   cancellationReason: string | null
@@ -166,6 +189,13 @@ export interface MockBooking {
   // No-show / dispute
   noShowReportedAt: string | null
   noShowReportedBy: string | null
+  acceptedAt: string | null
+  declinedAt: string | null
+  completedAt: string | null
+  // Legal — timestamp of traveler acknowledging the safety + liability checklist
+  travelerAcknowledgedAt: string | null
+  // Legal — timestamp of host acknowledging the safety + liability checklist on accept
+  hostAcknowledgedAt: string | null
   createdAt: string
 }
 
@@ -175,6 +205,27 @@ export interface MockHostPhoto {
   publicUrl: string
   isPrimary: boolean
   displayOrder: number
+  createdAt: string
+}
+
+export interface MockReport {
+  id: string
+  reporterId: string
+  reportedUserId: string
+  reportedHostId: string | null   // host_profiles.id if report is about a host
+  reason: 'fake_profile' | 'inappropriate_content' | 'harassment' | 'scam' | 'safety_concern' | 'other'
+  details: string | null
+  status: 'open' | 'reviewing' | 'resolved' | 'dismissed'
+  adminNote: string | null
+  resolvedAt: string | null
+  createdAt: string
+}
+
+export interface MockAdminNote {
+  id: string
+  targetUserId: string
+  authorId: string   // admin user id
+  note: string
   createdAt: string
 }
 
@@ -220,6 +271,8 @@ class MockDatabase {
   notifications: Map<string, MockNotification> = new Map()
   bookings: Map<string, MockBooking> = new Map()
   hostPhotos: Map<string, MockHostPhoto> = new Map()
+  reports: Map<string, MockReport> = new Map()
+  adminNotes: Map<string, MockAdminNote> = new Map()
 
   // Session store: sessionToken → userId
   sessions: Map<string, string> = new Map()
@@ -262,6 +315,7 @@ class MockDatabase {
       interests: ['food-drink', 'art-culture', 'nightlife'],
       travelStyle: 'solo',
       profileCompleteness: 70,
+      creditsBalance: 0,
       createdAt: new Date().toISOString(),
     }
     const demoHost: MockUser = {
@@ -278,10 +332,29 @@ class MockDatabase {
       interests: [],
       travelStyle: null,
       profileCompleteness: 0,
+      creditsBalance: 0,
+      createdAt: new Date().toISOString(),
+    }
+    const demoAdmin: MockUser = {
+      id: 'user-admin-demo',
+      email: 'admin@demo.com',
+      password: 'demo1234',
+      role: 'admin',
+      fullName: 'Admin User',
+      avatarUrl: null,
+      bio: null,
+      homeCity: null,
+      homeCountry: null,
+      languages: [],
+      interests: [],
+      travelStyle: null,
+      profileCompleteness: 0,
+      creditsBalance: 0,
       createdAt: new Date().toISOString(),
     }
     this.users.set(demoTraveler.id, demoTraveler)
     this.users.set(demoHost.id, demoHost)
+    this.users.set(demoAdmin.id, demoAdmin)
 
     // ── Host profiles ─────────────────────────────────────────────────────
     const profiles: MockHostProfile[] = [
@@ -421,8 +494,201 @@ class MockDatabase {
       { id: 'user-host-10', email: 'dusseldorf@demo.com',   fullName: 'Nina Schreiber' },
       { id: 'user-host-11', email: 'stuttgart@demo.com',    fullName: 'Erik & Laura Stein' },
     ]
-    hostUsers.forEach(u => this.users.set(u.id, { ...u, password: 'demo1234', role: 'host', avatarUrl: null, bio: null, homeCity: null, homeCountry: null, languages: [], interests: [], travelStyle: null, profileCompleteness: 0, createdAt: new Date().toISOString() }))
-    profiles.forEach(p => this.hostProfiles.set(p.id, p))
+    hostUsers.forEach(u => this.users.set(u.id, { ...u, password: 'demo1234', role: 'host', avatarUrl: null, bio: null, homeCity: null, homeCountry: null, languages: [], interests: [], travelStyle: null, profileCompleteness: 0, creditsBalance: 0, createdAt: new Date().toISOString() }))
+
+    // ── Host availability windows ─────────────────────────────────────────
+    // dayOfWeek: 0=Sun 1=Mon 2=Tue 3=Wed 4=Thu 5=Fri 6=Sat
+    const hostAvailability: Record<string, HostAvailability> = {
+      'host-1': { // Amira — Berlin street food
+        windows: [
+          { dayOfWeek: 2, startTime: '14:00', endTime: '21:00' }, // Tue
+          { dayOfWeek: 3, startTime: '14:00', endTime: '21:00' }, // Wed
+          { dayOfWeek: 5, startTime: '11:00', endTime: '20:00' }, // Fri
+          { dayOfWeek: 6, startTime: '10:00', endTime: '18:00' }, // Sat
+        ],
+        minNoticeHours: 24, maxSessionHours: 4, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+      'host-2': { // Lars — Berlin photographer
+        windows: [
+          { dayOfWeek: 1, startTime: '09:00', endTime: '17:00' }, // Mon
+          { dayOfWeek: 3, startTime: '09:00', endTime: '17:00' }, // Wed
+          { dayOfWeek: 5, startTime: '09:00', endTime: '17:00' }, // Fri
+          { dayOfWeek: 6, startTime: '08:00', endTime: '14:00' }, // Sat (morning only)
+        ],
+        minNoticeHours: 48, maxSessionHours: 3, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+      'host-3': { // Marco — Lisbon Alfama
+        windows: [
+          { dayOfWeek: 1, startTime: '15:00', endTime: '22:00' }, // Mon
+          { dayOfWeek: 2, startTime: '15:00', endTime: '22:00' }, // Tue
+          { dayOfWeek: 4, startTime: '15:00', endTime: '22:00' }, // Thu
+          { dayOfWeek: 6, startTime: '11:00', endTime: '19:00' }, // Sat
+          { dayOfWeek: 0, startTime: '11:00', endTime: '19:00' }, // Sun
+        ],
+        minNoticeHours: 24, maxSessionHours: 4, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+      'host-4': { // Yuki — Amsterdam cycling
+        windows: [
+          { dayOfWeek: 2, startTime: '10:00', endTime: '18:00' }, // Tue
+          { dayOfWeek: 3, startTime: '10:00', endTime: '18:00' }, // Wed
+          { dayOfWeek: 5, startTime: '10:00', endTime: '18:00' }, // Fri
+          { dayOfWeek: 6, startTime: '09:00', endTime: '17:00' }, // Sat
+          { dayOfWeek: 0, startTime: '09:00', endTime: '17:00' }, // Sun
+        ],
+        minNoticeHours: 24, maxSessionHours: 4, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+      'host-5': { // Sofia — Barcelona
+        windows: [
+          { dayOfWeek: 1, startTime: '16:00', endTime: '22:00' }, // Mon
+          { dayOfWeek: 3, startTime: '16:00', endTime: '22:00' }, // Wed
+          { dayOfWeek: 5, startTime: '16:00', endTime: '22:00' }, // Fri
+          { dayOfWeek: 6, startTime: '10:00', endTime: '20:00' }, // Sat
+          { dayOfWeek: 0, startTime: '10:00', endTime: '20:00' }, // Sun
+        ],
+        minNoticeHours: 24, maxSessionHours: 4, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+      'host-6': { // Jonas — Berlin jazz
+        windows: [
+          { dayOfWeek: 4, startTime: '18:00', endTime: '23:00' }, // Thu evenings
+          { dayOfWeek: 5, startTime: '20:00', endTime: '02:00' }, // Fri nights
+          { dayOfWeek: 6, startTime: '20:00', endTime: '02:00' }, // Sat nights
+        ],
+        minNoticeHours: 48, maxSessionHours: 3, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+      'host-7': { // Jan — Hamburg harbour
+        windows: [
+          { dayOfWeek: 1, startTime: '06:00', endTime: '14:00' }, // Mon early
+          { dayOfWeek: 3, startTime: '06:00', endTime: '14:00' }, // Wed early
+          { dayOfWeek: 6, startTime: '05:00', endTime: '13:00' }, // Sat fish market
+          { dayOfWeek: 0, startTime: '14:00', endTime: '20:00' }, // Sun afternoon
+        ],
+        minNoticeHours: 24, maxSessionHours: 4, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+      'host-8': { // Petra — Cologne
+        windows: [
+          { dayOfWeek: 2, startTime: '13:00', endTime: '19:00' }, // Tue
+          { dayOfWeek: 4, startTime: '13:00', endTime: '19:00' }, // Thu
+          { dayOfWeek: 6, startTime: '10:00', endTime: '18:00' }, // Sat
+          { dayOfWeek: 0, startTime: '12:00', endTime: '17:00' }, // Sun
+        ],
+        minNoticeHours: 24, maxSessionHours: 3, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+      'host-9': { // Thomas — Frankfurt
+        windows: [
+          { dayOfWeek: 3, startTime: '17:00', endTime: '22:00' }, // Wed after work
+          { dayOfWeek: 5, startTime: '17:00', endTime: '22:00' }, // Fri after work
+          { dayOfWeek: 6, startTime: '11:00', endTime: '19:00' }, // Sat
+        ],
+        minNoticeHours: 24, maxSessionHours: 3, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+      'host-10': { // Nina — Düsseldorf
+        windows: [
+          { dayOfWeek: 2, startTime: '14:00', endTime: '20:00' }, // Tue
+          { dayOfWeek: 4, startTime: '14:00', endTime: '20:00' }, // Thu
+          { dayOfWeek: 6, startTime: '11:00', endTime: '19:00' }, // Sat
+          { dayOfWeek: 0, startTime: '13:00', endTime: '18:00' }, // Sun
+        ],
+        minNoticeHours: 24, maxSessionHours: 4, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+      'host-11': { // Erik & Laura — Stuttgart
+        windows: [
+          { dayOfWeek: 6, startTime: '10:00', endTime: '18:00' }, // Sat
+          { dayOfWeek: 0, startTime: '10:00', endTime: '17:00' }, // Sun
+        ],
+        minNoticeHours: 48, maxSessionHours: 6, maxSessionsPerDay: 1,
+        blockedDates: [],
+      },
+    }
+
+    profiles.forEach(p => this.hostProfiles.set(p.id, {
+      ...p,
+      availability: hostAvailability[p.id] ?? null,
+    }))
+
+    // ── Seed bookings (to demo pending/accepted states) ───────────────────
+    // Get next Tuesday and Friday relative to today for realistic dates
+    const getNextWeekday = (targetDay: number, offsetWeeks = 0) => {
+      const now = new Date()
+      const d = new Date(now)
+      const diff = (targetDay - d.getDay() + 7) % 7 || 7
+      d.setDate(d.getDate() + diff + offsetWeeks * 7)
+      return d
+    }
+    const nextTue = getNextWeekday(2)
+    const nextFri = getNextWeekday(5)
+    const nextSat = getNextWeekday(6)
+
+    const seedBookings: MockBooking[] = [
+      {
+        id: 'booking-seed-1',
+        travelerId: 'user-traveler-demo',
+        hostId: 'user-host-demo',
+        conversationId: null,
+        sessionDate: (() => { const d = new Date(nextTue); d.setHours(14, 0, 0, 0); return d.toISOString() })(),
+        durationHours: 3,
+        noteFromTraveler: 'Street food tour + hidden bars',
+        meetingPoint: 'Neukölln U-Bahn exit',
+        interests: 'Street food, local bars, Kreuzberg nightlife',
+        sessionRateCents: 2500,
+        serviceFeePercent: 5,
+        platformCommissionPercent: 15,
+        travelerTotalCents: 7875,  // (2500*3) + 5%
+        hostPayoutCents: 6375,     // (2500*3) - 15%
+        platformFeeCents: 1500,
+        status: 'pending',
+        paymentStatus: 'authorized',
+        mockPaymentIntentId: 'mock_pi_booking_seed_1',
+        hostMustRespondBy: (() => { const d = new Date(); d.setHours(d.getHours() + 8); return d.toISOString() })(),
+        cancellationType: null, cancellationReason: null, cancelledBy: null, cancelledAt: null,
+        refundPercent: null, refundAmountCents: null, platformCreditCents: 0,
+        rescheduleCount: 0, originalSessionDate: null,
+        noShowReportedAt: null, noShowReportedBy: null,
+        acceptedAt: null, declinedAt: null, completedAt: null,
+        travelerAcknowledgedAt: new Date().toISOString(),
+        hostAcknowledgedAt: null,
+        createdAt: new Date().toISOString(),
+      },
+      {
+        id: 'booking-seed-2',
+        travelerId: 'user-traveler-demo',
+        hostId: 'user-host-4',
+        conversationId: null,
+        sessionDate: (() => { const d = new Date(nextFri); d.setHours(10, 0, 0, 0); return d.toISOString() })(),
+        durationHours: 2,
+        noteFromTraveler: 'Cycling tour of canals',
+        meetingPoint: 'Centraal Station main exit',
+        interests: 'Canal cycling, Jordaan neighbourhood',
+        sessionRateCents: 2200,
+        serviceFeePercent: 5,
+        platformCommissionPercent: 15,
+        travelerTotalCents: 4620,
+        hostPayoutCents: 3740,
+        platformFeeCents: 880,
+        status: 'accepted',
+        paymentStatus: 'captured',
+        mockPaymentIntentId: 'mock_pi_booking_seed_2',
+        hostMustRespondBy: null,
+        cancellationType: null, cancellationReason: null, cancelledBy: null, cancelledAt: null,
+        refundPercent: null, refundAmountCents: null, platformCreditCents: 0,
+        rescheduleCount: 0, originalSessionDate: null,
+        noShowReportedAt: null, noShowReportedBy: null,
+        acceptedAt: new Date().toISOString(), declinedAt: null, completedAt: null,
+        travelerAcknowledgedAt: new Date(Date.now() - 86400000).toISOString(),
+        hostAcknowledgedAt: new Date().toISOString(),
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+      },
+    ]
+    seedBookings.forEach(b => this.bookings.set(b.id, b))
 
     // ── Host photos (gallery, 2-4 per host) ───────────────────────────────
     const hostPhotoSeed: MockHostPhoto[] = [
@@ -470,7 +736,7 @@ class MockDatabase {
       { id: 'user-james', email: 'james@demo.com', fullName: 'James T.' },
       { id: 'user-priya', email: 'priya@demo.com', fullName: 'Priya M.' },
     ]
-    tripTravelers.forEach(u => this.users.set(u.id, { ...u, password: 'demo1234', role: 'traveler', avatarUrl: null, bio: null, homeCity: null, homeCountry: null, languages: [], interests: [], travelStyle: null, profileCompleteness: 0, createdAt: new Date().toISOString() }))
+    tripTravelers.forEach(u => this.users.set(u.id, { ...u, password: 'demo1234', role: 'traveler', avatarUrl: null, bio: null, homeCity: null, homeCountry: null, languages: [], interests: [], travelStyle: null, profileCompleteness: 0, creditsBalance: 0, createdAt: new Date().toISOString() }))
 
     // ── Seeded trip requests (match homepage ticker) ──────────────────────
     const seedTrips: MockTripRequest[] = [
@@ -557,10 +823,35 @@ class MockDatabase {
     this.wishlists.set('user-traveler-demo:host-3', { userId: 'user-traveler-demo', hostId: 'host-3' })
     this.wishlists.set('user-traveler-demo:host-5', { userId: 'user-traveler-demo', hostId: 'host-5' })
 
+    // ── Pending hosts (for admin review queue demo) ─────────────────────────
+    const pendingUsers: MockUser[] = [
+      { id: 'user-pending-1', email: 'lucas.mueller@example.com', password: 'test1234', role: 'host', fullName: 'Lucas Müller', avatarUrl: null, bio: 'Beer sommelier and craft brewery guide in Munich. I run tasting tours every weekend.', homeCity: 'Munich', homeCountry: 'Germany', languages: ['de', 'en'], interests: ['food-drink'], travelStyle: null, profileCompleteness: 60, creditsBalance: 0, createdAt: new Date(Date.now() - 86400000 * 1).toISOString() },
+      { id: 'user-pending-2', email: 'sofia.rossi@example.com', password: 'test1234', role: 'host', fullName: 'Sofia Rossi', avatarUrl: null, bio: 'Rome-born art historian. I give private tours of the Vatican and lesser-known baroque churches.', homeCity: 'Rome', homeCountry: 'Italy', languages: ['it', 'en', 'fr'], interests: ['art-culture', 'history'], travelStyle: null, profileCompleteness: 75, creditsBalance: 0, createdAt: new Date(Date.now() - 86400000 * 2).toISOString() },
+      { id: 'user-pending-3', email: 'jan.novak@example.com', password: 'test1234', role: 'host', fullName: 'Jan Novák', avatarUrl: null, bio: 'Prague jazz musician. I can show you the underground live music scene tourists never find.', homeCity: 'Prague', homeCountry: 'Czech Republic', languages: ['cs', 'en'], interests: ['music', 'nightlife'], travelStyle: null, profileCompleteness: 55, creditsBalance: 0, createdAt: new Date(Date.now() - 86400000 * 3).toISOString() },
+    ]
+    pendingUsers.forEach(u => this.users.set(u.id, u))
+
+    const pendingProfiles: MockHostProfile[] = [
+      { id: 'host-pending-1', userId: 'user-pending-1', cityId: 'city-munich', headline: 'Craft beer & brewery guide in Munich', bio: 'Beer sommelier and craft brewery guide in Munich. I run tasting tours every weekend and know every microbrewery in the city.', languages: ['de', 'en'], categories: ['food-drink'], hostType: 'male', hourlyRateCents: 4500, neighborhood: 'Schwabing', avgRating: '0.0', reviewCount: 0, isPremium: false, isFeatured: false, moderationStatus: 'pending', isActive: false, primaryPhotoUrl: null, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'not_submitted', idVerifiedAt: null, idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null, createdAt: new Date(Date.now() - 86400000 * 1).toISOString() },
+      { id: 'host-pending-2', userId: 'user-pending-2', cityId: 'city-rome', headline: 'Art historian offering private Vatican & baroque tours', bio: 'Rome-born art historian. I give private tours of the Vatican and lesser-known baroque churches that most tourists walk right past.', languages: ['it', 'en', 'fr'], categories: ['art-culture', 'history'], hostType: 'female', hourlyRateCents: 6000, neighborhood: 'Trastevere', avgRating: '0.0', reviewCount: 0, isPremium: false, isFeatured: false, moderationStatus: 'pending', isActive: false, primaryPhotoUrl: null, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'not_submitted', idVerifiedAt: null, idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null, createdAt: new Date(Date.now() - 86400000 * 2).toISOString() },
+      { id: 'host-pending-3', userId: 'user-pending-3', cityId: 'city-prague', headline: 'Underground jazz & live music scene guide', bio: 'Prague jazz musician. I can show you the underground live music scene tourists never find — speakeasy bars, jazz cellars, and impromptu jam sessions.', languages: ['cs', 'en'], categories: ['music', 'nightlife'], hostType: 'male', hourlyRateCents: 3500, neighborhood: 'Žižkov', avgRating: '0.0', reviewCount: 0, isPremium: false, isFeatured: false, moderationStatus: 'pending', isActive: false, primaryPhotoUrl: null, idDocumentUrl: null, idDocumentType: null, idVerificationStatus: 'not_submitted', idVerifiedAt: null, idRejectionReason: null, introVideoUrl: null, strikeCount: 0, cancellationCount: 0, noShowCount: 0, payoutFrozenUntil: null, createdAt: new Date(Date.now() - 86400000 * 3).toISOString() },
+    ]
+    pendingProfiles.forEach(p => this.hostProfiles.set(p.id, p))
+
+    // ── Sample reports (for admin safety queue demo) ─────────────────────────
+    const sampleReports: MockReport[] = [
+      { id: 'report-1', reporterId: 'user-traveler-demo', reportedUserId: 'user-r2', reportedHostId: 'host-3', reason: 'fake_profile', details: 'The profile photo looks like a stock image. The bio seems copied from another site.', status: 'open', adminNote: null, resolvedAt: null, createdAt: new Date(Date.now() - 86400000 * 1).toISOString() },
+      { id: 'report-2', reporterId: 'user-r3', reportedUserId: 'user-host-demo', reportedHostId: 'host-1', reason: 'harassment', details: 'Host sent several uncomfortable messages after I declined to book a session.', status: 'reviewing', adminNote: 'Reviewing conversation logs. Asked host for their account of events.', resolvedAt: null, createdAt: new Date(Date.now() - 86400000 * 3).toISOString() },
+      { id: 'report-3', reporterId: 'user-sarah', reportedUserId: 'user-r4', reportedHostId: 'host-5', reason: 'scam', details: 'Host asked me to pay directly via bank transfer outside the platform, then became unresponsive.', status: 'open', adminNote: null, resolvedAt: null, createdAt: new Date(Date.now() - 86400000 * 0.5).toISOString() },
+      { id: 'report-4', reporterId: 'user-james', reportedUserId: 'user-r5', reportedHostId: 'host-7', reason: 'inappropriate_content', details: 'Profile bio contains offensive language targeting a specific nationality.', status: 'resolved', adminNote: 'Bio updated by admin. Host warned via email. No further action needed.', resolvedAt: new Date(Date.now() - 86400000 * 2).toISOString(), createdAt: new Date(Date.now() - 86400000 * 4).toISOString() },
+    ]
+    sampleReports.forEach(r => this.reports.set(r.id, r))
+
     console.log('🌱 Mock database seeded with sample data')
     console.log('   Demo accounts:')
     console.log('   Traveler → traveler@demo.com / demo1234')
     console.log('   Host     → host@demo.com / demo1234')
+    console.log('   Admin    → admin@demo.com / demo1234')
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
@@ -604,6 +895,26 @@ class MockDatabase {
     return Array.from(this.subscriptions.values()).find(
       s => s.userId === userId && s.status === 'active' && new Date(s.currentPeriodEnd) > new Date()
     )
+  }
+
+  getCreditsBalance(userId: string): number {
+    return this.users.get(userId)?.creditsBalance ?? 0
+  }
+
+  addCredits(userId: string, amount: number): number {
+    const user = this.users.get(userId)
+    if (!user) return 0
+    user.creditsBalance = (user.creditsBalance ?? 0) + amount
+    this.users.set(userId, user)
+    return user.creditsBalance
+  }
+
+  deductCredits(userId: string, amount: number): boolean {
+    const user = this.users.get(userId)
+    if (!user || (user.creditsBalance ?? 0) < amount) return false
+    user.creditsBalance = (user.creditsBalance ?? 0) - amount
+    this.users.set(userId, user)
+    return true
   }
 
   createBooking(data: Omit<MockBooking, 'id' | 'createdAt'>): MockBooking {
@@ -900,6 +1211,114 @@ class MockDatabase {
     }
     this.hostProfiles.set(profile.id, profile)
     return profile
+  }
+
+  // ── Admin helpers ─────────────────────────────────────────────────────────
+
+  getAdminStats() {
+    const pendingHosts = Array.from(this.hostProfiles.values()).filter(h => h.moderationStatus === 'pending').length
+    const approvedHosts = Array.from(this.hostProfiles.values()).filter(h => h.moderationStatus === 'approved').length
+    const openReports = Array.from(this.reports.values()).filter(r => r.status === 'open' || r.status === 'reviewing').length
+    const totalUsers = Array.from(this.users.values()).filter(u => u.role !== 'admin').length
+    const activeSubscriptions = Array.from(this.subscriptions.values()).filter(s => s.status === 'active').length
+    const totalBookings = this.bookings.size
+    const completedBookings = Array.from(this.bookings.values()).filter(b => b.status === 'completed').length
+    const totalRevenueCents = Array.from(this.bookings.values())
+      .filter(b => b.status === 'completed')
+      .reduce((sum, b) => sum + b.platformFeeCents, 0)
+    return { pendingHosts, approvedHosts, openReports, totalUsers, activeSubscriptions, totalBookings, completedBookings, totalRevenueCents }
+  }
+
+  getAllHosts(filter?: 'pending' | 'approved' | 'rejected' | 'all') {
+    let profiles = Array.from(this.hostProfiles.values())
+    if (filter && filter !== 'all') profiles = profiles.filter(h => h.moderationStatus === filter)
+    return profiles
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .map(h => {
+        const user = this.users.get(h.userId)
+        const city = this.cities.get(h.cityId)
+        return { ...h, fullName: user?.fullName ?? null, email: user?.email ?? null, cityName: city?.name ?? null, flagEmoji: city?.flagEmoji ?? null }
+      })
+  }
+
+  approveHost(profileId: string): boolean {
+    const profile = this.hostProfiles.get(profileId)
+    if (!profile) return false
+    profile.moderationStatus = 'approved'
+    profile.isActive = true
+    this.hostProfiles.set(profileId, profile)
+    return true
+  }
+
+  rejectHost(profileId: string, reason?: string): boolean {
+    const profile = this.hostProfiles.get(profileId)
+    if (!profile) return false
+    profile.moderationStatus = 'rejected'
+    profile.isActive = false
+    this.hostProfiles.set(profileId, profile)
+    return true
+  }
+
+  suspendHost(profileId: string): boolean {
+    const profile = this.hostProfiles.get(profileId)
+    if (!profile) return false
+    profile.isActive = false
+    this.hostProfiles.set(profileId, profile)
+    return true
+  }
+
+  getReports(filter?: 'open' | 'reviewing' | 'resolved' | 'dismissed' | 'all') {
+    let reports = Array.from(this.reports.values())
+    if (filter && filter !== 'all') reports = reports.filter(r => r.status === filter)
+    return reports
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .map(r => {
+        const reporter = this.users.get(r.reporterId)
+        const reported = this.users.get(r.reportedUserId)
+        return { ...r, reporterName: reporter?.fullName ?? null, reportedName: reported?.fullName ?? null }
+      })
+  }
+
+  updateReport(reportId: string, patch: { status?: MockReport['status']; adminNote?: string }): boolean {
+    const report = this.reports.get(reportId)
+    if (!report) return false
+    if (patch.status) report.status = patch.status
+    if (patch.adminNote !== undefined) report.adminNote = patch.adminNote
+    if (patch.status === 'resolved' || patch.status === 'dismissed') report.resolvedAt = new Date().toISOString()
+    this.reports.set(reportId, report)
+    return true
+  }
+
+  addAdminNote(targetUserId: string, authorId: string, note: string): MockAdminNote {
+    const n: MockAdminNote = {
+      id: `note-${nanoid(8)}`,
+      targetUserId,
+      authorId,
+      note,
+      createdAt: new Date().toISOString(),
+    }
+    this.adminNotes.set(n.id, n)
+    return n
+  }
+
+  getAdminNotes(targetUserId: string): MockAdminNote[] {
+    return Array.from(this.adminNotes.values())
+      .filter(n => n.targetUserId === targetUserId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  }
+
+  searchAllUsers(q: string) {
+    const query = q.toLowerCase()
+    return Array.from(this.users.values())
+      .filter(u => u.role !== 'admin' && (
+        u.fullName?.toLowerCase().includes(query) ||
+        u.email.toLowerCase().includes(query)
+      ))
+      .map(u => {
+        const hostProfile = this.getHostProfileByUserId(u.id)
+        const activeSub = this.getActiveSubscription(u.id)
+        return { ...u, password: undefined, hostProfile: hostProfile ?? null, hasActiveSub: !!activeSub }
+      })
   }
 }
 

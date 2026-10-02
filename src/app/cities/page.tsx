@@ -79,7 +79,7 @@ export default async function CitiesPage() {
             <p className="overline mb-3" style={{ color: 'rgba(255,255,255,0.55)' }}>Live cities</p>
             <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4" style={{ letterSpacing: '-0.03em', lineHeight: 1.05 }}>
               Every city,{' '}
-              <em className="italic text-gradient-sunrise">every local.</em>
+              <span className="text-gradient-sunrise">every local.</span>
             </h1>
             <p className="text-base leading-relaxed max-w-2xl" style={{ color: 'rgba(255,255,255,0.70)' }}>
               {cities.length} {cities.length === 1 ? 'city' : 'cities'} live across {countries.length} {countries.length === 1 ? 'country' : 'countries'} — {totalHosts}+ verified hosts ready to show you their corner of Europe.

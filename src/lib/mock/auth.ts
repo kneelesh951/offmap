@@ -25,6 +25,7 @@ export function mockSignUp(email: string, password: string, fullName: string, ro
     interests: [] as string[],
     travelStyle: null,
     profileCompleteness: 0,
+    creditsBalance: 0,
     createdAt: new Date().toISOString(),
   }
   mockDb.users.set(user.id, user)

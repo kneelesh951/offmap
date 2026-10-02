@@ -4,11 +4,17 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import Link from 'next/link'
 import { BookingCard } from '@/components/booking/BookingCard'
+import { DashboardCreditsWidget } from '@/components/credits/DashboardCreditsWidget'
+import { BookingSuccessBanner } from '@/components/booking/BookingSuccessBanner'
 
 const GREEN = '#084E4E'
 const TERRA = '#E8621A'
 
-export default async function TravelerDashboard() {
+export default async function TravelerDashboard({
+  searchParams,
+}: {
+  searchParams?: { booked?: string; host?: string }
+}) {
   const isMock = process.env.MOCK_MODE === 'true'
 
   let sessionUser: any = null
@@ -19,6 +25,7 @@ export default async function TravelerDashboard() {
   let recentBookings: any[] = []
   let hostCount = 47
   let cityCount = 8
+  let creditsBalance = 0
 
   if (isMock) {
     const { mockGetUser } = await import('@/lib/mock/auth')
@@ -37,6 +44,7 @@ export default async function TravelerDashboard() {
     }))
     sessionUser = { id: user.id, email: user.email, role: user.role as any, fullName: user.fullName, avatarUrl: null }
     sub = activeSub ? { plan: activeSub.plan, expiresAt: activeSub.currentPeriodEnd } : null
+    creditsBalance = mockDb.getCreditsBalance(user.id)
 
     hostCount = Array.from(mockDb.hostProfiles.values()).filter(h => h.moderationStatus === 'approved' && h.isActive).length
     cityCount = new Set(Array.from(mockDb.hostProfiles.values()).filter(h => h.moderationStatus === 'approved' && h.isActive).map(h => h.cityId)).size
@@ -66,6 +74,10 @@ export default async function TravelerDashboard() {
       convCount = convRow?.count ?? 0
       wishCount = wishRow?.count ?? 0
       tripCount = tripRow?.count ?? 0
+
+      const { users: usersTable } = await import('@/lib/db/schema')
+      const [userRow] = await db.select({ creditsBalance: usersTable.creditsBalance }).from(usersTable).where(eq(usersTable.id, authUser.id)).limit(1)
+      creditsBalance = userRow?.creditsBalance ?? 0
 
       const { hostProfiles, cities } = await import('@/lib/db/schema')
       const { count } = await import('drizzle-orm')
@@ -121,15 +133,20 @@ export default async function TravelerDashboard() {
 
   const STATS = [
     { label: 'Conversations', value: convCount, href: '/conversations', icon: '💬',
-      accent: '#084E4E' },
+      bg: 'linear-gradient(135deg,#C05621,#F07830)', border: '#F07830', textColor: '#fff' },
     { label: 'Saved hosts', value: wishCount, href: '/wishlists', icon: '❤️',
-      accent: '#084E4E' },
+      bg: 'linear-gradient(135deg,#134E4A,#0D9488)', border: '#0D9488', textColor: '#fff' },
     { label: 'Cities live', value: cityCount, href: '/search', icon: '🌍',
-      accent: '#084E4E' },
+      bg: 'linear-gradient(135deg,#1E3A5F,#2D6A9F)', border: '#2D6A9F', textColor: '#fff' },
   ]
+
+  const showBookedBanner = searchParams?.booked === 'true'
 
   return (
     <>
+      {showBookedBanner && (
+        <BookingSuccessBanner hostName={searchParams?.host} />
+      )}
       <Navbar user={sessionUser} />
       <main className="min-h-screen pt-[68px]" style={{ backgroundColor: '#EDE6DA' }}>
 
@@ -223,21 +240,22 @@ export default async function TravelerDashboard() {
             </div>
           )}
 
+          {/* ── Credits widget ──────────────────────────── */}
+          <DashboardCreditsWidget balance={creditsBalance} hasSub={!!sub} />
+
           {/* ── Stats row ───────────────────────────────── */}
           <div className="grid grid-cols-3 gap-4 mb-8">
             {STATS.map(s => (
               <Link key={s.label} href={s.href}
-                className="rounded-2xl p-6 text-center transition-all hover:-translate-y-1 group"
+                className="rounded-2xl p-6 text-center transition-all hover:-translate-y-1 hover:scale-[1.02] group"
                 style={{
-                  background: 'rgba(255,255,255,0.55)',
-                  backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)',
-                  border: '1.5px solid rgba(255,255,255,0.70)',
-                  boxShadow: '0 4px 24px rgba(8,78,78,0.08), inset 0 1px 0 rgba(255,255,255,0.80)',
+                  background: s.bg,
+                  border: `3px solid ${s.border}`,
+                  boxShadow: `0 6px 24px ${s.border}40`,
                 }}>
-                <div className="text-2xl mb-2">{s.icon}</div>
-                <div className="font-serif text-5xl font-bold mb-1" style={{ color: s.accent, letterSpacing: '-0.03em' }}>{s.value}</div>
-                <div className="text-[10px] font-bold uppercase tracking-widest mt-1" style={{ color: 'rgba(8,78,78,0.45)' }}>{s.label}</div>
+                <div className="text-3xl mb-3">{s.icon}</div>
+                <div className="font-serif text-5xl font-bold mb-1" style={{ color: s.textColor, letterSpacing: '-0.03em' }}>{s.value}</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest mt-2" style={{ color: s.textColor, opacity: 0.75 }}>{s.label}</div>
               </Link>
             ))}
           </div>

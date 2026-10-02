@@ -21,21 +21,18 @@ interface Props {
 const GREEN = '#084E4E'
 const TERRA = '#E8621A'
 
-function FlagImg({ countryCode, size = 20 }: { countryCode: string; size?: number }) {
+function FlagEmoji({ emoji, size = 20 }: { emoji: string; size?: number }) {
   return (
-    <img
-      src={`https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`}
-      alt=""
-      width={size}
-      height={size}
-      style={{
-        width: size, height: size,
-        borderRadius: '50%',
-        objectFit: 'cover',
-        flexShrink: 0,
-        border: '1.5px solid rgba(0,0,0,0.10)',
-      }}
-    />
+    <span style={{
+      fontSize: size,
+      lineHeight: 1,
+      flexShrink: 0,
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      {emoji}
+    </span>
   )
 }
 
@@ -100,7 +97,7 @@ export function CityAutocomplete({ cities, value, onChange }: Props) {
         {/* Flag or chevron icon */}
         <div style={{ flexShrink: 0 }}>
           {selected
-            ? <FlagImg countryCode={selected.countryCode} size={22} />
+            ? <FlagEmoji emoji={selected.flagEmoji} size={20} />
             : <ChevronDown size={14} style={{ color: TERRA }} />
           }
         </div>
@@ -179,7 +176,7 @@ export function CityAutocomplete({ cities, value, onChange }: Props) {
                 onMouseEnter={e => { setActiveIndex(i); e.currentTarget.style.background = 'rgba(232,98,26,0.08)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = isSelected ? 'rgba(232,98,26,0.05)' : '#fff' }}
               >
-                <FlagImg countryCode={city.countryCode} size={28} />
+                <FlagEmoji emoji={city.flagEmoji} size={22} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: isActive || isSelected ? TERRA : GREEN }}>
                     {city.name}

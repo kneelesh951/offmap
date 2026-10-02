@@ -4,12 +4,29 @@
  * In production: uses Upstash rate limiting + Supabase session refresh.
  */
 import { NextResponse, type NextRequest } from 'next/server'
+import type { RateLimitTier } from '@/lib/cache'
 
 const PROTECTED = ['/dashboard', '/host-dashboard', '/host-onboarding', '/conversations', '/settings', '/wishlists']
+
+// Admin IP allowlist — comma-separated IPs in env var. Empty = allow all (dev safety).
+// In production set ADMIN_ALLOWED_IPS=your.ip.here in Vercel env vars.
+const ADMIN_ALLOWED_IPS = (process.env.ADMIN_ALLOWED_IPS ?? '')
+  .split(',').map(s => s.trim()).filter(Boolean)
 
 // Routes that legitimately receive cross-origin POST requests (Stripe, future webhooks).
 // These already verify requests via their own signature mechanisms — no CSRF check needed.
 const CSRF_EXEMPT = ['/api/webhooks/']
+
+// Auth endpoints get a much stricter limit (5 req / 15 min) to prevent brute-force.
+const AUTH_ROUTES = ['/api/auth/login', '/api/auth/register', '/api/auth/forgot-password', '/api/auth/reset-password']
+// Write routes (POST/PATCH/DELETE to resources) get 30 req / 60 s.
+const WRITE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+
+function rateLimitTier(pathname: string, method: string): RateLimitTier {
+  if (AUTH_ROUTES.some(r => pathname.startsWith(r))) return 'auth'
+  if (WRITE_METHODS.has(method)) return 'write'
+  return 'read'
+}
 
 /**
  * CSRF protection via Origin header check.
@@ -52,6 +69,19 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isMock = process.env.MOCK_MODE === 'true'
 
+  // ── Admin IP allowlist ─────────────────────────────────────────────────────
+  if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
+    if (ADMIN_ALLOWED_IPS.length > 0) {
+      const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+               ?? request.headers.get('x-real-ip')
+               ?? '127.0.0.1'
+      const isLocalhost = ip === '127.0.0.1' || ip === '::1' || ip.startsWith('localhost')
+      if (!isLocalhost && !ADMIN_ALLOWED_IPS.includes(ip)) {
+        return NextResponse.rewrite(new URL('/not-found', request.url))
+      }
+    }
+  }
+
   // ── CSRF protection (all modes) ────────────────────────────────────────────
   const csrfError = csrfCheck(request)
   if (csrfError) return csrfError
@@ -59,13 +89,17 @@ export async function middleware(request: NextRequest) {
   // ── Rate limiting (production only) ────────────────────────────────────────
   if (!isMock && pathname.startsWith('/api/')) {
     try {
-      const { Ratelimit } = await import('@upstash/ratelimit')
-      const { Redis } = await import('@upstash/redis')
-      const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1'
-      const limiter = new Ratelimit({ redis: Redis.fromEnv(), limiter: Ratelimit.slidingWindow(100, '60 s'), prefix: 'rl:api' })
-      const { success } = await limiter.limit(ip)
-      if (!success) return NextResponse.json({ error: { code: 'RATE_LIMITED', message: 'Too many requests' } }, { status: 429 })
-    } catch { /* fail open — don't block requests if Redis is unavailable */ }
+      const { checkRateLimit } = await import('@/lib/cache')
+      const ip = (request.headers.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0].trim()
+      const tier = rateLimitTier(pathname, request.method)
+      const { success } = await checkRateLimit(tier, ip)
+      if (!success) {
+        return NextResponse.json(
+          { success: false, error: { code: 'RATE_LIMITED', message: 'Too many requests — please slow down' } },
+          { status: 429, headers: { 'Retry-After': '60' } }
+        )
+      }
+    } catch { /* fail open — Redis outage must not take down the app */ }
   }
 
   // ── Session refresh (production only) ──────────────────────────────────────
@@ -82,7 +116,7 @@ export async function middleware(request: NextRequest) {
   // If the cookie is stale (server restarted), the page will redirect to login
   // and the login page will clear the old cookie on successful re-login.
   const mockSession = request.cookies.get('offmap_mock_session')?.value
-  const isProtected = PROTECTED.some(r => pathname.startsWith(r))
+  const isProtected = PROTECTED.some(r => pathname.startsWith(r)) || pathname.startsWith('/admin')
 
   if (isProtected && !mockSession) {
     const url = new URL('/auth/login', request.url)

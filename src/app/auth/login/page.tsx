@@ -50,7 +50,7 @@ function LoginForm() {
       }
       const role = json.data?.user?.role
       const redirectTo = searchParams.get('redirect')
-      const defaultDest = role === 'host' ? '/host-dashboard' : '/dashboard'
+      const defaultDest = role === 'host' ? '/host-dashboard' : role === 'admin' ? '/admin' : '/dashboard'
       window.location.href = redirectTo || defaultDest
     } catch {
       setError('Something went wrong. Please try again.')
@@ -104,7 +104,7 @@ function LoginForm() {
           <div className="rounded-2xl p-6" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', maxWidth: 380 }}>
             {isHostLogin ? (
               <>
-                <p className="text-sm leading-relaxed italic mb-4" style={{ color: 'rgba(255,255,255,0.80)' }}>
+                <p className="text-sm leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.80)' }}>
                   &ldquo;I&apos;ve met people from 40 countries through Offmap. It pays for my rent and I love every session.&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
@@ -118,7 +118,7 @@ function LoginForm() {
               </>
             ) : (
               <>
-                <p className="text-sm leading-relaxed italic mb-4" style={{ color: 'rgba(255,255,255,0.80)' }}>
+                <p className="text-sm leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.80)' }}>
                   &ldquo;Amira showed me a Berlin I would never have found in ten trips. One of my best travel memories.&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
@@ -178,6 +178,7 @@ function LoginForm() {
                 <div className="text-xs text-amber-700 space-y-0.5">
                   <div>Traveler: <code className="bg-amber-100 px-1.5 py-0.5 rounded-md font-semibold">traveler@demo.com</code> / <code className="bg-amber-100 px-1.5 py-0.5 rounded-md font-semibold">demo1234</code></div>
                   <div>Host: <code className="bg-amber-100 px-1.5 py-0.5 rounded-md font-semibold">host@demo.com</code> / <code className="bg-amber-100 px-1.5 py-0.5 rounded-md font-semibold">demo1234</code></div>
+                  <div>Admin: <code className="bg-amber-100 px-1.5 py-0.5 rounded-md font-semibold">admin@demo.com</code> / <code className="bg-amber-100 px-1.5 py-0.5 rounded-md font-semibold">demo1234</code></div>
                 </div>
               </div>
             )}

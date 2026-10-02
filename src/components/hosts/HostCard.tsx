@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { Star, Heart, MapPin, Shield } from 'lucide-react'
 import { formatCents, formatRating, getInitials } from '@/lib/utils'
 import type { HostSearchResult } from '@/types'
@@ -30,9 +31,10 @@ const CATEGORY_COLORS: Record<string, string> = {
 interface HostCardProps {
   host: HostSearchResult
   onConnectClick?: (host: HostSearchResult) => void
+  compact?: boolean
 }
 
-export function HostCard({ host }: HostCardProps) {
+export function HostCard({ host, compact }: HostCardProps) {
   const [wishlisted, setWishlisted] = useState(false)
 
   const toggleWishlist = async (e: React.MouseEvent) => {
@@ -52,20 +54,25 @@ export function HostCard({ host }: HostCardProps) {
 
   return (
     <Link href={`/hosts/${host.userId}`} className="block group h-full">
-      <div
-        className="rounded-2xl overflow-hidden card-hover h-full flex flex-col"
+      <motion.div
+        className="rounded-2xl overflow-hidden h-full flex flex-col"
         style={{
           border: '1px solid rgba(17,80,104,0.25)',
           boxShadow: '0 4px 16px rgba(12,53,71,0.20), 0 1px 4px rgba(12,53,71,0.10)',
         }}
+        whileHover={{
+          y: -8,
+          boxShadow: '0 28px 52px rgba(12,53,71,0.30), 0 4px 12px rgba(12,53,71,0.12)',
+          transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
+        }}
       >
         {/* ── Photo / cover ──────────────────────────────── */}
-        <div className="relative h-52 overflow-hidden">
+        <div className={`relative ${compact ? 'h-36' : 'h-52'} overflow-hidden`} style={{ background: '#0C3547' }}>
           {host.primaryPhotoUrl ? (
             <img
               src={host.primaryPhotoUrl}
               alt={host.fullName ?? 'Host'}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
             />
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${gradient}`} />
@@ -112,7 +119,7 @@ export function HostCard({ host }: HostCardProps) {
           )}
 
           {/* Avatar — overlaps into card body */}
-          <div className="absolute bottom-0 right-4 translate-y-1/2 w-12 h-12 rounded-xl border-2 border-white shadow-lg overflow-hidden z-10">
+          <div className={`absolute bottom-0 right-4 translate-y-1/2 ${compact ? 'w-9 h-9' : 'w-12 h-12'} rounded-xl border-2 border-white shadow-lg overflow-hidden z-10`}>
             {host.primaryPhotoUrl ? (
               <img src={host.primaryPhotoUrl} alt="" className="w-full h-full object-cover" />
             ) : (
@@ -124,9 +131,9 @@ export function HostCard({ host }: HostCardProps) {
         </div>
 
         {/* ── Body ───────────────────────────────────────── */}
-        <div className="pt-8 px-4 pb-4 flex-1 flex flex-col" style={{ background: 'linear-gradient(160deg, #0C3547, #0E4155, #115068)', borderTop: '2px solid rgba(255,255,255,0.12)' }}>
+        <div className={`${compact ? 'pt-6 px-3 pb-3' : 'pt-8 px-4 pb-4'} flex-1 flex flex-col`} style={{ background: 'linear-gradient(160deg, #0C3547, #0E4155, #115068)', borderTop: '2px solid rgba(255,255,255,0.12)' }}>
           <div className="flex items-center gap-2">
-            <div className="font-serif text-[17px] font-bold leading-tight" style={{ color: '#fff' }}>
+            <div className={`font-serif ${compact ? 'text-[14px]' : 'text-[17px]'} font-bold leading-tight`} style={{ color: '#fff' }}>
               {host.fullName ?? 'Local host'}
             </div>
             {host.idVerificationStatus === 'verified' && (
@@ -138,7 +145,7 @@ export function HostCard({ host }: HostCardProps) {
           </div>
 
           {host.headline && (
-            <p className="text-[12.5px] mt-0.5 leading-snug line-clamp-2" style={{ color: 'rgba(255,255,255,0.82)', fontWeight: 500 }}>
+            <p className={`${compact ? 'text-[11px]' : 'text-[12.5px]'} mt-0.5 leading-snug line-clamp-2`} style={{ color: 'rgba(255,255,255,0.82)', fontWeight: 500 }}>
               {host.headline}
             </p>
           )}
@@ -180,7 +187,7 @@ export function HostCard({ host }: HostCardProps) {
             </span>
           </div>
         </div>
-      </div>
+      </motion.div>
     </Link>
   )
 }
