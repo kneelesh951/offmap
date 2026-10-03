@@ -702,85 +702,77 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
               <HeroCarousel hosts={carouselHosts} />
             </div>
 
-            {/* ── 4 cards ── */}
-            <div style={{ display:'flex', flexDirection:'column', gap:'20px', marginTop:'100px' }}>
-
-            {/* ── Row 1: Review + Live Now ── */}
-            <div style={{ display:'flex', gap:'20px', alignItems:'stretch' }}>
-
-              {/* Review card */}
-              {(() => {
-                const rev = featuredReviews[reviewIdx]
-                const name  = rev?.reviewerName  ?? 'James M.'
-                const city  = rev?.reviewerCity  ?? 'Amsterdam'
-                const inits = rev?.reviewerInitials ?? 'JM'
-                const grad  = rev?.reviewerGradient ?? 'linear-gradient(135deg,#4A7A9E,#2A5A7E)'
-                const body  = rev?.body ?? 'This changed how I travel. No tour guide comes close.'
-                return (
-                  <div className="fc-review" style={{ flex:1, borderRadius:'16px', padding:'12px 14px', background:'#fff', boxShadow:'0 12px 36px rgba(0,0,0,0.18)', transition:'opacity 0.4s ease', opacity: reviewVisible ? 1 : 0, display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
-                    <div style={{ display:'flex', gap:'2px', marginBottom:'6px' }}>
-                      {[1,2,3,4,5].map(i => <span key={i} style={{ color:YELLOW, fontSize:'12px' }}>★</span>)}
-                    </div>
-                    <p style={{ fontSize:'11px', fontWeight:600, color:GREEN_DARK, lineHeight:1.5, marginBottom:'8px' }}>
-                      &ldquo;{body}&rdquo;
-                    </p>
-                    <div style={{ display:'flex', alignItems:'center', gap:'7px' }}>
-                      <div style={{ width:'24px', height:'24px', borderRadius:'50%', background:grad, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'10px', fontWeight:700, color:'#fff', flexShrink:0 }}>{inits}</div>
-                      <div>
-                        <div style={{ fontSize:'10px', fontWeight:700, color:GREEN_DARK }}>{name}</div>
-                        <div style={{ fontSize:'9px', color:'#9CAD9E', fontWeight:500 }}>{city} · verified traveler</div>
-                      </div>
-                    </div>
+            {/* ── Live activity feed ── */}
+            <div style={{ marginTop:'28px' }}>
+              <style>{`
+                @keyframes feedScroll {
+                  0%   { transform: translateY(0); }
+                  100% { transform: translateY(-50%); }
+                }
+                .feed-track { animation: feedScroll 18s linear infinite; }
+                .feed-track:hover { animation-play-state: paused; }
+              `}</style>
+              <div style={{ borderRadius:'20px', background:'rgba(255,255,255,0.10)', backdropFilter:'blur(18px)', border:'1px solid rgba(255,255,255,0.22)', boxShadow:'0 16px 48px rgba(0,0,0,0.22)', overflow:'hidden', padding:'0' }}>
+                {/* Header */}
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 16px 10px', borderBottom:'1px solid rgba(255,255,255,0.12)' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:'7px' }}>
+                    <span className="glow-dot" style={{ width:'7px', height:'7px', borderRadius:'50%', background:'#4ADE80', display:'inline-block', flexShrink:0 }} />
+                    <span style={{ fontSize:'11px', fontWeight:800, color:'#fff', textTransform:'uppercase', letterSpacing:'0.10em' }}>Live activity</span>
                   </div>
-                )
-              })()}
-
-              {/* Live Now card */}
-              <div className="fc-live" style={{ flex:1, borderRadius:'16px', padding:'12px 14px', background:`linear-gradient(135deg,${YELLOW},#FFD633,#E6B800)`, boxShadow:'0 12px 36px rgba(255,204,0,0.40), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.08)' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'6px' }}>
-                  <span className="glow-dot" style={{ width:'7px', height:'7px', borderRadius:'50%', background:TEAL, display:'inline-block', flexShrink:0 }} />
-                  <span style={{ fontSize:'10px', fontWeight:800, color:GREEN_DARK, textTransform:'uppercase', letterSpacing:'0.08em' }}>Live now</span>
+                  <span style={{ fontSize:'10px', fontWeight:600, color:'rgba(255,255,255,0.55)' }}>{stats.hostCount}+ hosts · {stats.cityCount} cities</span>
                 </div>
-                <div style={{ fontSize:'20px', fontWeight:800, color:GREEN_DARK, fontFamily:'var(--font-fraunces), Georgia, serif', letterSpacing:'-0.03em', marginBottom:'2px' }}>⚡ 4 min</div>
-                <div style={{ fontSize:'10px', color:'rgba(4,60,60,0.80)', fontWeight:600, marginBottom:'8px' }}>avg. host reply time</div>
-                <div style={{ display:'flex', gap:'4px', flexWrap:'wrap' }}>
-                  {[['🇩🇪','Berlin'],['🇵🇹','Lisbon'],['🇳🇱','AMS']].map(([flag, city]) => (
-                    <span key={city} style={{ fontSize:'9px', fontWeight:700, padding:'2px 7px', borderRadius:'999px', background:'rgba(6,95,95,0.12)', color:GREEN_DARK }}>{flag} {city}</span>
-                  ))}
+                {/* Scrolling feed */}
+                <div style={{ height:'220px', overflow:'hidden', position:'relative' }}>
+                  <div className="feed-track">
+                    {[
+                      { icon:'🤝', color:'#4ADE80', text:'Amira K. connected with a traveler', sub:'Berlin · 2 min ago' },
+                      { icon:'★', color:YELLOW, text:'Marco R. left a 5-star review', sub:'Lisbon · 5 min ago' },
+                      { icon:'✈️', color:'#60A5FA', text:'Sophie B. posted a trip to Prague', sub:'Arriving Nov 14 · 8 min ago' },
+                      { icon:'🏠', color:TERRA, text:'New host joined in Amsterdam', sub:'Food & culture · 12 min ago' },
+                      { icon:'💬', color:'#A78BFA', text:'Yuki T. replied in under 3 min', sub:'Tokyo · 15 min ago' },
+                      { icon:'🤝', color:'#4ADE80', text:'Lena M. unlocked a Berlin host', sub:'18 min ago' },
+                      { icon:'★', color:YELLOW, text:'"This changed how I travel." — Alex D.', sub:'Amsterdam · 22 min ago' },
+                      { icon:'✈️', color:'#60A5FA', text:'Carlos V. posted a trip to Barcelona', sub:'Arriving Dec 2 · 25 min ago' },
+                    ].concat([
+                      { icon:'🤝', color:'#4ADE80', text:'Amira K. connected with a traveler', sub:'Berlin · 2 min ago' },
+                      { icon:'★', color:YELLOW, text:'Marco R. left a 5-star review', sub:'Lisbon · 5 min ago' },
+                      { icon:'✈️', color:'#60A5FA', text:'Sophie B. posted a trip to Prague', sub:'Arriving Nov 14 · 8 min ago' },
+                      { icon:'🏠', color:TERRA, text:'New host joined in Amsterdam', sub:'Food & culture · 12 min ago' },
+                      { icon:'💬', color:'#A78BFA', text:'Yuki T. replied in under 3 min', sub:'Tokyo · 15 min ago' },
+                      { icon:'🤝', color:'#4ADE80', text:'Lena M. unlocked a Berlin host', sub:'18 min ago' },
+                      { icon:'★', color:YELLOW, text:'"This changed how I travel." — Alex D.', sub:'Amsterdam · 22 min ago' },
+                      { icon:'✈️', color:'#60A5FA', text:'Carlos V. posted a trip to Barcelona', sub:'Arriving Dec 2 · 25 min ago' },
+                    ]).map((item, i) => (
+                      <div key={i} style={{ display:'flex', alignItems:'center', gap:'11px', padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
+                        <div style={{ width:'30px', height:'30px', borderRadius:'50%', background:'rgba(255,255,255,0.12)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', flexShrink:0 }}>{item.icon}</div>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:'11px', fontWeight:700, color:'#fff', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{item.text}</div>
+                          <div style={{ fontSize:'10px', color:'rgba(255,255,255,0.50)', marginTop:'1px' }}>{item.sub}</div>
+                        </div>
+                        <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:item.color, flexShrink:0 }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Footer stat row */}
+                <div style={{ display:'flex', justifyContent:'space-around', padding:'10px 16px', borderTop:'1px solid rgba(255,255,255,0.12)' }}>
+                  <div style={{ textAlign:'center' }}>
+                    <div style={{ fontSize:'14px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif' }}>⚡ 4 min</div>
+                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.55)', fontWeight:600, marginTop:'1px' }}>avg reply</div>
+                  </div>
+                  <div style={{ width:'1px', background:'rgba(255,255,255,0.12)' }} />
+                  <div style={{ textAlign:'center' }}>
+                    <div style={{ fontSize:'14px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif' }}>€6<span style={{ fontSize:'10px', fontWeight:500 }}>/day</span></div>
+                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.55)', fontWeight:600, marginTop:'1px' }}>from</div>
+                  </div>
+                  <div style={{ width:'1px', background:'rgba(255,255,255,0.12)' }} />
+                  <div style={{ textAlign:'center' }}>
+                    <div style={{ fontSize:'14px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif' }}>4.9★</div>
+                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.55)', fontWeight:600, marginTop:'1px' }}>avg rating</div>
+                  </div>
                 </div>
               </div>
-
-            </div>
-
-            {/* ── Row 2: Host count + Pricing ── */}
-            <div style={{ display:'flex', gap:'20px' }}>
-
-              {/* Host count */}
-              <div style={{ flex:1, borderRadius:'14px', padding:'12px 14px', background:`linear-gradient(135deg,${TEAL_DEEP},${TEAL_DARK},${TEAL})`, border:'1px solid rgba(255,255,255,0.15)', boxShadow:'inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.10), 0 8px 24px rgba(10,143,143,0.35)', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
-                <div style={{ fontSize:'9px', fontWeight:800, color:'rgba(255,255,255,0.80)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'4px' }}>Verified hosts</div>
-                <div style={{ fontSize:'20px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif', letterSpacing:'-0.03em', lineHeight:1 }}>{stats.hostCount}+</div>
-                <div style={{ fontSize:'10px', color:'rgba(255,255,255,0.80)', fontWeight:600, marginTop:'2px' }}>across {stats.cityCount} cities</div>
-                <div style={{ display:'flex', gap:'3px', marginTop:'6px' }}>
-                  {stats.topCityFlags.map(flag => (
-                    <span key={flag} style={{ fontSize:'13px' }}>{flag}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Pricing */}
-              <div style={{ flex:1, borderRadius:'14px', padding:'12px 14px', background:'linear-gradient(135deg,#E8621A,#F07830,#E8621A)', boxShadow:'0 8px 28px rgba(232,98,26,0.40), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.12)', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
-                <div style={{ fontSize:'9px', fontWeight:800, color:'#fff', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'4px' }}>Unlock hosts from</div>
-                <div style={{ fontSize:'20px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif', letterSpacing:'-0.03em', lineHeight:1 }}>€6 <span style={{ fontSize:'11px', fontWeight:600, color:'rgba(255,255,255,0.85)' }}>/day</span></div>
-                <div style={{ display:'flex', gap:'4px', marginTop:'6px', flexWrap:'wrap' }}>
-                  {['€6 day','€12 week','€18 mo'].map(t => (
-                    <span key={t} style={{ fontSize:'9px', fontWeight:700, padding:'2px 6px', borderRadius:'999px', background:'rgba(255,255,255,0.25)', color:'#fff' }}>{t}</span>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-
-            </div>{/* end 4-cards wrapper */}
+            </div>{/* end feed */}
 
           </div>
         </div>
