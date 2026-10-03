@@ -703,7 +703,7 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
             </div>
 
             {/* ── Live activity feed ── */}
-            <div style={{ marginTop:'28px' }}>
+            <div style={{ marginTop:'60px' }}>
               <style>{`
                 @keyframes feedScroll {
                   0%   { transform: translateY(0); }
@@ -712,14 +712,14 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
                 .feed-track { animation: feedScroll 18s linear infinite; }
                 .feed-track:hover { animation-play-state: paused; }
               `}</style>
-              <div style={{ borderRadius:'20px', background:'rgba(255,255,255,0.10)', backdropFilter:'blur(18px)', border:'1px solid rgba(255,255,255,0.22)', boxShadow:'0 16px 48px rgba(0,0,0,0.22)', overflow:'hidden', padding:'0' }}>
+              <div style={{ borderRadius:'20px', background:'linear-gradient(160deg,#1A6B82 0%,#0E4F63 60%,#0B3D50 100%)', border:'1px solid rgba(255,255,255,0.14)', boxShadow:'0 16px 48px rgba(10,60,80,0.45)', overflow:'hidden' }}>
                 {/* Header */}
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 16px 10px', borderBottom:'1px solid rgba(255,255,255,0.12)' }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 16px 10px', borderBottom:'1px solid rgba(255,255,255,0.10)' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:'7px' }}>
                     <span className="glow-dot" style={{ width:'7px', height:'7px', borderRadius:'50%', background:'#4ADE80', display:'inline-block', flexShrink:0 }} />
                     <span style={{ fontSize:'11px', fontWeight:800, color:'#fff', textTransform:'uppercase', letterSpacing:'0.10em' }}>Live activity</span>
                   </div>
-                  <span style={{ fontSize:'10px', fontWeight:600, color:'rgba(255,255,255,0.55)' }}>{stats.hostCount}+ hosts · {stats.cityCount} cities</span>
+                  <span style={{ fontSize:'10px', fontWeight:600, color:'rgba(255,255,255,0.50)' }}>{stats.hostCount}+ hosts · {stats.cityCount} cities</span>
                 </div>
                 {/* Scrolling feed */}
                 <div style={{ height:'220px', overflow:'hidden', position:'relative' }}>
@@ -727,27 +727,27 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
                     {[
                       { icon:'🤝', color:'#4ADE80', text:'Amira K. connected with a traveler', sub:'Berlin · 2 min ago' },
                       { icon:'★', color:YELLOW, text:'Marco R. left a 5-star review', sub:'Lisbon · 5 min ago' },
-                      { icon:'✈️', color:'#60A5FA', text:'Sophie B. posted a trip to Prague', sub:'Arriving Nov 14 · 8 min ago' },
-                      { icon:'🏠', color:TERRA, text:'New host joined in Amsterdam', sub:'Food & culture · 12 min ago' },
-                      { icon:'💬', color:'#A78BFA', text:'Yuki T. replied in under 3 min', sub:'Tokyo · 15 min ago' },
+                      { icon:'✈️', color:'#93C5FD', text:'Sophie B. posted a trip to Prague', sub:'Arriving Nov 14 · 8 min ago' },
+                      { icon:'🏠', color:'#FCA572', text:'New host joined in Amsterdam', sub:'Food & culture · 12 min ago' },
+                      { icon:'💬', color:'#C4B5FD', text:'Yuki T. replied in under 3 min', sub:'Tokyo · 15 min ago' },
                       { icon:'🤝', color:'#4ADE80', text:'Lena M. unlocked a Berlin host', sub:'18 min ago' },
                       { icon:'★', color:YELLOW, text:'"This changed how I travel." — Alex D.', sub:'Amsterdam · 22 min ago' },
-                      { icon:'✈️', color:'#60A5FA', text:'Carlos V. posted a trip to Barcelona', sub:'Arriving Dec 2 · 25 min ago' },
+                      { icon:'✈️', color:'#93C5FD', text:'Carlos V. posted a trip to Barcelona', sub:'Arriving Dec 2 · 25 min ago' },
                     ].concat([
                       { icon:'🤝', color:'#4ADE80', text:'Amira K. connected with a traveler', sub:'Berlin · 2 min ago' },
                       { icon:'★', color:YELLOW, text:'Marco R. left a 5-star review', sub:'Lisbon · 5 min ago' },
-                      { icon:'✈️', color:'#60A5FA', text:'Sophie B. posted a trip to Prague', sub:'Arriving Nov 14 · 8 min ago' },
-                      { icon:'🏠', color:TERRA, text:'New host joined in Amsterdam', sub:'Food & culture · 12 min ago' },
-                      { icon:'💬', color:'#A78BFA', text:'Yuki T. replied in under 3 min', sub:'Tokyo · 15 min ago' },
+                      { icon:'✈️', color:'#93C5FD', text:'Sophie B. posted a trip to Prague', sub:'Arriving Nov 14 · 8 min ago' },
+                      { icon:'🏠', color:'#FCA572', text:'New host joined in Amsterdam', sub:'Food & culture · 12 min ago' },
+                      { icon:'💬', color:'#C4B5FD', text:'Yuki T. replied in under 3 min', sub:'Tokyo · 15 min ago' },
                       { icon:'🤝', color:'#4ADE80', text:'Lena M. unlocked a Berlin host', sub:'18 min ago' },
                       { icon:'★', color:YELLOW, text:'"This changed how I travel." — Alex D.', sub:'Amsterdam · 22 min ago' },
-                      { icon:'✈️', color:'#60A5FA', text:'Carlos V. posted a trip to Barcelona', sub:'Arriving Dec 2 · 25 min ago' },
+                      { icon:'✈️', color:'#93C5FD', text:'Carlos V. posted a trip to Barcelona', sub:'Arriving Dec 2 · 25 min ago' },
                     ]).map((item, i) => (
-                      <div key={i} style={{ display:'flex', alignItems:'center', gap:'11px', padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
-                        <div style={{ width:'30px', height:'30px', borderRadius:'50%', background:'rgba(255,255,255,0.12)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', flexShrink:0 }}>{item.icon}</div>
+                      <div key={i} style={{ display:'flex', alignItems:'center', gap:'11px', padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+                        <div style={{ width:'30px', height:'30px', borderRadius:'50%', background:'rgba(255,255,255,0.10)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', flexShrink:0 }}>{item.icon}</div>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ fontSize:'11px', fontWeight:700, color:'#fff', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{item.text}</div>
-                          <div style={{ fontSize:'10px', color:'rgba(255,255,255,0.50)', marginTop:'1px' }}>{item.sub}</div>
+                          <div style={{ fontSize:'10px', color:'rgba(255,255,255,0.45)', marginTop:'1px' }}>{item.sub}</div>
                         </div>
                         <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:item.color, flexShrink:0 }} />
                       </div>
@@ -755,20 +755,20 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
                   </div>
                 </div>
                 {/* Footer stat row */}
-                <div style={{ display:'flex', justifyContent:'space-around', padding:'10px 16px', borderTop:'1px solid rgba(255,255,255,0.12)' }}>
+                <div style={{ display:'flex', justifyContent:'space-around', padding:'10px 16px', borderTop:'1px solid rgba(255,255,255,0.10)' }}>
                   <div style={{ textAlign:'center' }}>
                     <div style={{ fontSize:'14px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif' }}>⚡ 4 min</div>
-                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.55)', fontWeight:600, marginTop:'1px' }}>avg reply</div>
+                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.50)', fontWeight:600, marginTop:'1px' }}>avg reply</div>
                   </div>
-                  <div style={{ width:'1px', background:'rgba(255,255,255,0.12)' }} />
+                  <div style={{ width:'1px', background:'rgba(255,255,255,0.10)' }} />
                   <div style={{ textAlign:'center' }}>
                     <div style={{ fontSize:'14px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif' }}>€6<span style={{ fontSize:'10px', fontWeight:500 }}>/day</span></div>
-                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.55)', fontWeight:600, marginTop:'1px' }}>from</div>
+                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.50)', fontWeight:600, marginTop:'1px' }}>from</div>
                   </div>
-                  <div style={{ width:'1px', background:'rgba(255,255,255,0.12)' }} />
+                  <div style={{ width:'1px', background:'rgba(255,255,255,0.10)' }} />
                   <div style={{ textAlign:'center' }}>
                     <div style={{ fontSize:'14px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif' }}>4.9★</div>
-                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.55)', fontWeight:600, marginTop:'1px' }}>avg rating</div>
+                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.50)', fontWeight:600, marginTop:'1px' }}>avg rating</div>
                   </div>
                 </div>
               </div>
