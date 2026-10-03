@@ -334,15 +334,19 @@ function HeroCarousel({ hosts }: { hosts: ReturnType<typeof mapToCarousel>[] }) 
             <div style={{ fontSize:'11px', color:'rgba(255,255,255,0.50)', fontWeight:500 }}>{host.reviews} reviews</div>
           </div>
 
-          {/* Tags + price */}
+          {/* Tags */}
           <div style={{ display:'flex', gap:'5px', flexWrap:'wrap' }}>
             {(host.tags as string[]).map((t: string) => (
               <span key={t} style={{ fontSize:'10px', fontWeight:600, padding:'3px 10px', borderRadius:'999px', background:'rgba(255,255,255,0.10)', color:'rgba(255,255,255,0.85)', border:'1px solid rgba(255,255,255,0.18)' }}>{t}</span>
             ))}
-            <span style={{ fontSize:'10px', fontWeight:700, padding:'3px 10px', borderRadius:'999px', background:TERRA, color:'#fff' }}>
-              €{Math.round(host.rateCents / 100)}/hr
-            </span>
           </div>
+        </div>
+
+        {/* Price badge — bottom-right of teal panel */}
+        <div style={{ position:'absolute', bottom:'16px', right:'18px', zIndex:10 }}>
+          <span style={{ display:'inline-block', fontSize:'13px', fontWeight:800, padding:'6px 14px', borderRadius:'999px', background:'linear-gradient(135deg,#E8621A,#F07830)', color:'#fff', boxShadow:'0 4px 16px rgba(232,98,26,0.55), inset 0 1px 0 rgba(255,255,255,0.22)', letterSpacing:'0.01em' }}>
+            €{Math.round(host.rateCents / 100)}/hr
+          </span>
         </div>
 
         {/* Hover scrim */}
@@ -524,13 +528,6 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
 
           {/* LEFT */}
           <div>
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-7 text-[12px] font-bold fade-up"
-              style={{ background:'linear-gradient(135deg, rgba(20,184,166,0.22) 0%, rgba(255,255,255,0.08) 100%)', border:'1px solid rgba(20,184,166,0.45)', color:'rgba(255,255,255,0.95)', backdropFilter:'blur(12px)', boxShadow:'0 2px 12px rgba(20,184,166,0.25), inset 0 1px 0 rgba(255,255,255,0.18)' }}>
-              <span className="w-2 h-2 rounded-full animate-pulse flex-shrink-0" style={{ background:'#14B8A6', boxShadow:'0 0 8px rgba(20,184,166,0.80)' }} />
-              Now live across Europe · 8 cities
-            </div>
-
             {/* Headline */}
             <h1 className="font-serif font-bold text-white mb-5 fade-up fade-up-delay-1"
               style={{ fontSize:'clamp(42px,5vw,72px)', letterSpacing:'-0.045em', lineHeight:1.02 }}>
@@ -698,12 +695,29 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
             `}</style>
 
             {/* ── Host carousel ── */}
-            <div className="relative w-full" style={{ height:'200px', marginTop:'140px' }}>
-              <HeroCarousel hosts={carouselHosts} />
+            <div style={{ marginTop:'60px' }}>
+              <style>{`
+                @keyframes livePing {
+                  0%   { transform: scale(1);   opacity: 1; box-shadow: 0 0 0 0 rgba(255,255,255,0.9), 0 0 12px 4px rgba(255,255,255,0.7); }
+                  50%  { transform: scale(1.35); opacity: 1; box-shadow: 0 0 0 6px rgba(255,255,255,0.0), 0 0 24px 8px rgba(255,255,255,0.5); }
+                  100% { transform: scale(1);   opacity: 1; box-shadow: 0 0 0 0 rgba(255,255,255,0.9), 0 0 12px 4px rgba(255,255,255,0.7); }
+                }
+                .live-dot { animation: livePing 1s ease-in-out infinite; }
+              `}</style>
+              <div style={{ display:'flex', justifyContent:'center', marginBottom:'28px' }}>
+                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full text-[12px] font-bold"
+                  style={{ background:'linear-gradient(135deg,#E8621A,#F07830)', border:'2px solid rgba(255,255,255,0.35)', color:'#fff', boxShadow:'0 4px 24px rgba(232,98,26,0.70), 0 0 40px rgba(232,98,26,0.30), inset 0 1px 0 rgba(255,255,255,0.28)' }}>
+                  <span className="live-dot flex-shrink-0" style={{ width:'9px', height:'9px', borderRadius:'50%', background:'#fff', display:'inline-block' }} />
+                  Now live across Europe · 8 cities
+                </div>
+              </div>
+              <div className="relative w-full" style={{ height:'200px' }}>
+                <HeroCarousel hosts={carouselHosts} />
+              </div>
             </div>
 
             {/* ── Live activity feed ── */}
-            <div style={{ marginTop:'60px' }}>
+            <div style={{ marginTop:'68px' }}>
               <style>{`
                 @keyframes feedScroll {
                   0%   { transform: translateY(0); }
@@ -712,63 +726,63 @@ export function HomeClient({ sessionUser, featuredHosts }: { sessionUser: any; f
                 .feed-track { animation: feedScroll 18s linear infinite; }
                 .feed-track:hover { animation-play-state: paused; }
               `}</style>
-              <div style={{ borderRadius:'20px', background:'linear-gradient(160deg,#1A6B82 0%,#0E4F63 60%,#0B3D50 100%)', border:'1px solid rgba(255,255,255,0.14)', boxShadow:'0 16px 48px rgba(10,60,80,0.45)', overflow:'hidden' }}>
+              <div style={{ borderRadius:'22px', background:'#FFFFFF', border:'2.5px solid #CBD5E1', boxShadow:'0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)', overflow:'hidden' }}>
                 {/* Header */}
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 16px 10px', borderBottom:'1px solid rgba(255,255,255,0.10)' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:'7px' }}>
-                    <span className="glow-dot" style={{ width:'7px', height:'7px', borderRadius:'50%', background:'#4ADE80', display:'inline-block', flexShrink:0 }} />
-                    <span style={{ fontSize:'11px', fontWeight:800, color:'#fff', textTransform:'uppercase', letterSpacing:'0.10em' }}>Live activity</span>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 18px 12px', borderBottom:'2px solid #E2E8F0', background:'linear-gradient(180deg,#F8FAFC 0%,#F1F5F9 100%)' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+                    <span className="glow-dot" style={{ width:'8px', height:'8px', borderRadius:'50%', background:'#22C55E', display:'inline-block', flexShrink:0, boxShadow:'0 0 0 3px rgba(34,197,94,0.20)' }} />
+                    <span style={{ fontSize:'11px', fontWeight:900, color:'#0F172A', textTransform:'uppercase', letterSpacing:'0.12em' }}>Live activity</span>
                   </div>
-                  <span style={{ fontSize:'10px', fontWeight:600, color:'rgba(255,255,255,0.50)' }}>{stats.hostCount}+ hosts · {stats.cityCount} cities</span>
+                  <span style={{ fontSize:'10px', fontWeight:700, color:'#64748B', background:'#E2E8F0', padding:'3px 8px', borderRadius:'999px', border:'1px solid #CBD5E1' }}>{stats.hostCount}+ hosts · {stats.cityCount} cities</span>
                 </div>
                 {/* Scrolling feed */}
-                <div style={{ height:'220px', overflow:'hidden', position:'relative' }}>
+                <div style={{ height:'140px', overflow:'hidden', position:'relative', background:'#fff' }}>
                   <div className="feed-track">
                     {[
-                      { icon:'🤝', color:'#4ADE80', text:'Amira K. connected with a traveler', sub:'Berlin · 2 min ago' },
-                      { icon:'★', color:YELLOW, text:'Marco R. left a 5-star review', sub:'Lisbon · 5 min ago' },
-                      { icon:'✈️', color:'#93C5FD', text:'Sophie B. posted a trip to Prague', sub:'Arriving Nov 14 · 8 min ago' },
-                      { icon:'🏠', color:'#FCA572', text:'New host joined in Amsterdam', sub:'Food & culture · 12 min ago' },
-                      { icon:'💬', color:'#C4B5FD', text:'Yuki T. replied in under 3 min', sub:'Tokyo · 15 min ago' },
-                      { icon:'🤝', color:'#4ADE80', text:'Lena M. unlocked a Berlin host', sub:'18 min ago' },
-                      { icon:'★', color:YELLOW, text:'"This changed how I travel." — Alex D.', sub:'Amsterdam · 22 min ago' },
-                      { icon:'✈️', color:'#93C5FD', text:'Carlos V. posted a trip to Barcelona', sub:'Arriving Dec 2 · 25 min ago' },
+                      { icon:'🤝', color:'#22C55E', bg:'#DCFCE7', text:'Amira K. connected with a traveler', sub:'Berlin · 2 min ago' },
+                      { icon:'⭐', color:'#F59E0B', bg:'#FEF3C7', text:'Marco R. left a 5-star review', sub:'Lisbon · 5 min ago' },
+                      { icon:'✈️', color:'#3B82F6', bg:'#DBEAFE', text:'Sophie B. posted a trip to Prague', sub:'Arriving Nov 14 · 8 min ago' },
+                      { icon:'🏠', color:'#F97316', bg:'#FFEDD5', text:'New host joined in Amsterdam', sub:'Food & culture · 12 min ago' },
+                      { icon:'💬', color:'#8B5CF6', bg:'#EDE9FE', text:'Yuki T. replied in under 3 min', sub:'Tokyo · 15 min ago' },
+                      { icon:'🤝', color:'#22C55E', bg:'#DCFCE7', text:'Lena M. unlocked a Berlin host', sub:'18 min ago' },
+                      { icon:'⭐', color:'#F59E0B', bg:'#FEF3C7', text:'"This changed how I travel." — Alex D.', sub:'Amsterdam · 22 min ago' },
+                      { icon:'✈️', color:'#3B82F6', bg:'#DBEAFE', text:'Carlos V. posted a trip to Barcelona', sub:'Arriving Dec 2 · 25 min ago' },
                     ].concat([
-                      { icon:'🤝', color:'#4ADE80', text:'Amira K. connected with a traveler', sub:'Berlin · 2 min ago' },
-                      { icon:'★', color:YELLOW, text:'Marco R. left a 5-star review', sub:'Lisbon · 5 min ago' },
-                      { icon:'✈️', color:'#93C5FD', text:'Sophie B. posted a trip to Prague', sub:'Arriving Nov 14 · 8 min ago' },
-                      { icon:'🏠', color:'#FCA572', text:'New host joined in Amsterdam', sub:'Food & culture · 12 min ago' },
-                      { icon:'💬', color:'#C4B5FD', text:'Yuki T. replied in under 3 min', sub:'Tokyo · 15 min ago' },
-                      { icon:'🤝', color:'#4ADE80', text:'Lena M. unlocked a Berlin host', sub:'18 min ago' },
-                      { icon:'★', color:YELLOW, text:'"This changed how I travel." — Alex D.', sub:'Amsterdam · 22 min ago' },
-                      { icon:'✈️', color:'#93C5FD', text:'Carlos V. posted a trip to Barcelona', sub:'Arriving Dec 2 · 25 min ago' },
+                      { icon:'🤝', color:'#22C55E', bg:'#DCFCE7', text:'Amira K. connected with a traveler', sub:'Berlin · 2 min ago' },
+                      { icon:'⭐', color:'#F59E0B', bg:'#FEF3C7', text:'Marco R. left a 5-star review', sub:'Lisbon · 5 min ago' },
+                      { icon:'✈️', color:'#3B82F6', bg:'#DBEAFE', text:'Sophie B. posted a trip to Prague', sub:'Arriving Nov 14 · 8 min ago' },
+                      { icon:'🏠', color:'#F97316', bg:'#FFEDD5', text:'New host joined in Amsterdam', sub:'Food & culture · 12 min ago' },
+                      { icon:'💬', color:'#8B5CF6', bg:'#EDE9FE', text:'Yuki T. replied in under 3 min', sub:'Tokyo · 15 min ago' },
+                      { icon:'🤝', color:'#22C55E', bg:'#DCFCE7', text:'Lena M. unlocked a Berlin host', sub:'18 min ago' },
+                      { icon:'⭐', color:'#F59E0B', bg:'#FEF3C7', text:'"This changed how I travel." — Alex D.', sub:'Amsterdam · 22 min ago' },
+                      { icon:'✈️', color:'#3B82F6', bg:'#DBEAFE', text:'Carlos V. posted a trip to Barcelona', sub:'Arriving Dec 2 · 25 min ago' },
                     ]).map((item, i) => (
-                      <div key={i} style={{ display:'flex', alignItems:'center', gap:'11px', padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
-                        <div style={{ width:'30px', height:'30px', borderRadius:'50%', background:'rgba(255,255,255,0.10)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', flexShrink:0 }}>{item.icon}</div>
+                      <div key={i} style={{ display:'flex', alignItems:'center', gap:'12px', padding:'11px 18px', borderBottom:'2px solid #E8EEF4' }}>
+                        <div style={{ width:'34px', height:'34px', borderRadius:'10px', background:item.bg, border:`2.5px solid ${item.color}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'16px', flexShrink:0 }}>{item.icon}</div>
                         <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ fontSize:'11px', fontWeight:700, color:'#fff', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{item.text}</div>
-                          <div style={{ fontSize:'10px', color:'rgba(255,255,255,0.45)', marginTop:'1px' }}>{item.sub}</div>
+                          <div style={{ fontSize:'11.5px', fontWeight:700, color:'#1E293B', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{item.text}</div>
+                          <div style={{ fontSize:'10px', color:'#94A3B8', marginTop:'2px', fontWeight:500 }}>{item.sub}</div>
                         </div>
-                        <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:item.color, flexShrink:0 }} />
+                        <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:item.color, flexShrink:0, boxShadow:`0 0 0 3px ${item.color}25` }} />
                       </div>
                     ))}
                   </div>
                 </div>
                 {/* Footer stat row */}
-                <div style={{ display:'flex', justifyContent:'space-around', padding:'10px 16px', borderTop:'1px solid rgba(255,255,255,0.10)' }}>
+                <div style={{ display:'flex', justifyContent:'space-around', padding:'12px 18px', borderTop:'2px solid #E2E8F0', background:'linear-gradient(180deg,#F1F5F9 0%,#F8FAFC 100%)' }}>
                   <div style={{ textAlign:'center' }}>
-                    <div style={{ fontSize:'14px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif' }}>⚡ 4 min</div>
-                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.50)', fontWeight:600, marginTop:'1px' }}>avg reply</div>
+                    <div style={{ fontSize:'15px', fontWeight:800, color:'#0F172A', fontFamily:'var(--font-fraunces), Georgia, serif' }}>⚡ 4 min</div>
+                    <div style={{ fontSize:'9px', color:'#64748B', fontWeight:700, marginTop:'2px', textTransform:'uppercase', letterSpacing:'0.06em' }}>avg reply</div>
                   </div>
-                  <div style={{ width:'1px', background:'rgba(255,255,255,0.10)' }} />
+                  <div style={{ width:'2px', background:'#E2E8F0', borderRadius:'2px' }} />
                   <div style={{ textAlign:'center' }}>
-                    <div style={{ fontSize:'14px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif' }}>€6<span style={{ fontSize:'10px', fontWeight:500 }}>/day</span></div>
-                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.50)', fontWeight:600, marginTop:'1px' }}>from</div>
+                    <div style={{ fontSize:'15px', fontWeight:800, color:'#0F172A', fontFamily:'var(--font-fraunces), Georgia, serif' }}>€6<span style={{ fontSize:'11px', fontWeight:600, color:'#64748B' }}>/day</span></div>
+                    <div style={{ fontSize:'9px', color:'#64748B', fontWeight:700, marginTop:'2px', textTransform:'uppercase', letterSpacing:'0.06em' }}>from</div>
                   </div>
-                  <div style={{ width:'1px', background:'rgba(255,255,255,0.10)' }} />
+                  <div style={{ width:'2px', background:'#E2E8F0', borderRadius:'2px' }} />
                   <div style={{ textAlign:'center' }}>
-                    <div style={{ fontSize:'14px', fontWeight:800, color:'#fff', fontFamily:'var(--font-fraunces), Georgia, serif' }}>4.9★</div>
-                    <div style={{ fontSize:'9px', color:'rgba(255,255,255,0.50)', fontWeight:600, marginTop:'1px' }}>avg rating</div>
+                    <div style={{ fontSize:'15px', fontWeight:800, color:'#0F172A', fontFamily:'var(--font-fraunces), Georgia, serif' }}>4.9★</div>
+                    <div style={{ fontSize:'9px', color:'#64748B', fontWeight:700, marginTop:'2px', textTransform:'uppercase', letterSpacing:'0.06em' }}>avg rating</div>
                   </div>
                 </div>
               </div>
