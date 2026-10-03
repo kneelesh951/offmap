@@ -229,6 +229,23 @@ export interface MockAdminNote {
   createdAt: string
 }
 
+export interface MockBanner {
+  id: string
+  key: string
+  enabled: boolean
+  variant: 'info' | 'promo' | 'warning' | 'urgent'
+  text: string
+  ctaLabel: string | null
+  ctaHref: string | null
+  target: 'all' | 'travelers' | 'hosts' | 'unsubscribed' | 'subscribed'
+  priority: number
+  startsAt: string | null
+  endsAt: string | null
+  dismissible: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export interface MockNotification {
   id: string
   userId: string
@@ -273,6 +290,7 @@ class MockDatabase {
   hostPhotos: Map<string, MockHostPhoto> = new Map()
   reports: Map<string, MockReport> = new Map()
   adminNotes: Map<string, MockAdminNote> = new Map()
+  banners: Map<string, MockBanner> = new Map()
 
   // Session store: sessionToken → userId
   sessions: Map<string, string> = new Map()
@@ -819,6 +837,15 @@ class MockDatabase {
     }
     this.conversations.set(seedConv.id, seedConv)
 
+    // ── Seed messages for the demo conversation ──────────────────────────
+    const seedMessages = [
+      { id: 'msg-seed-1', conversationId: 'conv-seed-1', senderId: 'user-traveler-demo', content: 'Hi Amira! Really excited to explore Berlin with you. I arrive Thursday evening — when are you free?', isRead: true, createdAt: new Date(Date.now() - 86400000 * 4).toISOString() },
+      { id: 'msg-seed-2', conversationId: 'conv-seed-1', senderId: 'user-host-demo', content: 'Welcome! Thursday night is perfect. There\'s a rooftop bar in Mitte that\'s totally off the tourist radar — I\'ll take you there first. Meet at Hackescher Markt at 8pm?', isRead: true, createdAt: new Date(Date.now() - 86400000 * 3.8).toISOString() },
+      { id: 'msg-seed-3', conversationId: 'conv-seed-1', senderId: 'user-traveler-demo', content: 'Perfect, 8pm works great. Should I bring anything?', isRead: true, createdAt: new Date(Date.now() - 86400000 * 3.5).toISOString() },
+      { id: 'msg-seed-4', conversationId: 'conv-seed-1', senderId: 'user-host-demo', content: 'Just comfortable shoes — we\'ll be walking a lot! I know a döner spot that\'s only open until midnight and the queue is worth every minute. See you Thursday 🙌', isRead: true, createdAt: new Date(Date.now() - 86400000 * 1).toISOString() },
+    ]
+    seedMessages.forEach(m => this.messages.set(m.id, m))
+
     // Seed a couple of wishlist items for demo traveler
     this.wishlists.set('user-traveler-demo:host-3', { userId: 'user-traveler-demo', hostId: 'host-3' })
     this.wishlists.set('user-traveler-demo:host-5', { userId: 'user-traveler-demo', hostId: 'host-5' })
@@ -846,6 +873,43 @@ class MockDatabase {
       { id: 'report-4', reporterId: 'user-james', reportedUserId: 'user-r5', reportedHostId: 'host-7', reason: 'inappropriate_content', details: 'Profile bio contains offensive language targeting a specific nationality.', status: 'resolved', adminNote: 'Bio updated by admin. Host warned via email. No further action needed.', resolvedAt: new Date(Date.now() - 86400000 * 2).toISOString(), createdAt: new Date(Date.now() - 86400000 * 4).toISOString() },
     ]
     sampleReports.forEach(r => this.reports.set(r.id, r))
+
+    // ── Banners ─────────────────────────────────────────────────────────────
+    const bannerData: MockBanner[] = [
+      {
+        id: 'banner-launch',
+        key: 'launch_promo',
+        enabled: true,
+        variant: 'promo',
+        text: 'Welcome to Offmap — explore cities like a local. Annual plan just €49.',
+        ctaLabel: 'Get started',
+        ctaHref: '/subscribe',
+        target: 'unsubscribed',
+        priority: 10,
+        startsAt: null,
+        endsAt: null,
+        dismissible: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'banner-host',
+        key: 'host_signup',
+        enabled: false,
+        variant: 'info',
+        text: 'Are you a local? Share your city with travelers and earn while doing what you love.',
+        ctaLabel: 'Become a host',
+        ctaHref: '/host-signup',
+        target: 'travelers',
+        priority: 5,
+        startsAt: null,
+        endsAt: null,
+        dismissible: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ]
+    bannerData.forEach(b => this.banners.set(b.id, b))
 
     console.log('🌱 Mock database seeded with sample data')
     console.log('   Demo accounts:')
@@ -1319,6 +1383,48 @@ class MockDatabase {
         const activeSub = this.getActiveSubscription(u.id)
         return { ...u, password: undefined, hostProfile: hostProfile ?? null, hasActiveSub: !!activeSub }
       })
+  }
+
+  // ── Banner helpers ────────────────────────────────────────────────────────
+
+  getAllBanners(): MockBanner[] {
+    if (!this.banners) return []
+    return Array.from(this.banners.values()).sort((a, b) => b.priority - a.priority)
+  }
+
+  getActiveBanners(): MockBanner[] {
+    if (!this.banners) return []
+    const now = new Date()
+    return Array.from(this.banners.values())
+      .filter(b => {
+        if (!b.enabled) return false
+        if (b.startsAt && new Date(b.startsAt) > now) return false
+        if (b.endsAt && new Date(b.endsAt) < now) return false
+        return true
+      })
+      .sort((a, b) => b.priority - a.priority)
+  }
+
+  createBanner(data: Omit<MockBanner, 'id' | 'createdAt' | 'updatedAt'>): MockBanner {
+    if (!this.banners) this.banners = new Map()
+    const now = new Date().toISOString()
+    const banner: MockBanner = { id: `banner-${nanoid(8)}`, createdAt: now, updatedAt: now, ...data }
+    this.banners.set(banner.id, banner)
+    return banner
+  }
+
+  updateBanner(id: string, patch: Partial<Omit<MockBanner, 'id' | 'createdAt'>>): MockBanner | null {
+    if (!this.banners) return null
+    const banner = this.banners.get(id)
+    if (!banner) return null
+    const updated = { ...banner, ...patch, updatedAt: new Date().toISOString() }
+    this.banners.set(id, updated)
+    return updated
+  }
+
+  deleteBanner(id: string): boolean {
+    if (!this.banners) return false
+    return this.banners.delete(id)
   }
 }
 

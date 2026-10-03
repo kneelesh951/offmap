@@ -702,6 +702,32 @@ export const revenueEvents = pgTable(
   })
 )
 
+// ─── SITE BANNERS ─────────────────────────────────────────────────────────────
+export const bannerVariantEnum = pgEnum('banner_variant', ['info', 'promo', 'warning', 'urgent'])
+export const bannerTargetEnum  = pgEnum('banner_target',  ['all', 'travelers', 'hosts', 'unsubscribed', 'subscribed'])
+
+export const siteBanners = pgTable(
+  'site_banners',
+  {
+    id:          uuid('id').primaryKey().defaultRandom(),
+    key:         text('key').unique().notNull(),
+    enabled:     boolean('enabled').default(false).notNull(),
+    variant:     bannerVariantEnum('variant').default('info').notNull(),
+    text:        text('text').notNull(),
+    ctaLabel:    text('cta_label'),
+    ctaHref:     text('cta_href'),
+    target:      bannerTargetEnum('target').default('all').notNull(),
+    priority:    integer('priority').default(0).notNull(),
+    startsAt:    timestamp('starts_at', { withTimezone: true }),
+    endsAt:      timestamp('ends_at', { withTimezone: true }),
+    dismissible: boolean('dismissible').default(true).notNull(),
+    ...timestamps,
+  },
+  (t) => ({
+    enabledPriorityIdx: index('site_banners_enabled_priority_idx').on(t.enabled, t.priority),
+  })
+)
+
 // ─── RELATIONS ────────────────────────────────────────────────────────────────
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -785,3 +811,5 @@ export type TripHostResponse = typeof tripHostResponses.$inferSelect
 export type NewTripHostResponse = typeof tripHostResponses.$inferInsert
 export type Booking = typeof bookings.$inferSelect
 export type NewBooking = typeof bookings.$inferInsert
+export type SiteBanner = typeof siteBanners.$inferSelect
+export type NewSiteBanner = typeof siteBanners.$inferInsert

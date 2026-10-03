@@ -68,6 +68,22 @@ export const createTripHostResponseSchema = z.object({
   message: z.string().max(1000).optional(),
 })
 
+export const createBannerSchema = z.object({
+  key:         z.string().min(1).max(100).regex(/^[a-z0-9_-]+$/, 'Lowercase letters, numbers, hyphens, underscores only'),
+  variant:     z.enum(['info', 'promo', 'warning', 'urgent']).default('info'),
+  text:        z.string().min(1, 'Banner text required').max(300),
+  ctaLabel:    z.string().max(50).optional().nullable(),
+  ctaHref:     z.string().max(200).optional().nullable(),
+  target:      z.enum(['all', 'travelers', 'hosts', 'unsubscribed', 'subscribed']).default('all'),
+  priority:    z.coerce.number().int().min(0).max(100).default(0),
+  startsAt:    z.string().datetime().optional().nullable(),
+  endsAt:      z.string().datetime().optional().nullable(),
+  dismissible: z.boolean().default(true),
+})
+export const updateBannerSchema = createBannerSchema.partial().extend({
+  enabled: z.boolean().optional(),
+})
+
 export const updateProfileSchema = z.object({
   fullName: z.string().min(2).max(100).optional(),
   bio: z.string().max(500).optional(),

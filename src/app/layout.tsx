@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, Fraunces, JetBrains_Mono, Sora } from 'next/font/google'
 import { MockBanner } from '@/components/ui/MockBanner'
+import { PromoBanner } from '@/components/ui/PromoBanner'
 import { AlmaButtonLazy } from '@/components/ai/AlmaButtonLazy'
 import { CookieConsent } from '@/components/consent/CookieConsent'
 import { AnalyticsGate } from '@/components/consent/AnalyticsGate'
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${sora.variable} antialiased bg-cream text-ink`}>
+        <PromoBanner />
         {children}
         <MockBanner />
         <AlmaButtonLazy />

@@ -13,6 +13,7 @@ const NAV = [
   { href: '/admin/hosts',   label: 'Host Queue', icon: <HostIcon /> },
   { href: '/admin/reports', label: 'Reports',    icon: <FlagIcon /> },
   { href: '/admin/users',   label: 'Users',      icon: <UsersIcon /> },
+  { href: '/admin/banners', label: 'Banners',    icon: <BannerIcon /> },
 ]
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -87,4 +88,7 @@ function FlagIcon() {
 }
 function UsersIcon() {
   return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+}
+function BannerIcon() {
+  return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
 }

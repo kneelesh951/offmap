@@ -23,12 +23,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: { code: 'SUBSCRIPTION_REQUIRED', message: 'Subscribe from €6/day or use 2 credits to connect with hosts.' } }, { status: 403 })
     }
 
-    // Check host exists
+    // Check host exists — accept either host profile ID or host user ID, normalise to user ID
     const hostProfile = mockDb.getHostProfileByUserId(parsed.data.hostId)
+                     ?? mockDb.hostProfiles.get(parsed.data.hostId)
     if (!hostProfile) return NextResponse.json({ success: false, error: { code: 'NOT_FOUND', message: 'Host not found' } }, { status: 404 })
+    const hostUserId = hostProfile.userId  // always normalised user ID for storage + dedup
 
     // Check for existing conversation (no credit charge for re-opening)
-    const existing = Array.from(mockDb.conversations.values()).find(c => c.travelerId === user.id && c.hostId === parsed.data.hostId)
+    const existing = Array.from(mockDb.conversations.values()).find(c => c.travelerId === user.id && c.hostId === hostUserId)
     if (existing) return NextResponse.json({ success: true, data: { conversationId: existing.id } })
 
     // Deduct 2 credits if not using subscription
@@ -39,7 +41,7 @@ export async function POST(request: NextRequest) {
     const conv = {
       id: `conv-${nanoid(8)}`,
       travelerId: user.id,
-      hostId: parsed.data.hostId,
+      hostId: hostUserId,
       subscriptionId: activeSub?.id ?? null,
       unlockedAt: new Date().toISOString(),
       lastMessageAt: null as string | null,
