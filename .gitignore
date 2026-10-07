@@ -40,3 +40,27 @@ coverage/
 # Claude Code internals
 .agents/
 skills-lock.json
+
+# Backup files
+*.backup.tsx
+*.backup.ts
+*.backup.js
+
+# Private business docs — never commit these to a public repo
+docs/SECURITY_PLAN.md
+docs/UAT_REPORT.md
+docs/UAT_AND_DEPLOYMENT.md
+docs/REVENUE_AND_TEAM_PLAN.md
+docs/GO_TO_MARKET.md
+docs/LEGAL_PROTECTION_PLAN.md
+docs/DOMAIN_AND_TRADEMARK.md
+docs/BRAND_AND_DOMAIN.md
+docs/pitch-deck.html
+docs/PAYMENTS_AND_ENVIRONMENTS.md
+docs/PRODUCTION_ARCHITECTURE.md
+docs/ADMIN_PANEL.md
+docs/ADMIN_DASHBOARD_PLAN.md
+docs/FLOW_AUDIT_2026-06-14.md
+docs/AI_AGENT_TEAM.md
+docs/AWS_MIGRATION_PLAN.md
+docs/Offmap_Production_Rollout_Plan.xlsx
